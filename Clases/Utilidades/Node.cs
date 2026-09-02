@@ -1,7 +1,7 @@
 ﻿using System;
 
 /// <summary>
-/// Representa a un nodo dentro de una estructura de datos
+/// Representa a un nodo dentro de una estructura de datos.
 /// </summary>
 public class Node
 {
