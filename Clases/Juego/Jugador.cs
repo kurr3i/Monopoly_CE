@@ -9,18 +9,26 @@ public class Jugador
 	public int ID { get; set; } 
 	public string Nombre { get; set; }
 	public int Saldo { get; set; }
-	public int PosicionActual { get; set; } // Pendiente: Cual será el tipo de dato de la posición actual
 	public bool Activo { get; set; }
-    /* public DATO PropiedadesAdquiridas { get; set; } */ // Pendientes: La clase propiedad y la estructura lineal para guardar las propiedades adquiridas
+
+    /// <summary>
+    /// Representa la posición actual del jugador en el tablero, que es una instancia de la clase Casilla.
+    /// </summary>
+    public Casilla PosicionActual { get; set; }
+
+    /// <summary>
+    /// Representa una lista doblemente enlazada que contiene las propiedades adquiridas por el jugador. Cada nodo contiene una instancia de la clase Propiedad.
+    /// </summary>
+    public ListaDobleEnlazada PropiedadesAdquiridas { get; set; } 
 
 
 
-    public Jugador(int ID, string Nombre)
+    public Jugador(int ID, string Nombre, Casilla PosicionActual)
 	{
 		this.ID = ID;
 		this.Nombre = Nombre;
 		this.Saldo = 0; // Pendiente: Acordar el saldo inicial
-        this.PosicionActual = 0; // Pendiente:  el dato de posición y cual será la posición inicial
+        this.PosicionActual = PosicionActual; 
 		this.Activo = false; // Pendiente: Acordar si el jugador inicia activo o inactivo, creo que es false, pues solo un jugador puede tomar acciones a la vez
     }
 }
