@@ -30,5 +30,6 @@ public class Jugador
 		this.Saldo = 0; // Pendiente: Acordar el saldo inicial
         this.PosicionActual = PosicionActual; 
 		this.Activo = false; // Pendiente: Acordar si el jugador inicia activo o inactivo, creo que es false, pues solo un jugador puede tomar acciones a la vez
+        this.PropiedadesAdquiridas = new ListaDobleEnlazada();
     }
 }
