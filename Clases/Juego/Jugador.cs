@@ -11,7 +11,7 @@ public class Jugador
 	public int Saldo { get; set; }
 	public int PosicionActual { get; set; } // Pendiente: Cual será el tipo de dato de la posición actual
 	public bool Activo { get; set; }
-    /* public DATO propiedadesAdquiridasJugador { get; set; } */ // Pendientes: La clase propiedad y la estructura lineal para guardar las propiedades adquiridas
+    /* public DATO PropiedadesAdquiridas { get; set; } */ // Pendientes: La clase propiedad y la estructura lineal para guardar las propiedades adquiridas
 
 
 
