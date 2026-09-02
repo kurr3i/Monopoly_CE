@@ -5,17 +5,17 @@
 /// </summary>
 public class ListaDobleEnlazada
 {
-    public Node Head { get; private set; }
-    public Node Tail { get; private set; }
+    public NodeCasilla Head { get; private set; }
+    public NodeCasilla Tail { get; private set; }
     public int Size { get; private set; }
 
     /// <summary>
     /// Agrega un nuevo nodo al final de la lista doblemente enlazada.
     /// </summary>
     /// <param name="data">Dato que almacenará el nodo.</param>
-    public void Add(object data)
+    public void Add(Casilla data)
     {
-        Node newNode = new Node { Data = data };
+        NodeCasilla newNode = new NodeCasilla { Data = data };
 
         if (Size == 0) // Si la lista está vacía, el nuevo nodo será tanto la cabeza como la cola
         {

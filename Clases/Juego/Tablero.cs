@@ -5,8 +5,8 @@
 /// </summary>
 public class Tablero
 {
-    public Node Head { get; private set; }
-    public Node Tail { get; private set; }
+    public NodeCasilla Head { get; private set; }
+    public NodeCasilla Tail { get; private set; }
     public int Size { get; private set; }
 
     /// <summary>
@@ -15,7 +15,7 @@ public class Tablero
     /// <param name="casilla">Dato que almacenará el nodo.</param>
     public void Add(Casilla casilla)
     {
-        Node newNode = new Node { Data = casilla };
+        NodeCasilla newNode = new NodeCasilla { Data = casilla };
 
         if (Size == 0) // Si la lista está vacía, el nuevo nodo será tanto la cabeza como la cola
         {

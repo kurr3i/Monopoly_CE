@@ -60,7 +60,7 @@ public class Juego
 
                 Console.WriteLine("Has lanzado un " + resultado1 + " y un " + resultado2 + ". Total: " + movimiento);
 
-                Node nodoActual = TableroJuego.Head;
+                NodeCasilla nodoActual = TableroJuego.Head;
 
                 for (int i = 0; i < movimiento; i++)
                 {

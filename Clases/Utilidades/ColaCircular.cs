@@ -2,8 +2,8 @@
 
 public class ColaCircular
 {
-    public Node Head { get; private set; }
-    public Node Tail { get; private set; }
+    public NodeJugador Head { get; private set; }
+    public NodeJugador Tail { get; private set; }
     public int Size { get; private set; }
 
     /// <summary>
@@ -12,7 +12,7 @@ public class ColaCircular
     /// <param name="jugador">jugador que almacenará el nodo.</param>
     public void Add(Jugador jugador)
     {
-        Node newNode = new Node { Data = jugador };
+        NodeJugador newNode = new NodeJugador { Data = jugador };
 
         if (Size == 0) // Si la cola está vacía, el nuevo nodo será tanto la cabeza como la cola (tail)
         {
