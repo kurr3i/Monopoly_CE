@@ -8,6 +8,9 @@ namespace Proyecto_MonopoTEC
                 {
                         ClaseTest test = new ClaseTest();
                         test.Test();
+
+                        Juego juego = new Juego();
+                        juego.IniciarJuego();
                 }
         }
 }

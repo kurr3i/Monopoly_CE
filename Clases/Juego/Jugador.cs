@@ -27,7 +27,7 @@ public class Jugador
 	{
 		this.ID = ID;
 		this.Nombre = Nombre;
-		this.Saldo = 0; // Pendiente: Acordar el saldo inicial
+		this.Saldo = 2000; 
         this.PosicionActual = PosicionActual; 
 		this.Activo = false; // Pendiente: Acordar si el jugador inicia activo o inactivo, creo que es false, pues solo un jugador puede tomar acciones a la vez
         this.PropiedadesAdquiridas = new ListaDobleEnlazada();
