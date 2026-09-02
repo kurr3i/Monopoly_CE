@@ -29,7 +29,7 @@ public class Jugador
 		this.Nombre = Nombre;
 		this.Saldo = 2000; 
         this.PosicionActual = PosicionActual; 
-		this.Activo = false; // Pendiente: Acordar si el jugador inicia activo o inactivo, creo que es false, pues solo un jugador puede tomar acciones a la vez
+		this.Activo = true; // Si el jugador está activo o no en la partida (perdió)
         this.PropiedadesAdquiridas = new ListaDobleEnlazada();
     }
 }
