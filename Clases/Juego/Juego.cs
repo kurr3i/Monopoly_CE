@@ -1,6 +1,18 @@
 ﻿using System;
 
 /// <summary>
+/// Representa la acción que puede devolver la casilla en la que cae un jugador.
+/// </summary>
+enum AccionCasilla
+{
+    SinAccion,
+    PermitirComprar,
+    CobrarAlquiler,
+    DarCarta,
+    MandarCarcel
+}
+
+/// <summary>
 /// Representa el juego.
 /// </summary>
 public class Juego
@@ -59,24 +71,12 @@ public class Juego
         return cola;
     }
 
-
-    private string ValidarOpcionJugador(string opcion)
+    private AccionCasilla PrepararTurno()
     {
-        while (opcion != "1" && opcion != "2" && opcion != "3")
-        {
-            Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
-            opcion = Console.ReadLine();
-        }
-        return opcion;
-    }
-    public void IniciarJuego()
-    {
-        Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
-
-        while (true) // Bucle infinito para el juego
+        bool sigueEnTurno = true;
+        while (sigueEnTurno)
         {
             Console.Clear();
-
             Console.WriteLine("Elige una opción:\n1. Lanzar el dado\n2. Vender propiedad\n3. Ver propiedades");
             string opcion = ValidarOpcionJugador(Console.ReadLine());
 
@@ -92,16 +92,44 @@ public class Juego
                     Casilla CasillaJugadorActual = TableroJuego.MoverJugador(jugadorActual, resultadoDado1 + resultadoDado2);
                     Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + CasillaJugadorActual.Nombre);
 
-                    // Aquí se puede agregar la lógica para mover al jugador en el tablero según el resultado del dado
-                    // Avanzar al siguiente jugador
+                    sigueEnTurno = false; 
                     break;
                 case "2":
                     Console.WriteLine("Por ahora no se ha implementado lo de la venta");
-                    break; // Salir del bucle y terminar el juego
+                    break;
                 case "3":
                     Console.WriteLine("Por ahora no se ha implementado lo de ver propiedades");
-                    break; // Salir del método y terminar el juego
+                    break;
             }
+            Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+            Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
+        }
+        return AccionCasilla.SinAccion;
+    }
+
+
+
+
+    // Falta comentar esto.
+    private string ValidarOpcionJugador(string opcion)
+    {
+        while (opcion != "1" && opcion != "2" && opcion != "3")
+        {
+            Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
+            opcion = Console.ReadLine();
+        }
+        return opcion;
+    }
+
+    // Falta comentar esto.
+    public void IniciarJuego()
+    {
+        Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
+
+        while (true) // Bucle infinito para el juego
+        {
+            AccionCasilla accion = PrepararTurno();
+            Console.WriteLine(accion);
 
             Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
             Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
@@ -109,5 +137,7 @@ public class Juego
 
 
         }
+
+
     }
 }
