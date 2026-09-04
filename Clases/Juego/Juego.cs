@@ -51,10 +51,10 @@ public class Juego
     {
         ColaCircular cola = new ColaCircular();
 
-        cola.Add(jugador1);
-        cola.Add(jugador2);
-        cola.Add(jugador3);
-        cola.Add(jugador4);
+        cola.Enqueue(jugador1);
+        cola.Enqueue(jugador2);
+        cola.Enqueue(jugador3);
+        cola.Enqueue(jugador4);
 
         return cola;
     }
@@ -62,7 +62,7 @@ public class Juego
 
     private string ValidarOpcionJugador(string opcion)
     {
-        while (opcion != "1" && opcion != "2")
+        while (opcion != "1" && opcion != "2" && opcion != "3")
         {
             Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
             opcion = Console.ReadLine();
@@ -77,7 +77,7 @@ public class Juego
         {
             Console.Clear();
 
-            Console.WriteLine("Elige una opción: \n1. Lanzar el dado\n2. Vender propiedad");
+            Console.WriteLine("Elige una opción:\n1. Lanzar el dado\n2. Vender propiedad\n3. Ver propiedades");
             string opcion = ValidarOpcionJugador(Console.ReadLine());
 
             switch (opcion)
@@ -85,14 +85,22 @@ public class Juego
                 case "1":
                     int resultadoDado1 = dado.Lanzar();
                     int resultadoDado2 = dado.Lanzar();
+
                     Console.WriteLine("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
                     Console.WriteLine("Eso suma: " + (resultadoDado1 + resultadoDado2));
+
+                    Casilla CasillaJugadorActual = TableroJuego.MoverJugador(jugadorActual, resultadoDado1 + resultadoDado2);
+                    Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + CasillaJugadorActual.Nombre);
+
                     // Aquí se puede agregar la lógica para mover al jugador en el tablero según el resultado del dado
                     // Avanzar al siguiente jugador
                     break;
                 case "2":
                     Console.WriteLine("Por ahora no se ha implementado lo de la venta");
                     break; // Salir del bucle y terminar el juego
+                case "3":
+                    Console.WriteLine("Por ahora no se ha implementado lo de ver propiedades");
+                    break; // Salir del método y terminar el juego
             }
 
             Console.WriteLine("Presiona Enter para continuar al siguiente turno...");

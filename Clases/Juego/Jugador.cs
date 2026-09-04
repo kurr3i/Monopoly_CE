@@ -14,7 +14,7 @@ public class Jugador
     /// <summary>
     /// Representa la posición actual del jugador en el tablero, que es una instancia de la clase Casilla.
     /// </summary>
-    public Casilla PosicionActual { get; set; }
+    public Casilla Posicion { get; set; }
 
     /// <summary>
     /// Representa una lista doblemente enlazada que contiene las propiedades adquiridas por el jugador. Cada nodo contiene una instancia de la clase Propiedad.
@@ -23,12 +23,12 @@ public class Jugador
 
 
 
-    public Jugador(int ID, string Nombre, Casilla PosicionActual)
+    public Jugador(int ID, string Nombre, Casilla Posicion)
 	{
 		this.ID = ID;
 		this.Nombre = Nombre;
 		this.Saldo = 2000; 
-        this.PosicionActual = PosicionActual; 
+        this.Posicion = Posicion; 
 		this.Activo = true; // Si el jugador está activo o no en la partida (perdió)
         this.PropiedadesAdquiridas = new ListaDobleEnlazada();
     }

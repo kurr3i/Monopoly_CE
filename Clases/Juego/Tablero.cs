@@ -39,9 +39,34 @@ public class Tablero
     }
 
     /// <summary>
+    /// Avanza al jugador en el tablero.
+    /// </summary>
+    /// <param name="jugador">El jugador que se moverá.</param>
+    /// <param name="movimiento">La cantidad de casillas a mover.</param>
+    /// <returns>La casilla en la que termina el jugador después del movimiento.</returns>
+    public Casilla MoverJugador(Jugador jugador, int movimiento)
+    {
+        Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
+        NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+
+        while (nodoCasillaActual.Data != casillaActual) // Avanzamos hasta encontrar el nodo que contiene la casilla actual del jugador
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        for (int i = 0; i < movimiento; i++) // Avanzamos el número de casillas indicado por el movimiento 
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        jugador.Posicion = nodoCasillaActual.Data; // Actualizamos la posición del jugador a la nueva casilla
+
+        return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
+    }
+
+    /// <summary>
     /// Inicializar el tablero agregando las 24 casillas necesarias.
     /// </summary>
-    
     public void Inicializar()
     {
         CasillaEspecial salida = new CasillaEspecial(1, "Salida");
