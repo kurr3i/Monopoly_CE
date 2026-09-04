@@ -15,4 +15,28 @@ public class Propiedad : Casilla
 		this.Alquiler = Alquiler;
 		this.Propietario = null;
 	}
+
+    /// <summary>
+    /// Método que devuelve la acción que se debe realizar al caer en la casilla propiedad.
+    /// </summary>
+    /// <param name="jugador">El jugador que ha caído en la casilla.</param>
+    /// <returns>La acción que se debe realizar.</returns>
+    public override AccionCasilla DevolverAccion(Jugador jugador)
+    {
+        if (Propietario == jugador)
+        {
+            return AccionCasilla.SinAccion; // El jugador es el propietario de la propiedad, no se realiza ninguna acción.
+        }
+        else
+        {
+            if (Propietario == null)
+            {
+                return AccionCasilla.PermitirComprar; // La propiedad no tiene propietario, se puede comprar.
+            }
+            else
+            {
+                return AccionCasilla.CobrarAlquiler; // La propiedad tiene un propietario diferente al jugador, se debe pagar alquiler.
+            }
+        }
+    }
 }

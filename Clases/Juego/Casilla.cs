@@ -14,4 +14,14 @@ public class Casilla
 		this.ID = ID;
 		this.Nombre = Nombre;
 	}
+
+    /// <summary>
+    /// Método que modificaran las clases hijas para devolver la acción que se debe realizar al caer en la casilla.
+    /// </summary>
+	/// <param name="jugador">El jugador que ha caído en la casilla.</param>
+    /// <returns>La acción que se debe realizar.</returns>
+    public virtual AccionCasilla DevolverAccion(Jugador jugador)
+	{
+		return AccionCasilla.SinAccion;
+	}
 }

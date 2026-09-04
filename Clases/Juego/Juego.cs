@@ -3,13 +3,21 @@
 /// <summary>
 /// Representa la acción que puede devolver la casilla en la que cae un jugador.
 /// </summary>
-enum AccionCasilla
+public enum AccionCasilla
 {
     SinAccion,
     PermitirComprar,
     CobrarAlquiler,
     DarCarta,
     MandarCarcel
+}
+
+public enum SubtipoCasillaEspecial
+{
+    Salida,
+    Carcel,
+    PaqueDiversiones,
+    VayaCarcel
 }
 
 /// <summary>
@@ -83,28 +91,37 @@ public class Juego
             switch (opcion)
             {
                 case "1":
-                    int resultadoDado1 = dado.Lanzar();
-                    int resultadoDado2 = dado.Lanzar();
-
-                    Console.WriteLine("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
-                    Console.WriteLine("Eso suma: " + (resultadoDado1 + resultadoDado2));
-
-                    Casilla CasillaJugadorActual = TableroJuego.MoverJugador(jugadorActual, resultadoDado1 + resultadoDado2);
-                    Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + CasillaJugadorActual.Nombre);
-
                     sigueEnTurno = false; 
                     break;
                 case "2":
                     Console.WriteLine("Por ahora no se ha implementado lo de la venta");
+                    Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+                    Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
+
                     break;
                 case "3":
                     Console.WriteLine("Por ahora no se ha implementado lo de ver propiedades");
+                    Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+                    Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
+
                     break;
             }
-            Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
-            Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
         }
-        return AccionCasilla.SinAccion;
+
+        int resultadoDado1 = dado.Lanzar();
+        int resultadoDado2 = dado.Lanzar();
+
+        Console.WriteLine("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
+        Console.WriteLine("Eso suma: " + (resultadoDado1 + resultadoDado2));
+
+
+        Casilla CasillaJugadorActual = TableroJuego.MoverJugador(jugadorActual, resultadoDado1 + resultadoDado2);
+        Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + CasillaJugadorActual.Nombre);
+
+        Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+        Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
+
+        return CasillaJugadorActual.DevolverAccion(jugadorActual);
     }
 
 

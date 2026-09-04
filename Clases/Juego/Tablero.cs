@@ -69,7 +69,7 @@ public class Tablero
     /// </summary>
     public void Inicializar()
     {
-        CasillaEspecial salida = new CasillaEspecial(1, "Salida");
+        CasillaEspecial salida = new CasillaEspecial(1, "Salida", SubtipoCasillaEspecial.Salida);
         Add(salida);
 
         CasillaEvento loteria1 = new CasillaEvento(2, "Loteria 1");
@@ -87,7 +87,7 @@ public class Tablero
         Propiedad zarcero = new Propiedad(6, "Zarcero", 350, 80);
         Add(zarcero);
 
-        CasillaEspecial carcel = new CasillaEspecial(7, "Carcel - San Lucas");
+        CasillaEspecial carcel = new CasillaEspecial(7, "Carcel - San Lucas", SubtipoCasillaEspecial.Carcel);
         Add(carcel);
 
         Propiedad heredia = new Propiedad(8, "Heredia", 400, 90);
@@ -105,7 +105,7 @@ public class Tablero
         Propiedad golfito = new Propiedad(12, "Golfito", 550, 120);
         Add(golfito);
 
-        CasillaEspecial parqueDeDiversiones = new CasillaEspecial(13, "Parque de Diversiones");
+        CasillaEspecial parqueDeDiversiones = new CasillaEspecial(13, "Parque de Diversiones", SubtipoCasillaEspecial.PaqueDiversiones);
         Add(parqueDeDiversiones);
 
         Propiedad liberia = new Propiedad(14, "Liberia", 600, 130);
@@ -123,7 +123,7 @@ public class Tablero
         Propiedad turrialba = new Propiedad(18, "Turrialba", 750, 160);
         Add(turrialba);
 
-        CasillaEspecial vayaCarcel = new CasillaEspecial(19, "Vaya a la Carcel - La Cali");
+        CasillaEspecial vayaCarcel = new CasillaEspecial(19, "Vaya a la Carcel - La Cali", SubtipoCasillaEspecial.VayaCarcel);
         Add(vayaCarcel);
 
         Propiedad Desamparados = new Propiedad(20, "Desamparados", 800, 170);
