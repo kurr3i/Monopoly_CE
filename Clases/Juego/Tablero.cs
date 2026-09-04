@@ -13,7 +13,7 @@ public class Tablero
     /// Agrega un nuevo nodo al final de la lista circular doblemente enlazada.
     /// </summary>
     /// <param name="casilla">Dato que almacenará el nodo.</param>
-    public void Add(Casilla casilla)
+    private void Add(Casilla casilla)
     {
         NodeCasilla newNode = new NodeCasilla { Data = casilla };
 
@@ -42,7 +42,7 @@ public class Tablero
     /// Inicializar el tablero agregando las 24 casillas necesarias.
     /// </summary>
     
-    public void InicializarTablero()
+    public void Inicializar()
     {
         CasillaEspecial salida = new CasillaEspecial(1, "Salida");
         Add(salida);

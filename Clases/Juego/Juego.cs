@@ -7,78 +7,99 @@ public class Juego
 {
     private Tablero TableroJuego;
 
-    private Casilla casilla1;
-    private Casilla casilla2;
-    private Casilla casilla3;
-
     private Jugador jugador1;
     private Jugador jugador2;
+    private Jugador jugador3;
+    private Jugador jugador4;
+    private Jugador jugadorActual;
 
-    private Dado dado1;
-    private Dado dado2;
+    private ColaCircular ColaTurnos;
+
+    private Dado dado;
 
     public Juego()
     {
         TableroJuego = new Tablero();
+        TableroJuego.Inicializar();
 
-        casilla1 = new Casilla(1, "Casilla 1");
-        casilla2 = new Casilla(2, "Casilla 2");
-        casilla3 = new Casilla(3, "Casilla 3");
+        jugador1 = InicializarJugador(123, "Josué", TableroJuego.Head.Data);
+        jugador2 = InicializarJugador(456, "Joshua", TableroJuego.Head.Data);
+        jugador3 = InicializarJugador(789, "Kevin", TableroJuego.Head.Data);
+        jugador4 = InicializarJugador(101, "Ignacio", TableroJuego.Head.Data);
 
-        TableroJuego.Add(casilla1);
-        TableroJuego.Add(casilla2);
-        TableroJuego.Add(casilla3);
+        ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
 
-        dado1 = new Dado();
-        dado2 = new Dado();
+        jugadorActual = ColaTurnos.Peek();
 
-        jugador1 = new Jugador(123, "Josué", casilla1);
-        jugador2 = new Jugador(456, "Juan", casilla1);
-
+        dado = new Dado();
     }
 
+    /// <summary>
+    /// Método empleado para inicializar un jugador. 
+    /// </summary>
+    /// <returns>Retorna el objeto jugador inicializado.</returns>
+    private Jugador InicializarJugador(int ID, string Nombre, Casilla Posicion) // Nota: Este método posteriormente se debe modificar para que se inicialice el jugador con los ingresos del cliente y el arduino.
+    {
+        return new Jugador(ID, Nombre, Posicion);
+    }
+
+    /// <summary>
+    /// Método empleado para inicializar la cola de turnos. 
+    /// </summary>
+    /// <returns>Retorna la cola de turnos inicializada.</returns>
+    private ColaCircular InicializarTurnos(Jugador jugador1, Jugador jugador2, Jugador jugador3, Jugador jugador4)
+    {
+        ColaCircular cola = new ColaCircular();
+
+        cola.Add(jugador1);
+        cola.Add(jugador2);
+        cola.Add(jugador3);
+        cola.Add(jugador4);
+
+        return cola;
+    }
+
+
+    private string ValidarOpcionJugador(string opcion)
+    {
+        while (opcion != "1" && opcion != "2")
+        {
+            Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
+            opcion = Console.ReadLine();
+        }
+        return opcion;
+    }
     public void IniciarJuego()
     {
-        // Lógica para iniciar el juego
-        Console.WriteLine("El juego ha comenzado.");
+        Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
 
-        while (jugador1.Saldo > 0)
+        while (true) // Bucle infinito para el juego
         {
             Console.Clear();
 
-            Console.WriteLine("Turno de " + jugador1.Nombre);
-            Console.WriteLine("Saldo actual: " + jugador1.Saldo);
-            Console.WriteLine("Presiona 1 para lanzar el dado...");
+            Console.WriteLine("Elige una opción: \n1. Lanzar el dado\n2. Vender propiedad");
+            string opcion = ValidarOpcionJugador(Console.ReadLine());
 
-            int input = Convert.ToInt32(Console.ReadLine());
-            if (input == 1)
+            switch (opcion)
             {
-                int resultado1 = dado1.Lanzar();
-                int resultado2 = dado2.Lanzar();
-
-                int movimiento = resultado1 + resultado2;
-
-                Console.WriteLine("Has lanzado un " + resultado1 + " y un " + resultado2 + ". Total: " + movimiento);
-
-                NodeCasilla nodoActual = TableroJuego.Head;
-
-                for (int i = 0; i < movimiento; i++)
-                {
-                    nodoActual = nodoActual.Next;
-                }
-
-                jugador1.PosicionActual = (Casilla)nodoActual.Data;
-                Console.WriteLine("Te has movido a la casilla: " + jugador1.PosicionActual.Nombre);
-            }
-            else
-            {
-                Console.WriteLine("Entrada no válida. Por favor, presiona 1 para lanzar el dado.");
+                case "1":
+                    int resultadoDado1 = dado.Lanzar();
+                    int resultadoDado2 = dado.Lanzar();
+                    Console.WriteLine("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
+                    Console.WriteLine("Eso suma: " + (resultadoDado1 + resultadoDado2));
+                    // Aquí se puede agregar la lógica para mover al jugador en el tablero según el resultado del dado
+                    // Avanzar al siguiente jugador
+                    break;
+                case "2":
+                    Console.WriteLine("Por Ahora no se ha implementado lo de la venta");
+                    break; // Salir del bucle y terminar el juego
             }
 
-            jugador1.Saldo -= 200;
+            Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+            Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
-            Console.WriteLine("Presione Enter para continuar al siguiente turno...");
-            Console.ReadLine();
+
+
         }
     }
 }
