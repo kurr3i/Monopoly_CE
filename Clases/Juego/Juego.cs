@@ -91,7 +91,7 @@ public class Juego
                     // Avanzar al siguiente jugador
                     break;
                 case "2":
-                    Console.WriteLine("Por Ahora no se ha implementado lo de la venta");
+                    Console.WriteLine("Por ahora no se ha implementado lo de la venta");
                     break; // Salir del bucle y terminar el juego
             }
 

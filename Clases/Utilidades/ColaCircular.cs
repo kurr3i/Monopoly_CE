@@ -10,7 +10,7 @@ public class ColaCircular
     /// Agrega un nuevo nodo al final de la cola circular.
     /// </summary>
     /// <param name="jugador">jugador que almacenará el nodo.</param>
-    public void Add(Jugador jugador)
+    public void Enqueue(Jugador jugador)
     {
         NodeJugador newNode = new NodeJugador { Data = jugador };
 
@@ -30,18 +30,42 @@ public class ColaCircular
 
             Head.Previous = Tail; // Conectamos la cabeza con la nueva cola (tail)
             Tail.Next = Head; // Conectamos la nueva cola (tail) con la cabeza 
-        }
+        }   
 
         Size++;
     }
 
     /// <summary>
-    /// Mueve el primer nodo de la cola al final.
+    /// Elimina el primer nodo de la cola circular.
+    /// </summary>
+    /// <returns>El jugador eliminado de la cabeza de la cola.</returns>
+    public Jugador Dequeue()
+    {
+        Jugador jugadorEliminado = Head.Data;
+
+        if (Size == 1)
+        {
+            Head = null;
+            Tail = null;
+        }
+        else
+        {
+                Head = Head.Next; // Avanzamos la cabeza al siguiente nodo
+                Head.Previous = Tail; // Actualizamos el nodo anterior de la nueva cabeza para que apunte a la cola (tail)
+                Tail.Next = Head; // Actualizamos el siguiente nodo de la cola (tail) para que apunte a la nueva cabeza
+        }
+        
+        Size--;
+        return jugadorEliminado; // Retornamos el jugador eliminado
+    }
+
+    /// <summary>
+    /// Elimina el primer jugador de la cola y lo agrega al final.
     /// </summary>
     public void Advance()
     {
-        Head = Head.Next; // Avanzamos la cabeza al siguiente nodo
-        Tail = Tail.Next; // La cola (tail) pasa a ser el siguiente nodo también (anterior cabeza), manteniendo la circularidad
+        Jugador jugadorEliminado = Dequeue(); // Guardamos el jugador eliminado de la cabeza de la cola
+        Enqueue(jugadorEliminado); // Agregamos un nuevo nodo al final de la cola con el jugador eliminado
     }
 
     /// <summary>
