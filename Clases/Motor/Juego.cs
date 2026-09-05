@@ -1,16 +1,6 @@
 ﻿using System;
 
-/// <summary>
-/// Representa la acción que puede devolver la casilla en la que cae un jugador.
-/// </summary>
-public enum AccionCasilla
-{
-    SinAccion,
-    PermitirComprar,
-    CobrarAlquiler,
-    DarCarta,
-    MandarCarcel
-}
+
 
 public enum SubtipoCasillaEspecial
 {
@@ -26,12 +16,14 @@ public enum SubtipoCasillaEspecial
 public class Juego
 {
     private Tablero TableroJuego;
+    private ManejadorAcciones manejadorAcciones;
 
     private Jugador jugador1;
     private Jugador jugador2;
     private Jugador jugador3;
     private Jugador jugador4;
     private Jugador jugadorActual;
+     
 
     private ColaCircular ColaTurnos;
 
@@ -41,6 +33,8 @@ public class Juego
     {
         TableroJuego = new Tablero();
         TableroJuego.Inicializar();
+
+        manejadorAcciones = new ManejadorAcciones();
 
         jugador1 = InicializarJugador(123, "Josué", TableroJuego.Head.Data);
         jugador2 = InicializarJugador(456, "Joshua", TableroJuego.Head.Data);
@@ -124,54 +118,6 @@ public class Juego
         return CasillaJugadorActual.DevolverAccion(jugadorActual);
     }
 
-    private bool EjecutarAccion(AccionCasilla accion)
-    {
-        Console.Clear();
-        switch (accion)
-        {
-            case AccionCasilla.SinAccion:
-                Console.WriteLine("Fin del turno.");
-                return true; // El jugador sigue en el juego.
-                break;
-            case AccionCasilla.PermitirComprar:
-                Propiedad propiedadComprar = (Propiedad)jugadorActual.Posicion;
-                // Evaluamos con el banco si se puede comprar
-                Console.WriteLine("Desea Comprar " + propiedadComprar.Nombre + "Con un precio de " + propiedadComprar.PrecioCompra);
-                Console.WriteLine("1. Sí\n2. No");
-
-                string desicion = ValidarDesicionJugador(Console.ReadLine());
-
-                if (desicion == "1")
-                {
-                    jugadorActual.Saldo -= propiedadComprar.PrecioCompra; // Esto debería hacerlo el banco
-                    return true;
-                }
-                else
-                {
-                    return true;
-                }
-                break;
-            case AccionCasilla.CobrarAlquiler:
-                Propiedad propiedadAlquilar = (Propiedad)jugadorActual.Posicion;
-                //Evaluacion del banco
-                jugadorActual.Saldo -= propiedadAlquilar.Alquiler; // Por ahora solo esto
-                return true;
-                break;
-            case AccionCasilla.DarCarta:
-                Console.WriteLine("El jugador recibe una carta de evento."); // Por ahora solo esto
-                return true;
-                break;
-            case AccionCasilla.MandarCarcel:
-                Console.WriteLine("El jugador es enviado a la cárcel."); // Hay que hacer que el tablero envíe a la carcel
-                return true;
-                break;
-            default:
-                Console.WriteLine("Acción desconocida.");
-                return true; 
-                break;
-        }
-    }
-
 
     // Falta comentar esto.
     private string ValidarOpcionJugador(string opcion)
@@ -184,16 +130,7 @@ public class Juego
         return opcion;
     }
 
-    // Falta comentar esto.
-    private string ValidarDesicionJugador(string opcion)
-    {
-        while (opcion != "1" && opcion != "2")
-        {
-            Console.WriteLine("Opión inválida. Por favor, elige una opción válida.");
-            opcion = Console.ReadLine();
-        }
-        return opcion;
-    }
+    
 
     // Falta comentar esto.
     public void IniciarJuego()
@@ -205,7 +142,7 @@ public class Juego
             AccionCasilla accion = PrepararTurno();
             Console.WriteLine(accion);
 
-            bool sigueEnJuego = EjecutarAccion(accion);
+            bool sigueEnJuego = manejadorAcciones.EjecutarAccion(jugadorActual.Posicion,accion,jugadorActual);
             if (sigueEnJuego)
             {
                 ColaTurnos.Advance();
