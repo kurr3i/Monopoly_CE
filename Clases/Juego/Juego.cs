@@ -118,13 +118,59 @@ public class Juego
         Casilla CasillaJugadorActual = TableroJuego.MoverJugador(jugadorActual, resultadoDado1 + resultadoDado2);
         Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + CasillaJugadorActual.Nombre);
 
-        Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+        Console.WriteLine("Presiona Enter para continuar...");
         Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
         return CasillaJugadorActual.DevolverAccion(jugadorActual);
     }
 
+    private bool EjecutarAccion(AccionCasilla accion)
+    {
+        Console.Clear();
+        switch (accion)
+        {
+            case AccionCasilla.SinAccion:
+                Console.WriteLine("Fin del turno.");
+                return true; // El jugador sigue en el juego.
+                break;
+            case AccionCasilla.PermitirComprar:
+                Propiedad propiedadComprar = (Propiedad)jugadorActual.Posicion;
+                // Evaluamos con el banco si se puede comprar
+                Console.WriteLine("Desea Comprar " + propiedadComprar.Nombre + "Con un precio de " + propiedadComprar.PrecioCompra);
+                Console.WriteLine("1. Sí\n2. No");
 
+                string desicion = ValidarDesicionJugador(Console.ReadLine());
+
+                if (desicion == "1")
+                {
+                    jugadorActual.Saldo -= propiedadComprar.PrecioCompra; // Esto debería hacerlo el banco
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+                break;
+            case AccionCasilla.CobrarAlquiler:
+                Propiedad propiedadAlquilar = (Propiedad)jugadorActual.Posicion;
+                //Evaluacion del banco
+                jugadorActual.Saldo -= propiedadAlquilar.Alquiler; // Por ahora solo esto
+                return true;
+                break;
+            case AccionCasilla.DarCarta:
+                Console.WriteLine("El jugador recibe una carta de evento."); // Por ahora solo esto
+                return true;
+                break;
+            case AccionCasilla.MandarCarcel:
+                Console.WriteLine("El jugador es enviado a la cárcel."); // Hay que hacer que el tablero envíe a la carcel
+                return true;
+                break;
+            default:
+                Console.WriteLine("Acción desconocida.");
+                return true; 
+                break;
+        }
+    }
 
 
     // Falta comentar esto.
@@ -133,6 +179,17 @@ public class Juego
         while (opcion != "1" && opcion != "2" && opcion != "3")
         {
             Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
+            opcion = Console.ReadLine();
+        }
+        return opcion;
+    }
+
+    // Falta comentar esto.
+    private string ValidarDesicionJugador(string opcion)
+    {
+        while (opcion != "1" && opcion != "2")
+        {
+            Console.WriteLine("Opión inválida. Por favor, elige una opción válida.");
             opcion = Console.ReadLine();
         }
         return opcion;
@@ -148,11 +205,19 @@ public class Juego
             AccionCasilla accion = PrepararTurno();
             Console.WriteLine(accion);
 
+            bool sigueEnJuego = EjecutarAccion(accion);
+            if (sigueEnJuego)
+            {
+                ColaTurnos.Advance();
+                jugadorActual = ColaTurnos.Peek();
+            }
+            else
+            {
+                Console.WriteLine("Se eliminó al jugador" + jugadorActual);
+                ColaTurnos.Dequeue();
+            }
             Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
             Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
-
-
-
         }
 
 
