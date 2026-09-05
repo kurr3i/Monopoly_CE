@@ -31,4 +31,47 @@ public class ListaDobleEnlazada
 
         Size++;
     }
+
+    /// <summary>
+    /// Eliminar un nodo de la lista.
+    /// </summary>
+    /// <param name="data">Dato que comparará para encontrar el nodo a eliminar.</param>
+    public void Remove(Casilla data)
+    {
+        NodeCasilla nodeActual = Head;
+
+        if (Size == 1)
+        {
+            Head = null;
+            Tail = null;
+            Size--;
+        }
+        else
+        {
+            while (nodeActual.Data != data)
+            {
+                nodeActual = nodeActual.Next; // Buscamos el nodo que guarda el dato (Casilla)
+            }
+
+            if (nodeActual == Head) 
+            {
+                Head = Head.Next; // Actualizamos la cabeza
+                Head.Previous = Tail; // El previous de la nueva cabeza será la cola
+                Tail.Next = Head; // El next de la cola será la nueva cabeza
+            }
+            else if (nodeActual == Tail) 
+            {
+                Tail = Tail.Previous; // Actualizamos la cola
+                Tail.Next = Head; // El next de la nueva cola será la cabeza
+                Head.Previous = Tail; // El previous de la cabeza será la nueva cola
+            }
+            else // En caso de que el elemento esté entre la cabeza y la cola
+            {
+                nodeActual.Next.Previous = nodeActual.Previous; // El previous del siguiente nodo será el previos del nodo actual
+                nodeActual.Previous.Next = nodeActual.Next; // El next del anterior nodo sera el next del nodo actual
+            }
+
+            Size--;
+        }
+    }
 }
