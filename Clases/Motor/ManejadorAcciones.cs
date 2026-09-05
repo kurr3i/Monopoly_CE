@@ -16,6 +16,12 @@ public enum AccionCasilla
 /// </summary>
 public class ManejadorAcciones
 {
+    Banco bancoJuego;
+
+    public ManejadorAcciones()
+        {
+        this.bancoJuego = new Banco();
+        }
 
     public bool EjecutarAccion(Casilla casillaActual, AccionCasilla accion, Jugador jugadorActual)
     {
@@ -36,7 +42,7 @@ public class ManejadorAcciones
 
                 if (desicion == "1")
                 {
-                    jugadorActual.Saldo -= propiedadComprar.PrecioCompra; // Esto debería hacerlo el banco
+                    bancoJuego.ComprarPropiedad(jugadorActual, propiedadComprar); // Esto debería hacerlo el banco
                     return true;
                 }
                 else
@@ -74,5 +80,10 @@ public class ManejadorAcciones
             opcion = Console.ReadLine();
         }
         return opcion;
+    }
+
+    public void AccionVenderPropiedad(Jugador jugadorVenta)
+    {
+
     }
 }

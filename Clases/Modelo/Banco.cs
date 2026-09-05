@@ -30,6 +30,7 @@ public class Banco
     /// <param name="montoPagar">El monto que debe pagar.</param>
     public void PagarAlBanco(Jugador jugadorOrigen, int montoPagar)
     {
+        //Aquí falta la conexión con el Arduino
         jugadorOrigen.Saldo -= montoPagar; // Solo le restamos el monto
     }
 
@@ -41,6 +42,7 @@ public class Banco
     /// <param name="montoPagar">El monto que debe pagar el jugador de origen.</param>
     public void PagarAlJugador(Jugador jugadorOrigen, Jugador jugadorDestino, int montoPagar)
     {
+        //Aquí falta la conexión con el Arduino
         jugadorOrigen.Saldo -= montoPagar; // Le quitamos el monto que debe pagar al jugador de origen
         jugadorDestino.Saldo += montoPagar; // Le damos el monto al jugador destino
     }
@@ -52,6 +54,7 @@ public class Banco
     /// <param name="propiedadCompra">La propiedad que va a comprar.</param>
     public void ComprarPropiedad(Jugador jugadorCompra, Propiedad propiedadCompra)
     {
+        //Aquí falta la conexión con el Arduino
         jugadorCompra.Saldo -= propiedadCompra.PrecioCompra;
         propiedadCompra.Propietario = jugadorCompra;
         jugadorCompra.PropiedadesAdquiridas.Add(propiedadCompra);
@@ -62,9 +65,10 @@ public class Banco
     /// </summary>
     /// <param name="jugadorVenta">El jugador que va a realizar la venta de la propiedad.</param>
     /// <param name="propiedadVenta">La propiedad que va a ser vendida.</param>
-    public void VenderrPropiedad(Jugador jugadorVenta, Propiedad propiedadVenta)
+    public void VenderPropiedad(Jugador jugadorVenta, Propiedad propiedadVenta)
     {
         jugadorVenta.Saldo += propiedadVenta.PrecioCompra;
+        propiedadVenta.Propietario = null;
         jugadorVenta.PropiedadesAdquiridas.Remove(propiedadVenta);
     }
 }

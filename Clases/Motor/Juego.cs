@@ -88,13 +88,13 @@ public class Juego
                     sigueEnTurno = false; 
                     break;
                 case "2":
-                    Console.WriteLine("Por ahora no se ha implementado lo de la venta");
                     Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
                     Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
                     break;
                 case "3":
-                    Console.WriteLine("Por ahora no se ha implementado lo de ver propiedades");
+                    Console.WriteLine("Sus propiedades son:");
+                    jugadorActual.PropiedadesAdquiridas.Display();
                     Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
                     Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 

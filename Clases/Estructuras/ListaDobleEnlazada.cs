@@ -50,28 +50,55 @@ public class ListaDobleEnlazada
         {
             while (nodeActual.Data != data)
             {
-                nodeActual = nodeActual.Next; // Buscamos el nodo que guarda el dato (Casilla)
+                nodeActual = nodeActual.Next;
             }
 
-            if (nodeActual == Head) 
+            if (nodeActual == Head)
             {
-                Head = Head.Next; // Actualizamos la cabeza
-                Head.Previous = Tail; // El previous de la nueva cabeza será la cola
-                Tail.Next = Head; // El next de la cola será la nueva cabeza
+                Head = Head.Next;
+                Head.Previous = null;
             }
-            else if (nodeActual == Tail) 
+            else if (nodeActual == Tail)
             {
-                Tail = Tail.Previous; // Actualizamos la cola
-                Tail.Next = Head; // El next de la nueva cola será la cabeza
-                Head.Previous = Tail; // El previous de la cabeza será la nueva cola
+                Tail = Tail.Previous;
+                Tail.Next = null;
             }
-            else // En caso de que el elemento esté entre la cabeza y la cola
+            else
             {
-                nodeActual.Next.Previous = nodeActual.Previous; // El previous del siguiente nodo será el previos del nodo actual
-                nodeActual.Previous.Next = nodeActual.Next; // El next del anterior nodo sera el next del nodo actual
+                nodeActual.Next.Previous = nodeActual.Previous;
+                nodeActual.Previous.Next = nodeActual.Next;
             }
 
             Size--;
         }
     }
+
+        /// <summary>
+        /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
+        /// </summary>
+     public void Display()
+     {
+        {
+
+            NodeCasilla nodeActual = Head;
+            int indice = 0;
+            if (Size == 0)
+            {
+                Console.WriteLine("No hay propiedades que mostrar");
+                return;
+            }
+            else
+            {
+                do
+                {
+                    Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre);
+                    nodeActual = nodeActual.Next;
+                }while (nodeActual != null);
+                
+            }
+
+            
+        }
+     }
+        
 }
