@@ -1,15 +1,14 @@
-﻿using System;
-
+﻿
 public class CasillaEspecial : Casilla
 {
     public SubtipoCasillaEspecial Subtipo { get; private set; }
-    public CasillaEspecial(int ID, string Nombre, SubtipoCasillaEspecial Subtipo) : base(ID, Nombre)
+    public CasillaEspecial(int id, string nombre, SubtipoCasillaEspecial subtipo) : base(id, nombre)
     {
-        this.Subtipo = Subtipo;
+        this.Subtipo = subtipo;
     }
 
     /// <summary>
-    /// Método que devuelve la acción que se debe realizar al caer en la casilla especial, dependiendo de su subtipo.
+    /// Determina la acción que se debe realizar al caer en la casilla especial según su subtipo.
     /// </summary>
     /// <param name="jugador">El jugador que ha caído en la casilla.</param>    
     /// <returns>La acción que se debe realizar.</returns>
@@ -19,9 +18,8 @@ public class CasillaEspecial : Casilla
         {
             return AccionCasilla.MandarCarcel;
         }
-        else
-        {
-            return AccionCasilla.SinAccion;
-        }
+
+        return AccionCasilla.SinAccion; // En caso de que no sea la subcasilla VayaCarcel
+
     }
 }
