@@ -5,8 +5,9 @@
 public class Jugador
 {
 
-	public int ID { get; private set; } 
-	public string Nombre { get; private set; }
+	public int ID { get; private set; }
+    public string UID { get; private set; }
+    public string Nombre { get; private set; }
 	public int Saldo { get; private set; }
 	public bool Activo { get; private set; }
 
@@ -63,5 +64,13 @@ public class Jugador
     public void DisminuirSaldo(int monto)
     {
         Saldo -= monto;
+    }
+
+    /// <summary>
+    /// Inicializa el UID del jugador.
+    /// </summary>
+    public void InicializarUID(string uid)
+    {
+        UID = uid;
     }
 }
