@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// Representa a una lista doblemente enlazada.
 /// </summary>
@@ -78,43 +77,41 @@ public class ListaDobleEnlazada
     /// </summary>
     public void Display()
     {
+        NodeCasilla nodeActual = Head;
+
+        int indice = 1;
+
+        if (Size == 0)
         {
-
-            NodeCasilla nodeActual = Head;
-            int indice = 1;
-            if (Size == 0)
+            Console.WriteLine("No tienes propiedades que mostrar");
+            return;
+        }
+        else
+        {
+            do
             {
-                Console.WriteLine("No hay propiedades que mostrar");
-                return;
-            }
-            else
-            {
-                do
-                {
-                    Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre);
-                    nodeActual = nodeActual.Next;
-                }while (nodeActual != null);
-                
-            }
-
-            
+                Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
+                nodeActual = nodeActual.Next; // Avanza a la siguiente
+                indice ++;
+            }while (nodeActual != null);       
         }
     }
 
     /// <summary>
-    /// Recorre la lista y devuelve la casilla del indice seleccionado.
+    /// Recorre la lista y devuelve la casilla correspondiente al índice seleccionado.
     /// </summary>
-    public Casilla Get(int indicePropiedad)
+    /// <param name="indicePropiedad">Índice de la propiedad que se desea obtener.</param>
+    public Casilla GetAt(int indicePropiedad)
     {
         int indiceActual = 1;
-        NodeCasilla nodecasillaActual = Head;
+        NodeCasilla nodoCasillaActual = Head;
 
         while (indiceActual < indicePropiedad)
         {
             indiceActual++;
-            nodecasillaActual = nodecasillaActual.Next;
+            nodoCasillaActual = nodoCasillaActual.Next;
         }
-        return nodecasillaActual.Data;
+        return nodoCasillaActual.Data;
        
     }
 

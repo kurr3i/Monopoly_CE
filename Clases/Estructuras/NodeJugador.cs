@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// Representa a un nodo dentro de la cola circular para los jugadores.
 /// </summary>

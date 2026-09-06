@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// Representa a un nodo dentro de la lista doblemente enlazada para las propiedades del jugador y las casillas del tablero.
 /// </summary>

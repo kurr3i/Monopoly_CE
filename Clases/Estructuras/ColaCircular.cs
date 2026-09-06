@@ -1,5 +1,7 @@
-﻿using System;
-
+﻿
+/// <summary>
+/// Representa una cola circular doblemente enlazada de jugadores.
+/// </summary>
 public class ColaCircular
 {
     public NodeJugador Head { get; private set; }
@@ -9,7 +11,7 @@ public class ColaCircular
     /// <summary>
     /// Agrega un nuevo nodo al final de la cola circular.
     /// </summary>
-    /// <param name="jugador">jugador que almacenará el nodo.</param>
+    /// <param name="jugador">Jugador que almacenará el nodo.</param>
     public void Enqueue(Jugador jugador)
     {
         NodeJugador newNode = new NodeJugador { Data = jugador };
