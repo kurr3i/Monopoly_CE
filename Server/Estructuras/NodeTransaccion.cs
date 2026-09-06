@@ -1,10 +1,10 @@
 ﻿
 /// <summary>
-/// Representa a un nodo dentro de la lista doblemente enlazada para las propiedades del jugador y las casillas del tablero.
+/// Representa a un nodo dentro de la lista doblemente enlazada para las transacciones.
 /// </summary>
-public class NodeCasilla
+public class NodeTransaccion
 {
-	public Casilla Data { get; set; }
-	public NodeCasilla Next { get; set; }
-	public NodeCasilla Previous { get; set; }
+	public Transaccion Data { get; set; }
+	public NodeTransaccion Next { get; set; }
+	public NodeTransaccion Previous { get; set; }
 }
