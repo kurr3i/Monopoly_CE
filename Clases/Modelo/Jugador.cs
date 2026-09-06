@@ -39,6 +39,15 @@ public class Jugador
     }
 
     /// <summary>
+    /// Cambia la posición del jugador.
+    /// </summary>
+    /// <param name="posicion">La casilla que será la nueva posición.</param>
+    public void CambiarPosicion(Casilla posicion)
+    {
+        Posicion = posicion;
+    }
+
+    /// <summary>
     /// Aumenta el saldo al jugador según un monto.
     /// </summary>
     /// <param name="monto">Monto en el que aumentará el saldo.</param>

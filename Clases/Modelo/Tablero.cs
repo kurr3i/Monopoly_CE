@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// Representa el tablero del juego como una lista circular doblemente enlazada.
 /// </summary>
@@ -10,14 +9,14 @@ public class Tablero
     public int Size { get; private set; }
 
     /// <summary>
-    /// Agrega un nuevo nodo al final de la lista circular doblemente enlazada.
+    /// Agrega una nueva casilla al final del tablero.
     /// </summary>
-    /// <param name="casilla">Dato que almacenará el nodo.</param>
+    /// <param name="casilla">Casilla que se agregará al tablero.</param>
     private void Add(Casilla casilla)
     {
         NodeCasilla newNode = new NodeCasilla { Data = casilla };
 
-        if (Size == 0) // Si la lista está vacía, el nuevo nodo será tanto la cabeza como la cola
+        if (Size == 0) 
         {
             Head = newNode;
             Tail = newNode;
@@ -25,7 +24,7 @@ public class Tablero
             Head.Next = Head; // Conectamos la cabeza con ella misma
             Head.Previous = Head;
         }
-        else // Si la lista no está vacía, agregamos el nuevo nodo al final y lo conectamos con el primero
+        else 
         {
             Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
             newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
@@ -59,13 +58,22 @@ public class Tablero
             nodoCasillaActual = nodoCasillaActual.Next;
         }
 
-        jugador.Posicion = nodoCasillaActual.Data; // Actualizamos la posición del jugador a la nueva casilla
+        jugador.CambiarPosicion(nodoCasillaActual.Data) ; // Actualizamos la posición del jugador a la nueva casilla
 
         return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
     }
 
     /// <summary>
-    /// Inicializar el tablero agregando las 24 casillas necesarias.
+    /// Mueve al jugador a la casilla de la cárcel.
+    /// </summary>
+    /// <param name="jugador">El jugador que será enviado a la cárcel.</param>
+    public void MoverJugadorACarcel(Jugador jugador)
+    {
+        // Falta implementar
+    }
+
+    /// <summary>
+    /// Inicializa el tablero agregando las 24 casillas necesarias.
     /// </summary>
     public void Inicializar()
     {
@@ -126,8 +134,8 @@ public class Tablero
         CasillaEspecial vayaCarcel = new CasillaEspecial(19, "Vaya a la Carcel - La Cali", SubtipoCasillaEspecial.VayaCarcel);
         Add(vayaCarcel);
 
-        Propiedad Desamparados = new Propiedad(20, "Desamparados", 800, 170);
-        Add(Desamparados);
+        Propiedad desamparados = new Propiedad(20, "Desamparados", 800, 170);
+        Add(desamparados);
 
         Propiedad perezZeledon = new Propiedad(21, "Perez Zeledón", 850, 180);
         Add(perezZeledon);
