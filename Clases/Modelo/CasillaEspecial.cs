@@ -1,4 +1,7 @@
 ﻿
+/// <summary>
+/// Representa a una casilla especial dentro del tablero del juego.
+/// </summary>
 public class CasillaEspecial : Casilla
 {
     public SubtipoCasillaEspecial Subtipo { get; private set; }

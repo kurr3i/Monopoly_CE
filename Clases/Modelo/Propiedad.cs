@@ -1,12 +1,11 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// Representa a una casilla propiedad dentro del tablero del juego.
 /// </summary>
 public class Propiedad : Casilla
 {
-	public int PrecioCompra { get; set; }
-	public int Alquiler { get; set; }
+	public int PrecioCompra { get; private set; }
+	public int Alquiler { get; private set; }
 	public Jugador Propietario { get; set; } 
 
     public Propiedad(int id, string nombre, int precioCompra, int alquiler) : base(id, nombre)

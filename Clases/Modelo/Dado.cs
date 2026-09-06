@@ -5,7 +5,7 @@
 /// </summary>
 public class Dado
 {
-	Random dado = new Random();
+	private Random dado = new Random();
 
     /// <summary>
     /// Simula el lanzamiento de un dado retornando un valor entre 1 y 6.

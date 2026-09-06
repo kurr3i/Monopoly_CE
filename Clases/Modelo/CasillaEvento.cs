@@ -1,4 +1,7 @@
 ﻿
+/// <summary>
+/// Representa a una casilla de evento dentro del tablero del juego.
+/// </summary>
 public class CasillaEvento : Casilla
 {
     public CasillaEvento(int id, string nombre) : base(id, nombre)
