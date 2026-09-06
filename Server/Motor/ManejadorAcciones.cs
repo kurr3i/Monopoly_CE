@@ -1,4 +1,5 @@
 ﻿using System;
+
 /// <summary>
 /// Representa la acción que puede devolver la casilla en la que cae un jugador.
 /// </summary>
@@ -12,67 +13,89 @@ public enum AccionCasilla
 }
 
 /// <summary>
-/// Será el encargado de ejecutar acciones internar y externas
+/// Se encarga de ejecutar las acciones correspondientes a las casillas del tablero.
 /// </summary>
 public class ManejadorAcciones
 {
-    Banco bancoJuego;
+    /// <summary>
+    /// El banco del juego.
+    /// </summary>
+    private readonly Banco _bancoJuego;
 
-    public ManejadorAcciones()
+    /// <summary>
+    /// Constructor del manejador de acciones.
+    /// </summary>
+    /// <param name="puertoArduino">Nombre del puerto serial utilizado para comunicarse con el Arduino.</param>
+    public ManejadorAcciones(string puertoArduino)
         {
-        this.bancoJuego = new Banco();
+        this._bancoJuego = new Banco(puertoArduino);
         }
 
-    public bool EjecutarAccion(Casilla casillaActual, AccionCasilla accion, Jugador jugadorActual)
+    /// <summary>
+    /// Ejecuta la acción correspondiente al tipo de acción que devuelve la casilla.
+    /// </summary>
+    /// <param name="accion">La acción que se va a ejecutar.</param>
+    /// <param name="jugadorActual">El jugador en el turno actual.</param>
+    /// <param name="numeroTurno">El turno actual de la partida.</param>
+    public bool EjecutarAccion(AccionCasilla accion, Jugador jugadorActual, int numeroTurno)
     {
         Console.Clear();
+
         switch (accion)
         {
             case AccionCasilla.SinAccion:
                 Console.WriteLine("Fin del turno.");
                 return true; // El jugador sigue en el juego.
-                break;
+
             case AccionCasilla.PermitirComprar:
-                Propiedad propiedadComprar = (Propiedad)jugadorActual.Posicion;
-                // Evaluamos con el banco si se puede comprar
-                Console.WriteLine("Desea Comprar " + propiedadComprar.Nombre + "Con un precio de " + propiedadComprar.PrecioCompra);
-                Console.WriteLine("1. Sí\n2. No");
 
-                string desicion = ValidarDesicionJugador(Console.ReadLine());
+                Propiedad propiedadComprar = (Propiedad)jugadorActual.Posicion; // Hacemos cast para poder tratarla como una propiedad
 
-                if (desicion == "1")
+                bool puedeComprar = _bancoJuego.PuedePagar(jugadorActual, propiedadComprar.PrecioCompra); // Evaluamos si puede pagar
+                if (puedeComprar)
                 {
-                    bancoJuego.ComprarPropiedad(jugadorActual, propiedadComprar); // Esto debería hacerlo el banco
-                    return true;
+                    Console.WriteLine("Desea Comprar " + propiedadComprar.Nombre + "Con un precio de " + propiedadComprar.PrecioCompra);
+                    Console.WriteLine("1. Sí\n2. No");
+                    string decision = ValidarDecisionCompra(Console.ReadLine());
+
+                    if (decision == "1")
+                    {
+                        _bancoJuego.ComprarPropiedad(jugadorActual, propiedadComprar, numeroTurno); // Ejecutamos la compra
+                    }
                 }
-                else
-                {
-                    return true;
-                }
-                break;
+                Console.WriteLine("Fin del turno.");
+                return true;
+
             case AccionCasilla.CobrarAlquiler:
-                Propiedad propiedadAlquilar = (Propiedad)jugadorActual.Posicion;
-                //Evaluacion del banco
-                jugadorActual.Saldo -= propiedadAlquilar.Alquiler; // Por ahora solo esto
-                return true;
-                break;
+                Propiedad propiedadAlquilar = (Propiedad)jugadorActual.Posicion; // Hacemos cast para poder tratarla como una propiedad
+
+                bool puedePagar = _bancoJuego.PuedePagar(jugadorActual, propiedadAlquilar.Alquiler); // Evaluamos si puede pagar
+                if (puedePagar)
+                {
+                    _bancoJuego.PagarAlquiler(jugadorActual, propiedadAlquilar.Propietario, propiedadAlquilar.Alquiler, numeroTurno); // Se realizá el cobro del alquiler
+                    Console.WriteLine("Fin del turno.");
+                    return true; // Sigue en juego
+                }
+                Console.WriteLine("Fin del turno.");
+                return false; // Sino entra en bancarrota
+
             case AccionCasilla.DarCarta:
-                Console.WriteLine("El jugador recibe una carta de evento."); // Por ahora solo esto
+                Console.WriteLine("El jugador recibe una carta de evento."); // Implementar carta y lista de cartas
+                Console.WriteLine("Fin del turno.");
                 return true;
-                break;
+
             case AccionCasilla.MandarCarcel:
                 Console.WriteLine("El jugador es enviado a la cárcel."); // Hay que hacer que el tablero envíe a la carcel
+                Console.WriteLine("Fin del turno.");
                 return true;
-                break;
-            default:
-                Console.WriteLine("Acción desconocida.");
-                return true;
-                break;
         }
     }
 
-        // Falta comentar esto.
-    private string ValidarDesicionJugador(string opcion)
+    /// <summary>
+    /// Valida si la desición de compra del jugador se encuentra entre las opciones disponibles.
+    /// </summary>
+    /// <param name="opcion">La opción del jugador.</param>
+    private string ValidarDecisionCompra(string opcion)
     {
         while (opcion != "1" && opcion != "2")
         {
@@ -82,21 +105,46 @@ public class ManejadorAcciones
         return opcion;
     }
 
-    public void AccionVenderPropiedad(Jugador jugadorVenta)
+    /// <summary>
+    /// Valida si el índice de venta se encuentra dentro de las opciones disponibles.
+    /// </summary>
+    /// <param name="limiteIndice">El limite superior que tendrá el indice.</param>
+    /// <param name="indice">La opción del jugador.</param>
+    private int ValidarIndiceVenta(int limiteIndice, string indice)
     {
-        if (jugadorVenta.PropiedadesAdquiridas == null)
+        int indicePropiedad;
+        string opcion = indice;
+
+        while (!int.TryParse(opcion, out indicePropiedad) || indicePropiedad < 1 || indicePropiedad > limiteIndice)
+        {
+            Console.WriteLine("Opción inválida. Ingrese un número válido.");
+            opcion = Console.ReadLine();
+        }
+
+        return indicePropiedad;
+    }
+
+    /// <summary>
+    /// Se encarga de realizar la acción de venta de un jugador.
+    /// </summary>
+    /// <param name="jugadorVenta">El jugador que desea vender.</param>
+    /// <param name="numeroTurno">El turno actual de la partida.</param>
+    public void AccionVenderPropiedad(Jugador jugadorVenta, int numeroTurno)
+    {
+        if (jugadorVenta.PropiedadesAdquiridas.Size == 0)
         {
             Console.WriteLine("Sin Propiedades para vender");
-            return;
         }
         else
         {
-            jugadorVenta.PropiedadesAdquiridas.Display();
-            Console.WriteLine("Ingrese cuál Propiedad desea vender:");
-            int ingresoUsuario = Convert.ToInt32(Console.ReadLine()); // Falta evaluar que sea una acción valida
+            jugadorVenta.PropiedadesAdquiridas.Display(); // Mostramos las propiedades
 
-            Propiedad casillaVenta = (Propiedad)jugadorVenta.PropiedadesAdquiridas.Get(ingresoUsuario);
-            bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta);
+            Console.WriteLine("Ingrese cuál Propiedad desea vender:");
+            int indicePropiedadVender = ValidarIndiceVenta(jugadorVenta.PropiedadesAdquiridas.Size, Console.ReadLine()); // Evaluamos el ingreso
+
+            Propiedad casillaVenta = (Propiedad)jugadorVenta.PropiedadesAdquiridas.GetAt(indicePropiedadVender); // Obtenemos la Propiedad que se va a vender y hacemos cast
+
+            _bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta, numeroTurno);
         }  
 
     }
