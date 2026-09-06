@@ -73,15 +73,15 @@ public class ListaDobleEnlazada
         }
     }
 
-        /// <summary>
-        /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
-        /// </summary>
-     public void Display()
-     {
+    /// <summary>
+    /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
+    /// </summary>
+    public void Display()
+    {
         {
 
             NodeCasilla nodeActual = Head;
-            int indice = 0;
+            int indice = 1;
             if (Size == 0)
             {
                 Console.WriteLine("No hay propiedades que mostrar");
@@ -99,6 +99,24 @@ public class ListaDobleEnlazada
 
             
         }
-     }
-        
+    }
+
+    /// <summary>
+    /// Recorre la lista y devuelve la casilla del indice seleccionado.
+    /// </summary>
+    public Casilla Get(int indicePropiedad)
+    {
+        int indiceActual = 1;
+        NodeCasilla nodecasillaActual = Head;
+
+        while (indiceActual < indicePropiedad)
+        {
+            indiceActual++;
+            nodecasillaActual = nodecasillaActual.Next;
+        }
+        return nodecasillaActual.Data;
+       
+    }
+
+
 }

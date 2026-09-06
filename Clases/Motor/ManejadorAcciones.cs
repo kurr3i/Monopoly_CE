@@ -84,6 +84,20 @@ public class ManejadorAcciones
 
     public void AccionVenderPropiedad(Jugador jugadorVenta)
     {
+        if (jugadorVenta.PropiedadesAdquiridas == null)
+        {
+            Console.WriteLine("Sin Propiedades para vender");
+            return;
+        }
+        else
+        {
+            jugadorVenta.PropiedadesAdquiridas.Display();
+            Console.WriteLine("Ingrese cuál Propiedad desea vender:");
+            int ingresoUsuario = Convert.ToInt32(Console.ReadLine()); // Falta evaluar que sea una acción valida
+
+            Propiedad casillaVenta = (Propiedad)jugadorVenta.PropiedadesAdquiridas.Get(ingresoUsuario);
+            bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta);
+        }  
 
     }
 }

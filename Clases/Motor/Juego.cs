@@ -88,6 +88,7 @@ public class Juego
                     sigueEnTurno = false; 
                     break;
                 case "2":
+                    manejadorAcciones.AccionVenderPropiedad(jugadorActual);
                     Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
                     Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
