@@ -69,7 +69,14 @@ public class Tablero
     /// <param name="jugador">El jugador que será enviado a la cárcel.</param>
     public void MoverJugadorACarcel(Jugador jugador)
     {
-        // Falta implementar
+        NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
+
+        while (nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la carcel
     }
 
     /// <summary>
@@ -113,7 +120,7 @@ public class Tablero
         Propiedad golfito = new Propiedad(12, "Golfito", 550, 120);
         Add(golfito);
 
-        CasillaEspecial parqueDeDiversiones = new CasillaEspecial(13, "Parque de Diversiones", SubtipoCasillaEspecial.PaqueDiversiones);
+        CasillaEspecial parqueDeDiversiones = new CasillaEspecial(13, "Parque de Diversiones", SubtipoCasillaEspecial.ParqueDiversiones);
         Add(parqueDeDiversiones);
 
         Propiedad liberia = new Propiedad(14, "Liberia", 600, 130);

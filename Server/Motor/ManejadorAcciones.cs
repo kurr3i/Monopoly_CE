@@ -23,12 +23,18 @@ public class ManejadorAcciones
     private readonly Banco _bancoJuego;
 
     /// <summary>
+    /// El banco del juego.
+    /// </summary>
+    private readonly Tablero _tableroJuego;
+
+    /// <summary>
     /// Constructor del manejador de acciones.
     /// </summary>
     /// <param name="puertoArduino">Nombre del puerto serial utilizado para comunicarse con el Arduino.</param>
-    public ManejadorAcciones(string puertoArduino)
+    public ManejadorAcciones(string puertoArduino, Tablero tableroJuego)
         {
         this._bancoJuego = new Banco(puertoArduino);
+        this._tableroJuego = tableroJuego;
         }
 
     /// <summary>
@@ -85,7 +91,11 @@ public class ManejadorAcciones
                 return true;
 
             case AccionCasilla.MandarCarcel:
-                Console.WriteLine("El jugador es enviado a la cárcel."); // Hay que hacer que el tablero envíe a la carcel
+
+                _tableroJuego.MoverJugadorACarcel(jugadorActual);
+
+                jugadorActual.EntrarCarcel();
+
                 Console.WriteLine("Fin del turno.");
                 return true;
         }

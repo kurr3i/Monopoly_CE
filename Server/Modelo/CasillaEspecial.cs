@@ -1,4 +1,11 @@
 ﻿
+public enum SubtipoCasillaEspecial
+{
+    Salida,
+    Carcel,
+    ParqueDiversiones,
+    VayaCarcel
+}
 /// <summary>
 /// Representa a una casilla especial dentro del tablero del juego.
 /// </summary>

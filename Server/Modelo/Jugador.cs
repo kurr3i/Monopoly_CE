@@ -10,6 +10,8 @@ public class Jugador
     public string Nombre { get; private set; }
 	public int Saldo { get; private set; }
 	public bool Activo { get; private set; }
+    public bool EnCarcel { get; private set; }
+    public int TurnosCarcel { get; private set; }
 
     /// <summary>
     /// Representa la posición actual del jugador en el tablero, que es una instancia de la clase Casilla.
@@ -72,5 +74,34 @@ public class Jugador
     public void InicializarUID(string uid)
     {
         UID = uid;
+    }
+
+    /// <summary>
+    /// Cambia el estado para que el jugador esté en carcel y cambia los turnos en carcel a 3.
+    /// </summary>
+    public void EntrarCarcel()
+    {
+        EnCarcel = true;
+        TurnosCarcel = 3;
+    }
+
+    /// <summary>
+    /// Reduce los turnos de la condena en 1.
+    /// </summary>
+    public void ReducirCondena()
+    {
+        if(TurnosCarcel > 0)
+        {
+            TurnosCarcel --;
+        }      
+    }
+
+    /// <summary>
+    /// Cambia el estado para que el jugador esté en carcel y cambia los turnos en carcel a 0.
+    /// </summary>
+    public void SalirCarcel()
+    {
+        EnCarcel = false;
+        TurnosCarcel = 0;
     }
 }
