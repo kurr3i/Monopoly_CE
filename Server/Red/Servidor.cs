@@ -121,5 +121,64 @@ namespace Proyecto_MonopoTEC.Server.Red
             }
         }
 
+        /// <summary>Interpreta un mensaje recibido y ejecuta la acción correspondiente.</summary>
+        private async Task ProcesarMensajeAsync(Mensaje mensaje, string jugadorId, NetworkStream stream, SemaphoreSlim escrituraLock)
+        {
+            switch (mensaje.Accion)
+            {
+                case Acciones.TirarDados:
+
+                    await _comandos.Writer.WriteAsync(async () =>
+                    {
+                        int dado1 = _random.Next(1, 7);
+                        int dado2 = _random.Next(1, 7);
+
+                        Console.WriteLine($"{jugadorId} tiró los dados: {dado1} y {dado2}");
+
+                        await _gestorConexiones.BroadcastAsync(new Mensaje
+                        {
+                            Accion = Acciones.DadoTirado,
+                            JugadorId = jugadorId,
+                            Datos = new { jugadorId, dado1, dado2, total = dado1 + dado2 }
+                        });
+                    });
+                    break;
+
+                default:
+                    await MensajeIO.EnviarAsync(stream, new Mensaje
+                    {
+                        Accion = Acciones.Error,
+                        Datos = new { motivo = $"Acción desconocida: {mensaje.Accion}" }
+                    }, escrituraLock);
+                    break;
+            }
+        }
+
+        /// <summary>Valida un jugadorId propuesto o asigna uno nuevo si no es válido o ya está en uso.</summary>
+        private string ValidarOAsignarJugadorId(string? jugadorIdPropuesto)
+        {
+            if (!string.IsNullOrWhiteSpace(jugadorIdPropuesto) && !_gestorConexiones.EstaConectado(jugadorIdPropuesto))
+            {
+                return jugadorIdPropuesto;
+            }
+
+            return Guid.NewGuid().ToString("N");
+        }
+
+        /// <summary>Único consumidor de la cola de comandos; procesa uno a la vez en orden de llegada.</summary>
+        private async Task ProcesarComandosAsync()
+        {
+            await foreach (Func<Task> comando in _comandos.Reader.ReadAllAsync())
+            {
+                try
+                {
+                    await comando();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error procesando comando: {ex.Message}");
+                }
+            }
+        }
     }
 }
