@@ -110,7 +110,7 @@ public class Jugador
     /// Suma los turnos que perderá el jugador.
     /// </summary>
     /// <param name="turnosPerdidos">Cantidad de turnos que perderá el jugador.</param>
-    public void PerderTurnos(int turnosPerdidos)
+    public void PerderTurno(int turnosPerdidos)
     {
         TurnosPerdidos+= turnosPerdidos;
     }

@@ -29,7 +29,7 @@ public class Juego
         _tableroJuego = new Tablero();
         _tableroJuego.Inicializar();
 
-        _manejadorAcciones = new ManejadorAcciones(string puertoArduino, _tableroJuego);
+        _manejadorAcciones = new ManejadorAcciones(puertoArduino, _tableroJuego);
 
         jugador1 = InicializarJugador(123, "Josué", _tableroJuego.Head.Data);
         jugador2 = InicializarJugador(456, "Joshua", _tableroJuego.Head.Data);
@@ -74,7 +74,7 @@ public class Juego
         bool sigueEnTurno = true;
         while (sigueEnTurno)
         {
-            if (jugadorActual.EnCarel)
+            if (jugadorActual.EnCarcel)
             {
                 Console.WriteLine("El jugador está en la carcel");
                 jugadorActual.ReducirCondena();

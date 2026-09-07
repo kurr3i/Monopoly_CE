@@ -21,10 +21,10 @@ public class CartaEvento
     public string Descripcion { get; private set; }
 	public int Valor { get; private set; }
 
-    public CartaEvento(TipoCartaEvento tipo, int valor, string descripcion)
-	{
-		this.Tipo = tipo;
+    public CartaEvento(int valor, TipoCartaEvento tipo , string descripcion)
+	{	
 		this.Valor = valor;
+		this.Tipo = tipo;
 		this.Descripcion = descripcion;
 	}
 }

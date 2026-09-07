@@ -116,7 +116,7 @@ public class Tablero
     {
         NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
 
-        while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
+        while (nodoCasillaActual.Data is not CasillaEspecial casillaCarcel || casillaCarcel.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
         {
             nodoCasillaActual = nodoCasillaActual.Next;
         }
@@ -144,7 +144,7 @@ public class Tablero
         {
             nodoCasillaActual = nodoCasillaActual.Next;
 
-            if (nodoCasillaActual.Data is CasillaEspecial casillaEspecial && casillaEspecial.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
+            if (nodoCasillaActual.Data is CasillaEspecial casillaParque && casillaParque.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
             {
                 pasoPorSalida = true;
             }
@@ -161,7 +161,7 @@ public class Tablero
     {
         NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
 
-        while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Salida) // Avanzamos hasta encontrar el nodo que contiene la salida
+        while (nodoCasillaActual.Data is not CasillaEspecial casillaSalida || casillaSalida.Subtipo != SubtipoCasillaEspecial.Salida) // Avanzamos hasta encontrar el nodo que contiene la salida
         {
             nodoCasillaActual = nodoCasillaActual.Next;
         }

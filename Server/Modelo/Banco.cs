@@ -1,4 +1,5 @@
-﻿
+﻿using Proyecto_MonopoTEC.Server.Hardware;
+
 /// <summary>
 /// Representa el banco del juego y se encarga de las operaciones económicas.
 /// </summary>
@@ -7,7 +8,7 @@ public class Banco
     /// <summary>
     /// Gestiona la comunicación con el lector RFID mediante Arduino.
     /// </summary>
-    private  readonly RFIDDriver _rfidDriver;
+    private readonly RFIDDriver _rfidDriver;
 
     /// <summary>
     /// Lista de transacciones de la partida actual.

@@ -32,7 +32,7 @@ public class ColaCartasEvento
 
             Head.Previous = Tail; // Conectamos la cabeza con la nueva cola (tail)
             Tail.Next = Head; // Conectamos la nueva cola (tail) con la cabeza 
-        }   
+        }
 
         Size++;
     }
@@ -52,11 +52,11 @@ public class ColaCartasEvento
         }
         else
         {
-                Head = Head.Next; // Avanzamos la cabeza al siguiente nodo
-                Head.Previous = Tail; // Actualizamos el nodo anterior de la nueva cabeza para que apunte a la cola (tail)
-                Tail.Next = Head; // Actualizamos el siguiente nodo de la cola (tail) para que apunte a la nueva cabeza
+            Head = Head.Next; // Avanzamos la cabeza al siguiente nodo
+            Head.Previous = Tail; // Actualizamos el nodo anterior de la nueva cabeza para que apunte a la cola (tail)
+            Tail.Next = Head; // Actualizamos el siguiente nodo de la cola (tail) para que apunte a la nueva cabeza
         }
-        
+
         Size--;
         return cartaEliminada; // Retornamos la carta eliminada
     }
@@ -86,7 +86,7 @@ public class ColaCartasEvento
     {
         CartaEvento hallazgo = new CartaEvento(
             200,
-            TipoCartaEvento.GanoColones, 
+            TipoCartaEvento.GanoColones,
             "El hallazgo en el pantalón de manta. " +
             "Te pusiste un pantalón que tenías " +
             "guardado desde los últimos zapateos " +
@@ -180,3 +180,4 @@ public class ColaCartasEvento
             );
         Enqueue(pase);
     }
+}
