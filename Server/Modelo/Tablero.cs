@@ -42,23 +42,57 @@ public class Tablero
     /// </summary>
     /// <param name="jugador">El jugador que se moverá.</param>
     /// <param name="movimiento">La cantidad de casillas a mover.</param>
-    /// <returns>La casilla en la que termina el jugador después del movimiento.</returns>
-    public Casilla MoverJugador(Jugador jugador, int movimiento)
+    /// <param name="pasoPorSalida">Indica si el jugador pasó por la casilla de salida durante el movimiento.</param>
+    /// <returns>La casilla en la que termina el jugador después del movimiento.</returns> 
+    public Casilla AvanzarJugador(Jugador jugador, int movimiento, out bool pasoPorSalida)
     {
         Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
         NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+        pasoPorSalida = false;
 
-        while (nodoCasillaActual.Data != casillaActual) // Avanzamos hasta encontrar el nodo que contiene la casilla actual del jugador
+        while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
         {
             nodoCasillaActual = nodoCasillaActual.Next;
         }
 
         for (int i = 0; i < movimiento; i++) // Avanzamos el número de casillas indicado por el movimiento 
         {
+
             nodoCasillaActual = nodoCasillaActual.Next;
+
+            if (nodoCasillaActual.Data is CasillaEspecial casillaEspecial && casillaEspecial.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
+            {
+                pasoPorSalida = true;
+            }
         }
 
         jugador.CambiarPosicion(nodoCasillaActual.Data) ; // Actualizamos la posición del jugador a la nueva casilla
+
+        return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
+    }
+
+    /// <summary>
+    /// Retrocede al jugador en el tablero.
+    /// </summary>
+    /// <param name="jugador">El jugador que se moverá.</param>
+    /// <param name="movimiento">La cantidad de casillas a mover.</param>
+    /// <returns>La casilla en la que termina el jugador después del movimiento.</returns>
+    public Casilla RetrocederJugador(Jugador jugador, int movimiento)
+    {
+        Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
+        NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+
+        while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        for (int i = 0; i < movimiento; i++) // Retrocedemos el número de casillas indicado por el movimiento 
+        {
+            nodoCasillaActual = nodoCasillaActual.Previous;
+        }
+
+        jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la nueva casilla
 
         return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
     }
@@ -71,12 +105,57 @@ public class Tablero
     {
         NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
 
-        while (nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
+        while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
         {
             nodoCasillaActual = nodoCasillaActual.Next;
         }
 
         jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la carcel
+    }
+
+    /// <summary>
+    /// Mueve al jugador a la casilla del parque de diversiones.
+    /// </summary>
+    /// <param name="jugador">El jugador que se moverá al parque de diversiones.</param>
+    /// <param name="pasoPorSalida">Indica si el jugador pasó por la casilla de salida durante el movimiento.</param>
+    public void MoverJugadorAParque(Jugador jugador, out bool pasoPorSalida)
+    {
+        Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
+        NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+        pasoPorSalida = false;
+
+        while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || casillaEspecial.Subtipo != SubtipoCasillaEspecial.ParqueDiversiones) // Avanzamos hasta encontrar el nodo que contiene el parque de diversiones
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+
+            if (nodoCasillaActual.Data is CasillaEspecial casillaEspecial && casillaEspecial.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
+            {
+                pasoPorSalida = true;
+            }
+        }
+
+        jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador al parque de diversiones
+    }
+
+    /// <summary>
+    /// Mueve al jugador a la casilla de la salida.
+    /// </summary>
+    /// <param name="jugador">El jugador que será avanzado hasta la salida.</param>
+    public void MoverJugadorASalida(Jugador jugador)
+    {
+        NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
+
+        while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || nodoCasillaActual.Data.Subtipo != SubtipoCasillaEspecial.Salida) // Avanzamos hasta encontrar el nodo que contiene la salida
+        {
+            nodoCasillaActual = nodoCasillaActual.Next;
+        }
+
+        jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la salida
     }
 
     /// <summary>

@@ -23,19 +23,27 @@ public class ManejadorAcciones
     private readonly Banco _bancoJuego;
 
     /// <summary>
-    /// El banco del juego.
+    /// El tablero del juego.
     /// </summary>
     private readonly Tablero _tableroJuego;
+
+    /// <summary>
+    /// La baraja de cartas de evento.
+    /// </summary>
+    private readonly ColaCartasEvento _barajaCartas;
 
     /// <summary>
     /// Constructor del manejador de acciones.
     /// </summary>
     /// <param name="puertoArduino">Nombre del puerto serial utilizado para comunicarse con el Arduino.</param>
+    /// <param name="tableroJuego">El tablero del juego.</param>
     public ManejadorAcciones(string puertoArduino, Tablero tableroJuego)
         {
         this._bancoJuego = new Banco(puertoArduino);
         this._tableroJuego = tableroJuego;
-        }
+        this._barajaCartas = new ColaCartasEvento();
+        _barajaCartas.Inicializar();
+    }
 
     /// <summary>
     /// Ejecuta la acción correspondiente al tipo de acción que devuelve la casilla.
@@ -43,6 +51,7 @@ public class ManejadorAcciones
     /// <param name="accion">La acción que se va a ejecutar.</param>
     /// <param name="jugadorActual">El jugador en el turno actual.</param>
     /// <param name="numeroTurno">El turno actual de la partida.</param>
+    /// <returns>Booleano que representa si el jugador sigue o no en el juego.</returns>
     public bool EjecutarAccion(AccionCasilla accion, Jugador jugadorActual, int numeroTurno)
     {
         Console.Clear();
@@ -86,9 +95,15 @@ public class ManejadorAcciones
                 return false; // Sino entra en bancarrota
 
             case AccionCasilla.DarCarta:
-                Console.WriteLine("El jugador recibe una carta de evento."); // Implementar carta y lista de cartas
+                CartaEvento cartaSacada = _barajaCartas.Peek();
+                
+
+                bool sigueEnJuego = EjecutarAccionCarta(cartaSacada, jugadorActual, numeroTurno);
+
+                _barajaCartas.Advance(); // La carta vuelve al final 
+
                 Console.WriteLine("Fin del turno.");
-                return true;
+                return sigueEnJuego;
 
             case AccionCasilla.MandarCarcel:
 
@@ -98,6 +113,105 @@ public class ManejadorAcciones
 
                 Console.WriteLine("Fin del turno.");
                 return true;
+
+            default:
+                Console.WriteLine("Acción desconocida.");
+                return true;
+        }
+    }
+
+    /// <summary>
+    /// Ejecuta la acción correspondiente al tipo de carta que saca el jugador.
+    /// </summary>
+    /// <param name="cartaEvento">La carta que sacó el jugador.</param>
+    /// <param name="jugadorActual">El jugador que sacó la carta.</param>
+    /// <param name="numeroTurno">El turno actual de la partida.</param>
+    /// <returns>Booleano que representa si el jugador sigue o no en el juego.</returns>
+    public bool EjecutarAccionCarta(CartaEvento cartaEvento, Jugador jugadorActual, int numeroTurno)
+    {
+        Console.Clear();
+
+        TipoCartaEvento tipo = cartaEvento.Tipo;
+
+        switch (tipo)
+        {
+            case TipoCartaEvento.GanoColones:
+                {
+                    _bancoJuego.GananciaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le damos la ganancia
+                    return true; // El jugador sigue en el juego.
+                }
+            case TipoCartaEvento.PerdioColones:
+                {
+                    bool puedePagar = _bancoJuego.PuedePagar(jugadorActual, cartaEvento.Valor); // Se verifica que pueda pagar o no
+
+                    if (puedePagar)
+                    {
+                        _bancoJuego.PerdidaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le rebajamos la perdida
+                        return true;
+                    }
+                }
+                return false;
+
+            case TipoCartaEvento.Avanzar:
+                {
+                    bool pasoPorSalida;
+                    _tableroJuego.AvanzarJugador(jugadorActual, cartaEvento.Valor, out pasoPorSalida); // Se avanza
+                    
+                    if (pasoPorSalida)
+                    {
+                        _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
+                    }
+
+                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion);
+                    bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
+
+                    return sigueEnJuego;
+                }
+                
+            case TipoCartaEvento.Retroceder:
+                {
+                    _tableroJuego.RetrocederJugador(jugadorActual, cartaEvento.Valor); // Se retocede
+
+                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion);
+                    bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
+
+                    return sigueEnJuego;
+                }
+
+            case TipoCartaEvento.PerderTurno:
+                {
+                    jugadorActual.PerderTurno(cartaEvento.Valor);
+                    return true;
+                }
+            case TipoCartaEvento.AvanzarSalida:
+                { 
+                    _tableroJuego.MoverJugadorASalida(jugadorActual);
+                    _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
+
+                    return true;
+                }
+            case TipoCartaEvento.AvanzarParque:
+                {
+                    bool pasoPorSalida;
+
+                    _tableroJuego.MoverJugadorAParque(jugadorActual, out pasoPorSalida); // Se mueve el jugador al parque y se obtiene si se pasó por salida
+
+                    if (pasoPorSalida)
+                    {
+                        _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
+                    }
+                    return true;
+                }
+            case TipoCartaEvento.VayaCarcel:
+                {
+                    _tableroJuego.MoverJugadorACarcel(jugadorActual);
+
+                    jugadorActual.EntrarCarcel();
+                    return true;
+                }
+            default:
+                Console.WriteLine("Acción desconocida.");
+                return true;
         }
     }
 
@@ -105,6 +219,7 @@ public class ManejadorAcciones
     /// Valida si la desición de compra del jugador se encuentra entre las opciones disponibles.
     /// </summary>
     /// <param name="opcion">La opción del jugador.</param>
+    /// <returns>Una opción valida</returns>
     private string ValidarDecisionCompra(string opcion)
     {
         while (opcion != "1" && opcion != "2")
@@ -120,6 +235,7 @@ public class ManejadorAcciones
     /// </summary>
     /// <param name="limiteIndice">El limite superior que tendrá el indice.</param>
     /// <param name="indice">La opción del jugador.</param>
+    /// <returns>Un indice valido.</returns>
     private int ValidarIndiceVenta(int limiteIndice, string indice)
     {
         int indicePropiedad;

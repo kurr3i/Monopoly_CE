@@ -1,10 +1,10 @@
 ﻿
 /// <summary>
-/// Representa a un nodo dentro de la lista doblemente enlazada para las propiedades del jugador y las casillas del tablero.
+/// Representa a un nodo dentro de la cola de cartas de evento que contiene una carta de evento de la baraja.
 /// </summary>
-public class NodeCasilla
+public class NodeCartaEvento
 {
-	public Casilla Data { get; set; }
-	public NodeCasilla Next { get; set; }
-	public NodeCasilla Previous { get; set; }
+	public CartaEvento Data { get; set; }
+	public NodeCartaEvento Next { get; set; }
+	public NodeCartaEvento Previous { get; set; }
 }

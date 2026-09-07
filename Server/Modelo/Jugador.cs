@@ -12,6 +12,7 @@ public class Jugador
 	public bool Activo { get; private set; }
     public bool EnCarcel { get; private set; }
     public int TurnosCarcel { get; private set; }
+    public int TurnosPerdidos { get; private set; }
 
     /// <summary>
     /// Representa la posición actual del jugador en el tablero, que es una instancia de la clase Casilla.
@@ -103,5 +104,25 @@ public class Jugador
     {
         EnCarcel = false;
         TurnosCarcel = 0;
+    }
+
+    /// <summary>
+    /// Suma los turnos que perderá el jugador.
+    /// </summary>
+    /// <param name="turnosPerdidos">Cantidad de turnos que perderá el jugador.</param>
+    public void PerderTurnos(int turnosPerdidos)
+    {
+        TurnosPerdidos+= turnosPerdidos;
+    }
+
+    /// <summary>
+    /// Reduce en 1 los turnos que perderá el jugador.
+    /// </summary>
+    public void ReducirTurnoPerdido()
+    {
+        if (TurnosPerdidos > 0)
+        {
+            TurnosPerdidos--;
+        }
     }
 }
