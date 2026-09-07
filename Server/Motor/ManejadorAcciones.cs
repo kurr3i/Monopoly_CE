@@ -162,7 +162,7 @@ public class ManejadorAcciones
                         _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
                     }
 
-                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion);
+                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion, jugadorActual);
                     bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
 
                     return sigueEnJuego;
@@ -172,7 +172,7 @@ public class ManejadorAcciones
                 {
                     _tableroJuego.RetrocederJugador(jugadorActual, cartaEvento.Valor); // Se retocede
 
-                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion);
+                    AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion, jugadorActual);
                     bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
 
                     return sigueEnJuego;
@@ -273,5 +273,15 @@ public class ManejadorAcciones
             _bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta, numeroTurno);
         }  
 
+    }
+
+    /// <summary>
+    /// Se encarga de darle el premio por pasar en el inicio al jugador.
+    /// </summary>
+    /// <param name="jugador">El que recibirá el premio.</param>
+    /// <param name="numeroTurno">El turno actual de la partida.</param>
+    public void DarPremio(Jugador jugador, int numeroTurno)
+    {
+        _bancoJuego.PremioPorInicio(jugador, numeroTurno);
     }
 }

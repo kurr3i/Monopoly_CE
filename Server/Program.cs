@@ -14,6 +14,10 @@ namespace Proyecto_MonopoTEC.Server
 
                         // Todo lo que resta de main
 
+                        //Prueba del juego
+                        Juego juego = new Juego(Config.ArduinoPort);
+                        juego.IniciarJuego();
+
                 }
 
 

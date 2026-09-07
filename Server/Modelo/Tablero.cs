@@ -38,6 +38,17 @@ public class Tablero
     }
 
     /// <summary>
+    /// Obtiene la acción correspondiente a una casilla.
+    /// </summary>
+    /// <param name="casilla">La casilla cuya acción se desea obtener.</param>
+    /// <param name="jugador">El jugador a comparar en caso de que sea una propiedad.</param>
+    /// <returns>La acción correspondiente a la casilla.</returns>
+    public AccionCasilla ObtenerAccion(Casilla casilla, Jugador jugador)
+    {
+        return casilla.DevolverAccion(jugador);
+    }
+
+    /// <summary>
     /// Avanza al jugador en el tablero.
     /// </summary>
     /// <param name="jugador">El jugador que se moverá.</param>

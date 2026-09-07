@@ -6,6 +6,7 @@ public enum SubtipoCasillaEspecial
     ParqueDiversiones,
     VayaCarcel
 }
+
 /// <summary>
 /// Representa a una casilla especial dentro del tablero del juego.
 /// </summary>
