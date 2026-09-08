@@ -90,7 +90,74 @@ namespace Proyecto_MonopoTEC.Client
 				}
 			}
 
+            /// <summary>Escucha la conexión persistente al Server y reenvía cada mensaje a los navegadores conectados.</summary>
+			async Task EscucharServidorAsync()
+			{
+				if (lectorServidor == null)
+					return;
 
+				while (true)
+				{
+					Mensaje? mensaje;
+
+					try
+					{
+						mensaje = await MensajeIO.RecibirAsync(lectorServidor);
+					}
+					catch (IOException)
+					{
+						break;
+					}
+
+					if (mensaje == null)
+					{
+						Console.WriteLine("Se perdió la conexión con el Server.");
+						break;
+					}
+
+					Console.WriteLine($"Server -> {mensaje.Accion}");
+
+					string json = JsonSerializer.Serialize(mensaje);
+
+					foreach (var kvp in navegadoresConectados)
+					{
+						WebSocket socket = kvp.Value;
+
+						if (socket.State != WebSocketState.Open)
+						{
+							navegadoresConectados.TryRemove(kvp.Key, out _);
+							continue;
+						}
+
+						byte[] bytes = Encoding.UTF8.GetBytes(json);
+
+						await socket.SendAsync(
+							new ArraySegment<byte>(bytes),
+							WebSocketMessageType.Text,
+							true,
+							CancellationToken.None
+						);
+					}
+				}
+			}
+
+
+			/// <summary>Envía una acción al Server sobre la conexión persistente.</summary>
+			async Task EnviarAlServidorAsync(string accion, object? datos = null)
+			{
+				if (streamServidor == null)
+				{
+					Console.WriteLine("No hay conexión activa con el Server.");
+					return;
+				}
+
+				await MensajeIO.EnviarAsync(streamServidor, new Mensaje
+				{
+					Accion = accion,
+					JugadorId = miJugadorId,
+					Datos = datos
+				}, escrituraServidorLock);
+			}
 			
 
         }
