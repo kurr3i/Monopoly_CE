@@ -158,8 +158,102 @@ namespace Proyecto_MonopoTEC.Client
 					Datos = datos
 				}, escrituraServidorLock);
 			}
-			
 
+
+
+
+            
+			/// <summary>Acepta la conexión WebSocket de un navegador y reenvía sus acciones al Server.</summary>
+			async Task HandleWebSocket(HttpListenerContext context)
+			{
+				HttpListenerWebSocketContext wsContext =
+					await context.AcceptWebSocketAsync(null);
+
+				WebSocket socket = wsContext.WebSocket;
+
+				Guid idNavegador = Guid.NewGuid();
+				navegadoresConectados[idNavegador] = socket;
+
+				Console.WriteLine("Navegador conectado.");
+
+				byte[] buffer = new byte[1024];
+
+				try
+				{
+					while (socket.State == WebSocketState.Open)
+					{
+						WebSocketReceiveResult result =
+							await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+						if (result.MessageType == WebSocketMessageType.Close)
+							break;
+
+						string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+						Console.WriteLine($"Navegador: {message}");
+
+						if (message == "TIRAR_DADOS" || message == "TIRAR_DADO")
+						{
+							await EnviarAlServidorAsync(Acciones.TirarDados);
+						}
+					}
+				}
+				finally
+				{
+					navegadoresConectados.TryRemove(idNavegador, out _);
+				}
+			}
+
+
+			/// <summary>Sirve los archivos estáticos del navegador (index.html, css, js).</summary>
+			async Task ServeFile(HttpListenerContext context)
+			{
+				string path = context.Request.Url!.AbsolutePath;
+
+				if (path == "/")
+					path = "/index.html";
+
+				string filePath =
+					Path.Combine(
+						AppContext.BaseDirectory,
+						"www",
+						path.TrimStart('/')
+					);
+
+				Console.WriteLine($"Buscando archivo: {filePath}");
+
+				if (!File.Exists(filePath))
+				{
+					context.Response.StatusCode = 404;
+					context.Response.Close();
+					return;
+				}
+
+				byte[] file =
+					await File.ReadAllBytesAsync(filePath);
+
+				string extension =
+					Path.GetExtension(filePath).ToLower();
+
+				context.Response.ContentType =
+					extension switch
+					{
+						".html" => "text/html",
+						".css" => "text/css",
+						".js" => "application/javascript",
+						_ => "application/octet-stream"
+					};
+
+				context.Response.ContentLength64 = file.Length;
+
+				await context.Response.OutputStream.WriteAsync(file);
+
+				context.Response.Close();
+			}
+	
+
+
+    
         }
 	}
 }
