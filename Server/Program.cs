@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Proyecto_MonopoTEC.Server.Modelo;
 using Proyecto_MonopoTEC.Server.Hardware;
 using Proyecto_MonopoTEC.Server.Red;
@@ -18,7 +18,12 @@ namespace Proyecto_MonopoTEC.Server
 			await servidor.IniciarAsync();
 
                         // Todo lo que resta de main
-		}
+
+                        //Prueba del juego
+                        Juego juego = new Juego(Config.ArduinoPort);
+                        juego.IniciarJuego();
+
+                }
 
 
 
