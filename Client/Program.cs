@@ -40,6 +40,59 @@ namespace Proyecto_MonopoTEC.Client
 			Console.WriteLine($"Cliente iniciado en http://localhost:{HTTP_PORT}");
 			Console.WriteLine("Esperando navegador...");
 
+            while (true)
+			{
+				HttpListenerContext context =
+					await httpListener.GetContextAsync();
+
+				if (context.Request.IsWebSocketRequest)
+				{
+					_ = Task.Run(async () =>
+					{
+						await HandleWebSocket(context);
+					});
+				}
+				else
+				{
+					await ServeFile(context);
+				}
+			}
+
+
+			/// <summary>Abre la conexión TCP hacia el Server y hace el handshake CONECTAR.</summary>
+			async Task ConectarAlServidorAsync()
+			{
+				conexionServidor = new TcpClient();
+
+				await conexionServidor.ConnectAsync(SERVER_HOST, SERVER_PORT);
+
+				streamServidor = conexionServidor.GetStream();
+				lectorServidor = new StreamReader(streamServidor, Encoding.UTF8);
+
+				Console.WriteLine("Conectado al Server.");
+
+				await MensajeIO.EnviarAsync(streamServidor, new Mensaje
+				{
+					Accion = Acciones.Conectar,
+					JugadorId = miJugadorId
+				}, escrituraServidorLock);
+
+				Mensaje? respuesta = await MensajeIO.RecibirAsync(lectorServidor);
+
+				if (respuesta != null && respuesta.Accion == Acciones.Conectado)
+				{
+					miJugadorId = respuesta.JugadorId;
+					Console.WriteLine($"Server asignó jugadorId: {miJugadorId}");
+				}
+				else
+				{
+					Console.WriteLine("El Server no confirmó la conexión (CONECTADO). Revisar protocolo.");
+				}
+			}
+
+
+			
+
         }
 	}
 }
