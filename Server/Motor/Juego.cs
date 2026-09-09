@@ -65,9 +65,22 @@ namespace Proyecto_MonopoTEC.Server.Motor
             {
                 string UID = _driver.ReadUID("AUTH_0");
                 jugador1 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
+
+                _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = 0 }));
             }
 
             return true;
+        }
+
+        public bool VerificarJugador(int id)
+        {
+            if (id == 0)
+            {
+                _driver.ReadUID("AUTH_0", jugador1.UID);
+                return true;
+            }
+
+            return false;
         }
 
 
@@ -196,6 +209,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
         public void IniciarJuego()
         {
+            Console.WriteLine("[Juego] Iniciando juego.");
+            Console.WriteLine("[Juego] Esperando jugadores...");
             // Me falta añadir el lobby antes de comenzar la partida
         }
 

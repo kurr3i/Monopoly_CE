@@ -27,8 +27,17 @@ namespace Proyecto_MonopoTEC.Server.Hardware
                 /// </summary>
                 public void Open()
                 {
-                        _serialPort.Open();
-                        Thread.Sleep(2000); // Tiempo de arranque
+                        try
+                        {
+                                _serialPort.Open();
+                                Thread.Sleep(2000); // Tiempo de arranque
+                        }
+                        catch (Exception ex)
+                        {
+                                Console.WriteLine("[RFIDDriver] Error al abrir el puerto serial: " + ex.Message);
+                                Console.WriteLine("[RFIDDriver] Revisar si el Arduino se encuentra conectado.");
+                                return;
+                        }
                 }
 
                 /// <summary>
