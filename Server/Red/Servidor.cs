@@ -1,184 +1,120 @@
-using System.Collections.Concurrent;
+
+using Proyecto_MonopoTEC.Compartido;
+using Proyecto_MonopoTEC.Server.Motor;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading.Channels;
+using System.Text.Json;
+using System.Net.Sockets;
 
 namespace Proyecto_MonopoTEC.Server.Red
 {
-    /// <summary>
-    /// Servidor TCP del juego. Mantiene una conexión persistente por
-    /// jugador, serializa las mutaciones de estado en una cola de
-    /// comandos, y hace broadcast a todos cuando algo cambia.
-    /// </summary>
     public class Servidor
     {
-        private const int PUERTO = 5000;
+        private readonly int _ServerPort;
+        private StreamWriter? _clientWriter;
 
-        private readonly GestorConexiones _gestorConexiones = new();
-        private readonly ConcurrentDictionary<string, int> _saldos = new();
-        private readonly Channel<Func<Task>> _comandos = Channel.CreateUnbounded<Func<Task>>();
-        private readonly Random _random = new();
+        private Juego? _juego;
 
-        /// <summary>Arranca el listener TCP y el consumidor de comandos. No retorna mientras el servidor esté activo.</summary>
-        public async Task IniciarAsync()
+        public Servidor(int ServerPort = 5000)
         {
-            _ = Task.Run(ProcesarComandosAsync);
+            _ServerPort = ServerPort;
+        }
 
-            TcpListener listener = new TcpListener(IPAddress.Any, PUERTO);
-            listener.Start();
 
-            Console.WriteLine($"Servidor iniciado en puerto {PUERTO}");
-            Console.WriteLine("Esperando clientes...");
+        public void InstanciarJuego(Juego juego)
+        {
+            _juego = juego;
+        }
+
+
+        public async Task IniciarServer()
+        {
+            using Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            serverSocket.Bind(new IPEndPoint(IPAddress.Any, _ServerPort));
+            serverSocket.Listen(1);
+
+            Console.WriteLine($"[Server] Servidor escuchando en puerto {_ServerPort}");
+
 
             while (true)
             {
-                TcpClient client = await listener.AcceptTcpClientAsync();
-                _ = Task.Run(() => ManejarClienteAsync(client));
+                using Socket clientSocket = await serverSocket.AcceptAsync();
+                Console.WriteLine("[Server] Client.cs conectado al servidor");
+
+                using NetworkStream stream = new NetworkStream(clientSocket, ownsSocket: false);
+                using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
+                _clientWriter = writer;
+
+                try
+                {
+                    string? json;
+                    while ((json = await reader.ReadLineAsync()) is not null)
+                    {
+                        if (string.IsNullOrWhiteSpace(json))
+                            continue;
+
+                        Console.WriteLine("[Server] TCP recibido: " + json);
+
+                        try
+                        {
+                            Mensaje? message = JsonSerializer.Deserialize<Mensaje>(json);
+                            RecibirMensaje(message);
+                        }
+                        catch (JsonException)
+                        {
+                            Console.WriteLine("[Server] Mensaje JSON inválido recibido.");
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine("[Server] Client.cs desconectado del servidor.");
+                }
+                finally
+                {
+                    _clientWriter = null;
+                }
             }
         }
 
-        /// <summary>Maneja el ciclo de vida completo de la conexión de un jugador.</summary>
-        private async Task ManejarClienteAsync(TcpClient client)
+
+
+        public void RecibirMensaje(Mensaje? mensaje)
         {
-            NetworkStream stream = client.GetStream();
-            StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-            SemaphoreSlim escrituraLock = new(1, 1);
+            if (mensaje == null || mensaje.Comando == null || mensaje.Contenido == null)
+                return;
 
-            string? jugadorId = null;
+            Console.WriteLine("[Server] Comando entrante: " + mensaje.Comando);
 
+
+            switch (mensaje.Comando)
+            {
+                case Protocolo.Prueba:
+                    _juego?.PruebaConexion(mensaje);
+                    break;
+            }
+        }
+
+
+
+        public void EnviarMensaje(Mensaje? mensaje)
+        {
+            if (_clientWriter == null)
+                return;
+
+            string json = JsonSerializer.Serialize(mensaje);
             try
             {
-                Mensaje? primerMensaje = await MensajeIO.RecibirAsync(reader);
-
-                if (primerMensaje == null || primerMensaje.Accion != Acciones.Conectar)
-                {
-                    Console.WriteLine("Conexión rechazada: el primer mensaje no fue CONECTAR.");
-                    client.Close();
-                    return;
-                }
-
-                jugadorId = ValidarOAsignarJugadorId(primerMensaje.JugadorId);
-
-                ConexionJugador conexion = new ConexionJugador(jugadorId, client, stream, escrituraLock);
-                _gestorConexiones.Agregar(conexion);
-
-                await _comandos.Writer.WriteAsync(async () =>
-                {
-                    if (!_saldos.ContainsKey(jugadorId))
-                        _saldos[jugadorId] = 1500;
-
-                    Console.WriteLine($"Jugador conectado: {jugadorId} (saldo: {_saldos[jugadorId]})");
-
-                    await MensajeIO.EnviarAsync(stream, new Mensaje
-                    {
-                        Accion = Acciones.Conectado,
-                        JugadorId = jugadorId,
-                        Datos = new { jugadorId, saldo = _saldos[jugadorId] }
-                    }, escrituraLock);
-
-                    await _gestorConexiones.BroadcastAsync(new Mensaje
-                    {
-                        Accion = Acciones.JugadorConectado,
-                        JugadorId = jugadorId,
-                        Datos = new { jugadorId }
-                    });
-                });
-
-                while (true)
-                {
-                    Mensaje? mensaje = await MensajeIO.RecibirAsync(reader);
-
-                    if (mensaje == null)
-                        break;
-
-                    await ProcesarMensajeAsync(mensaje, jugadorId, stream, escrituraLock);
-                }
+                _clientWriter.WriteLine(json);
+                Console.WriteLine("[Server] Comando enviado: " + json);
             }
             catch (IOException)
             {
-            }
-            finally
-            {
-                if (jugadorId != null)
-                {
-                    _gestorConexiones.Remover(jugadorId);
-
-                    await _comandos.Writer.WriteAsync(async () =>
-                    {
-                        Console.WriteLine($"Jugador desconectado: {jugadorId}");
-
-                        await _gestorConexiones.BroadcastAsync(new Mensaje
-                        {
-                            Accion = Acciones.JugadorDesconectado,
-                            JugadorId = jugadorId,
-                            Datos = new { jugadorId }
-                        });
-                    });
-                }
-
-                client.Close();
+                _clientWriter = null;
             }
         }
 
-        /// <summary>Interpreta un mensaje recibido y ejecuta la acción correspondiente.</summary>
-        private async Task ProcesarMensajeAsync(Mensaje mensaje, string jugadorId, NetworkStream stream, SemaphoreSlim escrituraLock)
-        {
-            switch (mensaje.Accion)
-            {
-                case Acciones.TirarDados:
-
-                    await _comandos.Writer.WriteAsync(async () =>
-                    {
-                        int dado1 = _random.Next(1, 7);
-                        int dado2 = _random.Next(1, 7);
-
-                        Console.WriteLine($"{jugadorId} tiró los dados: {dado1} y {dado2}");
-
-                        await _gestorConexiones.BroadcastAsync(new Mensaje
-                        {
-                            Accion = Acciones.DadoTirado,
-                            JugadorId = jugadorId,
-                            Datos = new { jugadorId, dado1, dado2, total = dado1 + dado2 }
-                        });
-                    });
-                    break;
-
-                default:
-                    await MensajeIO.EnviarAsync(stream, new Mensaje
-                    {
-                        Accion = Acciones.Error,
-                        Datos = new { motivo = $"Acción desconocida: {mensaje.Accion}" }
-                    }, escrituraLock);
-                    break;
-            }
-        }
-
-        /// <summary>Valida un jugadorId propuesto o asigna uno nuevo si no es válido o ya está en uso.</summary>
-        private string ValidarOAsignarJugadorId(string? jugadorIdPropuesto)
-        {
-            if (!string.IsNullOrWhiteSpace(jugadorIdPropuesto) && !_gestorConexiones.EstaConectado(jugadorIdPropuesto))
-            {
-                return jugadorIdPropuesto;
-            }
-
-            return Guid.NewGuid().ToString("N");
-        }
-
-        /// <summary>Único consumidor de la cola de comandos; procesa uno a la vez en orden de llegada.</summary>
-        private async Task ProcesarComandosAsync()
-        {
-            await foreach (Func<Task> comando in _comandos.Reader.ReadAllAsync())
-            {
-                try
-                {
-                    await comando();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error procesando comando: {ex.Message}");
-                }
-            }
-        }
     }
 }

@@ -1,6 +1,7 @@
-using System.Diagnostics;
-using Proyecto_MonopoTEC.Server.Modelo;
+﻿using System.Diagnostics;
+using Proyecto_MonopoTEC.Compartido;
 using Proyecto_MonopoTEC.Server.Hardware;
+using Proyecto_MonopoTEC.Server.Motor;
 using Proyecto_MonopoTEC.Server.Red;
 
 namespace Proyecto_MonopoTEC.Server
@@ -13,15 +14,20 @@ namespace Proyecto_MonopoTEC.Server
 			if (args.Length > 0 && args[0] == "--debug")
 				Debug();
 
+
+
 			// Iniciar el servidor
-			Servidor servidor = new Servidor();
-			await servidor.IniciarAsync();
+			Servidor servidor = new Servidor(Config.ServerPort);
 
-                        // Todo lo que resta de main
+			// Iniciar el driver
+			RFIDDriver driver = new RFIDDriver(Config.ArduinoPort);
 
-                        //Prueba del juego
-                        Juego juego = new Juego(Config.ArduinoPort);
-                        juego.IniciarJuego();
+			// Iniciar el juego antes del listener, porque IniciarAsync no retorna mientras el servidor está activo.
+			Juego juego = new Juego(servidor, driver);
+			juego.IniciarJuego();
+			servidor.InstanciarJuego(juego);
+
+			await servidor.IniciarServer();
 
                 }
 
