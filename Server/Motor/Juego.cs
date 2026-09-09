@@ -23,6 +23,9 @@ namespace Proyecto_MonopoTEC.Server.Motor
         private Jugador jugador2;
         private Jugador jugador3;
         private Jugador jugador4;
+
+        private string[] UIDs = new string[4];
+
         private Jugador jugadorActual;
 
 
@@ -59,24 +62,94 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
 
 
+        /// <summary>
+        /// Metodo para autenticar un  nuevo jugador.
+        /// Revisa si ya existe mediante una lista de UIDs
+        /// Se puede simplificar con lista de Jugador pero rompería el sistema de colas
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="nombre"></param>
+        /// <returns></returns>
         public bool AutenticarJugador(int id, string nombre)
         {
-            if (id == 0)
-            {
-                string UID = _driver.ReadUID("AUTH_0");
-                jugador1 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
 
-                _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = 0 }));
+            // Revisar que la ID sea válida
+            if (id >= 0 && id <= 3)
+            {
+                // Hacer la lectura del UID
+                string UID = _driver.ReadUID("PASAR J" + (id+1));
+                if (UIDs.Contains(UID))
+                {
+                    // Si ya existe, enviar una ID inválida, luego se maneja en el Cliente
+                    _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = -1, error = "Ese jugador ya existe" }));
+                    return false;
+                }
+                else
+                {
+                    // Si no existe, agregarlo a la lista
+                    UIDs[id] = UID;
+                }
+
+                // Inicializar el jugador según la ID y responder
+
+                if (id == 0)
+                {
+                    jugador1 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
+
+                    _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = jugador1.ID, nombre = jugador1.Nombre }));
+                }
+
+                if (id == 1)
+                {
+                    jugador2 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
+
+                    _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = jugador2.ID, nombre = jugador2.Nombre }));
+                }
+
+                if (id == 2)
+                {
+                    jugador3 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
+
+                    _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = jugador3.ID, nombre = jugador3.Nombre }));
+                }
+
+                if (id == 3)
+                {
+                    jugador4 = InicializarJugador(id, UID, nombre, _tableroJuego.Head.Data);
+
+                    _server.EnviarMensaje(new Mensaje(Protocolo.AutenticarJugador, new { id = jugador4.ID, nombre = jugador4.Nombre }));
+                }
+
+                return true;
+
             }
 
-            return true;
+            return false;
         }
 
         public bool VerificarJugador(int id)
         {
             if (id == 0)
             {
-                _driver.ReadUID("AUTH_0", jugador1.UID);
+                _driver.ReadUID("PASAR J"+(id+1), jugador1.UID);
+                return true;
+            }
+
+            if (id == 1)
+            {
+                _driver.ReadUID("PASAR J"+(id+1), jugador2.UID);
+                return true;
+            }
+
+            if (id == 2)
+            {
+                _driver.ReadUID("PASAR J"+(id+1), jugador3.UID);
+                return true;
+            }
+
+            if (id == 3)
+            {
+                _driver.ReadUID("PASAR J"+(id+1), jugador4.UID);
                 return true;
             }
 

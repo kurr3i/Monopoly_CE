@@ -18,7 +18,8 @@ namespace Proyecto_MonopoTEC.Compartido
                         { nameof(ConexionLista), ConexionLista },
                         { nameof(Prueba), Prueba },
                         { nameof(AutenticarJugador), AutenticarJugador },
-                        { nameof(IniciarPartida), IniciarPartida }
+                        { nameof(VerificarJugador), VerificarJugador },
+                        { nameof(IniciarPartida), IniciarPartida },
                         };
                 }
         }

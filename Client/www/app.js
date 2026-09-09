@@ -1,10 +1,16 @@
 // Definiciones de elementos
+const dialogCont = document.querySelector(".dialogVerif-container");
+const registroVerif = document.querySelector(".registroVerif");
+const dialogVerif = document.querySelector(".dialogVerif");
+const inputVerif = document.getElementById("inputVerif");
+const inputVerifBtn = document.getElementById("inputBtnVerif");
+const errorRegist = document.getElementById("errorRegist");
+const statusVerif = document.getElementById("errorVerif");
 
 
 // Variables globales
 let protocolo = null;
 
-let JUGADOR_A_REGISTRAR = null;
 let JUGADOR_A_VERIFICAR = null;
 let PLAYERS = [];
 
@@ -37,22 +43,41 @@ socket.onmessage = function (event) {
     recibirMensaje(mensaje.Comando, contenido);
 }
 
+
+
+
 // Función para registrar un nuevo jugador
-function registrarJugador(player) {
-    JUGADOR_A_REGISTRAR = player;
+async function registrarJugador(player) {
+    JUGADOR_A_VERIFICAR = player;
+
+    console.log(player);
+
+    let nombre = await mostrarRegistro();
+    console.log(nombre);
+
+    let id = parseInt(player.id.slice(-1));
+    console.log(player, id);
 
     enviarMensaje(protocolo.AutenticarJugador, {
-        id: 0,
-        nombre: "Jugador 1"
+        id: id,
+        nombre: nombre
     });
+
+    mostrarVerificacion();
 }
+
+
 
 function verificarJugador(player) {
     JUGADOR_A_VERIFICAR = player;
 
+    let id = parseInt(player.id.slice(-1));
+
     enviarMensaje(protocolo.VerificarJugador, {
-        id: 0
+        id: id
     });
+
+    mostrarVerificacion();
 }
 
 
@@ -60,6 +85,9 @@ function verificarJugador(player) {
 // Función para enviar mensajes al server
 function enviarMensaje(comando, contenido) {
     if (socket.readyState !== WebSocket.OPEN)
+        return;
+
+    if (comando == null || comando == undefined)
         return;
 
     // Se envía el mensaje
@@ -74,6 +102,63 @@ function enviarMensaje(comando, contenido) {
         Contenido: contenido
     }));
 }
+
+
+function mostrarRegistro() {
+    dialogCont.style.display = "block";
+    registroVerif.style.display = "block";
+    inputVerif.focus();
+
+    return new Promise((resolve) => {
+        const completarRegistro = () => {
+            const nombre = inputVerif.value.trim();
+
+            if (nombre === "") {
+                errorRegist.innerText = "Ingresa un nombre válido.";
+                inputVerif.focus();
+                return;
+            }
+
+            inputVerifBtn.removeEventListener("click", completarRegistro);
+            inputVerif.removeEventListener("keydown", clickEnter);
+            inputVerif.value = "";
+            errorRegist.innerText = "";
+            dialogCont.style.display = "none";
+            registroVerif.style.display = "none";
+            resolve(nombre);
+        };
+
+        const clickEnter = (event) => {
+            if (event.key === "Enter") {
+                completarRegistro();
+            }
+        };
+
+        inputVerifBtn.addEventListener("click", completarRegistro);
+        inputVerif.addEventListener("keydown", clickEnter);
+    });
+}
+
+
+
+function mostrarVerificacion() {
+    dialogCont.style.display = "block";
+    dialogVerif.style.display = "block";
+}
+
+function finalizarVerificacion(status = "") {
+    if (status != "") {
+        statusVerif.innerText = status;
+    }
+
+    setTimeout(() => {
+        dialogCont.style.display = "none";
+        dialogVerif.style.display = "none";
+        statusVerif.innerText = "";
+    }, 2000);
+}
+
+
 
 
 
@@ -101,7 +186,29 @@ function recibirMensaje(comando, contenido) {
 
         case protocolo.AutenticarJugador:
             console.log("[App] Jugador autenticado");
-            console.log(contenido);
+
+            if (contenido.id == -1) {
+                finalizarVerificacion(contenido.error);
+                JUGADOR_A_VERIFICAR = null;
+                return;
+            }
+
+            JUGADOR_A_VERIFICAR.querySelector("p").innerText = contenido.nombre;
+
+            JUGADOR_A_VERIFICAR.querySelector("button").setAttribute("onclick", "verificarJugador(this.parentNode)");
+            JUGADOR_A_VERIFICAR.querySelector("button").innerText = "Verificar";
+            JUGADOR_A_VERIFICAR.querySelector("button").classList.add("green");
+
+            finalizarVerificacion("Jugador autenticado correctamente.");
+
+            JUGADOR_A_VERIFICAR = null;
+            break;
+
+
+        case protocolo.VerificarJugador:
+            finalizarVerificacion("Jugador verificado correctamente.");
+
+            JUGADOR_A_VERIFICAR = null;
             break;
     }
 }

@@ -16,18 +16,24 @@
     <p id="status" style="opacity: 0;">[Conectado al server]</p>
 
     <div class="dialogVerif-container" style="display: none;">
-        <div class="dialogVerif">
+        <div class="dialogVerif" style="display: none;">
             <h3>Se requiere autenticación</h3>
-            <p>Consultar el dispositivo lector</p>
-            <div>
-                []
-            </div>
+            <p>Consulta el dispositivo lector</p>
+            
+            <h2 id="errorVerif"></h2>
         </div>
 
-        <div class="fieldVerif">
+
+
+        <div class="registroVerif" style="display: none;">
             <h3>Ingresa un nombre</h3>
             <input type="text" id="inputVerif" placeholder="Nombre">
-            <button onclick="verificar()">Verificar</button>
+            <br>
+            <p id="errorRegist">
+
+            </p>
+
+            <button id="inputBtnVerif">Enviar</button>
         </div>
     </div>
 
@@ -44,15 +50,15 @@
                 </div>
                 <div id="jugador1">
                     <p>Jugador 2</p>
-                    <button onclick="joinPlayer(this.parentNode)">Conectar</button>
+                    <button onclick="registrarJugador(this.parentNode)">Conectar</button>
                 </div>
                 <div id="jugador2">
                     <p>Jugador 3</p>
-                    <button onclick="joinPlayer(this.parentNode)">Conectar</button>
+                    <button onclick="registrarJugador(this.parentNode)">Conectar</button>
                 </div>
                 <div id="jugador3">
                     <p>Jugador 4</p>
-                    <button onclick="joinPlayer(this.parentNode)">Conectar</button>
+                    <button onclick="registrarJugador(this.parentNode)">Conectar</button>
                 </div>
             </div>
         </div>
