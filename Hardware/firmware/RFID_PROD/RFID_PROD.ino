@@ -162,7 +162,7 @@ void loop() {
 
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("APROBADO");
+        lcd.print("VERIFICANDO...");
         tone(buzzer, 5000, 150);
         
         // Mostrar la UID leida
