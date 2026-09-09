@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Content Include="www\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="..\Compartido\Compartido.csproj" />
   </ItemGroup>
 
 </Project>

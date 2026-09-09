@@ -1,4 +1,4 @@
-namespace Proyecto_MonopoTEC.Server.Modelo
+namespace Proyecto_MonopoTEC.Compartido
 {
         /// <summary>
         /// Configuración del juego
@@ -8,7 +8,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
                 /// <summary>
                 /// Simular el Arduino Sí/No
                 /// </summary>
-                public const bool ArduinoVirtual = true;
+                public const bool ArduinoVirtual = false;
 
                 /// <summary>
                 /// Puerto del Arduino fisico
@@ -29,7 +29,12 @@ namespace Proyecto_MonopoTEC.Server.Modelo
                 /// <summary>
                 /// Puerto del servidor
                 /// </summary>
-                public const string ServerPort = "8080";
+                public const int ServerPort = 5000;
+
+                /// <summary>
+                /// Puerto del servidor web
+                /// </summary>
+                public const int ClientPort = 8080;
 
                 /// <summary>
                 /// Modos de prueba

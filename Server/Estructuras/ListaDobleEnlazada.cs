@@ -1,119 +1,124 @@
-﻿
-/// <summary>
-/// Representa a una lista doblemente enlazada.
-/// </summary>
-public class ListaDobleEnlazada
+﻿using Proyecto_MonopoTEC.Server.Modelo;
+
+namespace Proyecto_MonopoTEC.Server.Estructuras
 {
-    public NodeCasilla Head { get; private set; }
-    public NodeCasilla Tail { get; private set; }
-    public int Size { get; private set; }
 
     /// <summary>
-    /// Agrega un nuevo nodo al final de la lista doblemente enlazada.
+    /// Representa a una lista doblemente enlazada.
     /// </summary>
-    /// <param name="data">Dato que almacenará el nodo.</param>
-    public void Add(Casilla data)
+    public class ListaDobleEnlazada
     {
-        NodeCasilla newNode = new NodeCasilla { Data = data };
+        public NodeCasilla Head { get; private set; }
+        public NodeCasilla Tail { get; private set; }
+        public int Size { get; private set; }
 
-        if (Size == 0) // Si la lista está vacía, el nuevo nodo será tanto la cabeza como la cola
+        /// <summary>
+        /// Agrega un nuevo nodo al final de la lista doblemente enlazada.
+        /// </summary>
+        /// <param name="data">Dato que almacenará el nodo.</param>
+        public void Add(Casilla data)
         {
-            Head = newNode;
-            Tail = newNode;
-        }
-        else // Si la lista no está vacía, agregamos el nuevo nodo al final
-        {
-            Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
-            newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
-            Tail = newNode; // Actualizamos la cola para que sea el nuevo nodo
-        }
+            NodeCasilla newNode = new NodeCasilla { Data = data };
 
-        Size++;
-    }
-
-    /// <summary>
-    /// Eliminar un nodo de la lista.
-    /// </summary>
-    /// <param name="data">Dato que comparará para encontrar el nodo a eliminar.</param>
-    public void Remove(Casilla data)
-    {
-        NodeCasilla nodeActual = Head;
-
-        if (Size == 1)
-        {
-            Head = null;
-            Tail = null;
-            Size--;
-        }
-        else
-        {
-            while (nodeActual.Data != data)
+            if (Size == 0) // Si la lista está vacía, el nuevo nodo será tanto la cabeza como la cola
             {
-                nodeActual = nodeActual.Next;
+                Head = newNode;
+                Tail = newNode;
+            }
+            else // Si la lista no está vacía, agregamos el nuevo nodo al final
+            {
+                Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
+                newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
+                Tail = newNode; // Actualizamos la cola para que sea el nuevo nodo
             }
 
-            if (nodeActual == Head)
+            Size++;
+        }
+
+        /// <summary>
+        /// Eliminar un nodo de la lista.
+        /// </summary>
+        /// <param name="data">Dato que comparará para encontrar el nodo a eliminar.</param>
+        public void Remove(Casilla data)
+        {
+            NodeCasilla nodeActual = Head;
+
+            if (Size == 1)
             {
-                Head = Head.Next;
-                Head.Previous = null;
-            }
-            else if (nodeActual == Tail)
-            {
-                Tail = Tail.Previous;
-                Tail.Next = null;
+                Head = null;
+                Tail = null;
+                Size--;
             }
             else
             {
-                nodeActual.Next.Previous = nodeActual.Previous;
-                nodeActual.Previous.Next = nodeActual.Next;
+                while (nodeActual.Data != data)
+                {
+                    nodeActual = nodeActual.Next;
+                }
+
+                if (nodeActual == Head)
+                {
+                    Head = Head.Next;
+                    Head.Previous = null;
+                }
+                else if (nodeActual == Tail)
+                {
+                    Tail = Tail.Previous;
+                    Tail.Next = null;
+                }
+                else
+                {
+                    nodeActual.Next.Previous = nodeActual.Previous;
+                    nodeActual.Previous.Next = nodeActual.Next;
+                }
+
+                Size--;
             }
-
-            Size--;
         }
-    }
 
-    /// <summary>
-    /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
-    /// </summary>
-    public void Display()
-    {
-        NodeCasilla nodeActual = Head;
-
-        int indice = 1;
-
-        if (Size == 0)
+        /// <summary>
+        /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
+        /// </summary>
+        public void Display()
         {
-            Console.WriteLine("No tienes propiedades que mostrar");
-            return;
-        }
-        else
-        {
-            do
+            NodeCasilla nodeActual = Head;
+
+            int indice = 1;
+
+            if (Size == 0)
             {
-                Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
-                nodeActual = nodeActual.Next; // Avanza a la siguiente
-                indice ++;
-            }while (nodeActual != null);       
+                Console.WriteLine("No tienes propiedades que mostrar");
+                return;
+            }
+            else
+            {
+                do
+                {
+                    Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
+                    nodeActual = nodeActual.Next; // Avanza a la siguiente
+                    indice++;
+                } while (nodeActual != null);
+            }
         }
-    }
 
-    /// <summary>
-    /// Recorre la lista y devuelve la casilla correspondiente al índice seleccionado.
-    /// </summary>
-    /// <param name="indicePropiedad">Índice de la propiedad que se desea obtener.</param>
-    public Casilla GetAt(int indicePropiedad)
-    {
-        int indiceActual = 1;
-        NodeCasilla nodoCasillaActual = Head;
-
-        while (indiceActual < indicePropiedad)
+        /// <summary>
+        /// Recorre la lista y devuelve la casilla correspondiente al índice seleccionado.
+        /// </summary>
+        /// <param name="indicePropiedad">Índice de la propiedad que se desea obtener.</param>
+        public Casilla GetAt(int indicePropiedad)
         {
-            indiceActual++;
-            nodoCasillaActual = nodoCasillaActual.Next;
+            int indiceActual = 1;
+            NodeCasilla nodoCasillaActual = Head;
+
+            while (indiceActual < indicePropiedad)
+            {
+                indiceActual++;
+                nodoCasillaActual = nodoCasillaActual.Next;
+            }
+            return nodoCasillaActual.Data;
+
         }
-        return nodoCasillaActual.Data;
-       
+
+
     }
-
-
 }
