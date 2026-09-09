@@ -19,7 +19,7 @@
         <div class="dialogVerif" style="display: none;">
             <h3>Se requiere autenticación</h3>
             <p>Consulta el dispositivo lector</p>
-            
+
             <h2 id="errorVerif"></h2>
         </div>
 
@@ -37,7 +37,13 @@
         </div>
     </div>
 
-    <section id="lobby">
+    <div id="dialogo-container" class="dialogo-container" style="display: none;">
+        <div id="dialogo" class="dialogo" role="dialog" aria-modal="true" aria-labelledby="dialogo-mensaje">
+            <p id="dialogo-mensaje"></p>
+        </div>
+    </div>
+
+    <section id="lobbySection">
         <div class="header-title">
             <h1>Sala de Espera</h1>
         </div>
@@ -63,12 +69,12 @@
             </div>
         </div>
         <br>
-        <button onclick="startGame()">Iniciar partida</button>
+        <button onclick="comenzarJuego()">Iniciar partida</button>
 
     </section>
 
 
-    <section id="game" style="display: none;">
+    <section id="gameSection" style="display: none;">
         <div class="header-title">
             <h1>Tablero</h1>
         </div>

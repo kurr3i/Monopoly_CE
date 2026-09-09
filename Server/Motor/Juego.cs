@@ -47,8 +47,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
             _tableroJuego.Inicializar();
 
             _manejadorAcciones = new ManejadorAcciones(driver, _tableroJuego);
-
-            dado = new Dado();
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             if (id >= 0 && id <= 3)
             {
                 // Hacer la lectura del UID
-                string UID = _driver.ReadUID("PASAR J" + (id+1));
+                string UID = _driver.ReadUID("PASAR J" + (id + 1));
                 if (UIDs.Contains(UID))
                 {
                     // Si ya existe, enviar una ID inválida, luego se maneja en el Cliente
@@ -131,25 +129,25 @@ namespace Proyecto_MonopoTEC.Server.Motor
         {
             if (id == 0)
             {
-                _driver.ReadUID("PASAR J"+(id+1), jugador1.UID);
+                _driver.ReadUID("PASAR J" + (id + 1), jugador1.UID);
                 return true;
             }
 
             if (id == 1)
             {
-                _driver.ReadUID("PASAR J"+(id+1), jugador2.UID);
+                _driver.ReadUID("PASAR J" + (id + 1), jugador2.UID);
                 return true;
             }
 
             if (id == 2)
             {
-                _driver.ReadUID("PASAR J"+(id+1), jugador3.UID);
+                _driver.ReadUID("PASAR J" + (id + 1), jugador3.UID);
                 return true;
             }
 
             if (id == 3)
             {
-                _driver.ReadUID("PASAR J"+(id+1), jugador4.UID);
+                _driver.ReadUID("PASAR J" + (id + 1), jugador4.UID);
                 return true;
             }
 
@@ -282,9 +280,26 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
         public void IniciarJuego()
         {
-            Console.WriteLine("[Juego] Iniciando juego.");
-            Console.WriteLine("[Juego] Esperando jugadores...");
-            // Me falta añadir el lobby antes de comenzar la partida
+            if (jugador1 == null || jugador2 == null || jugador3 == null || jugador4 == null || jugador1.UID == "" || jugador2.UID == "" || jugador3.UID == "" || jugador4.UID == "")
+            {
+                Console.WriteLine("[Juego] Jugadores insuficientes para comenzar.");
+
+                _server.EnviarMensaje(new Mensaje(Protocolo.IniciarJuego, new { error = "Jugadores insuficientes para comenzar." }));
+                return;
+            }
+            else
+            {
+                Console.WriteLine("[Juego] Iniciando juego...");
+
+                ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
+                Turno = 0;
+
+                jugadorActual = ColaTurnos.Peek();
+
+                dado = new Dado();
+
+                IniciarPartida();
+            }
         }
 
 
@@ -292,12 +307,14 @@ namespace Proyecto_MonopoTEC.Server.Motor
         // Falta comentar esto.
         public void IniciarPartida()
         {
+
             ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
             Turno = 0;
 
-            jugadorActual = ColaTurnos.Peek();
-
             Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
+
+            // Ejemplo de contexto para el Cliente
+            _server.EnviarMensaje(new Mensaje(Protocolo.IniciarJuego, new { jugadorActual = jugadorActual.Nombre }));
 
             while (true) // Bucle infinito para el juego
             {

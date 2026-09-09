@@ -8,7 +8,7 @@ namespace Proyecto_MonopoTEC.Compartido
                 public const string Prueba = "SOCKET_PRUEBA";
                 public const string AutenticarJugador = "SOCKET_AUTENTICAR_JUGADOR";
                 public const string VerificarJugador = "SOCKET_VERIFICAR_JUGADOR";
-                public const string IniciarPartida = "SOCKET_INICIAR_PARTIDA";
+                public const string IniciarJuego = "SOCKET_INICIAR_JUEGO";
 
 
                 public static Dictionary<string, string> devolverProtocolo()
@@ -19,7 +19,7 @@ namespace Proyecto_MonopoTEC.Compartido
                         { nameof(Prueba), Prueba },
                         { nameof(AutenticarJugador), AutenticarJugador },
                         { nameof(VerificarJugador), VerificarJugador },
-                        { nameof(IniciarPartida), IniciarPartida },
+                        { nameof(IniciarJuego), IniciarJuego },
                         };
                 }
         }

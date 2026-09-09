@@ -25,7 +25,6 @@ namespace Proyecto_MonopoTEC.Server
 
 			// Iniciar el juego
 			Juego juego = new Juego(servidor, driver);
-			juego.IniciarJuego();
 
 			// Instanciar el juego en el servidor
 			servidor.InstanciarJuego(juego);

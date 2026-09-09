@@ -1,4 +1,8 @@
 // Definiciones de elementos
+
+const secciones = document.querySelectorAll("section");
+
+
 const dialogCont = document.querySelector(".dialogVerif-container");
 const registroVerif = document.querySelector(".registroVerif");
 const dialogVerif = document.querySelector(".dialogVerif");
@@ -6,6 +10,10 @@ const inputVerif = document.getElementById("inputVerif");
 const inputVerifBtn = document.getElementById("inputBtnVerif");
 const errorRegist = document.getElementById("errorRegist");
 const statusVerif = document.getElementById("errorVerif");
+const dialogoCont = document.getElementById("dialogo-container");
+const dialogo = document.getElementById("dialogo");
+const dialogoMensaje = document.getElementById("dialogo-mensaje");
+let dialogoTimeout = null;
 
 
 // Variables globales
@@ -81,14 +89,27 @@ function verificarJugador(player) {
 }
 
 
+function comenzarJuego() {
+    enviarMensaje(protocolo.IniciarJuego, {});
+}
+
+
 
 // Función para enviar mensajes al server
 function enviarMensaje(comando, contenido) {
     if (socket.readyState !== WebSocket.OPEN)
         return;
 
-    if (comando == null || comando == undefined)
+    if (comando == null || comando == undefined) {
+        console.log("[App] Comando inválido.");
         return;
+    }
+
+    // Si el mensaje esta fuera del protocolo
+    if (protocolo == null || !Object.values(protocolo).includes(comando)) {
+        console.log("[App] Protocolo inválido.");
+        return;
+    }
 
     // Se envía el mensaje
     socket.send(JSON.stringify({
@@ -101,6 +122,30 @@ function enviarMensaje(comando, contenido) {
         Comando: comando,
         Contenido: contenido
     }));
+}
+
+
+function cerrarDialogo() {
+    if (dialogoTimeout !== null) {
+        clearTimeout(dialogoTimeout);
+        dialogoTimeout = null;
+    }
+
+    dialogoCont.style.display = "none";
+    dialogoMensaje.textContent = "";
+}
+
+
+function mostrarDialogo(message, color) {
+    if (dialogoTimeout !== null) {
+        clearTimeout(dialogoTimeout);
+    }
+
+    dialogoMensaje.textContent = message;
+    dialogo.style.setProperty("--dialogo-color", color || "#52d7fc");
+    dialogoCont.style.display = "flex";
+
+    dialogoTimeout = setTimeout(cerrarDialogo, 2000);
 }
 
 
@@ -141,21 +186,28 @@ function mostrarRegistro() {
 
 
 
+
+
+
 function mostrarVerificacion() {
     dialogCont.style.display = "block";
     dialogVerif.style.display = "block";
 }
 
-function finalizarVerificacion(status = "") {
-    if (status != "") {
-        statusVerif.innerText = status;
+function finalizarVerificacion() {
+    dialogCont.style.display = "none";
+    dialogVerif.style.display = "none";
+    statusVerif.innerText = "";
+}
+
+
+
+function cambiarSeccion(seccion) {
+    for (const sec of secciones) {
+        sec.style.display = "none";
     }
 
-    setTimeout(() => {
-        dialogCont.style.display = "none";
-        dialogVerif.style.display = "none";
-        statusVerif.innerText = "";
-    }, 2000);
+    document.querySelector("#" + seccion+"Section").style.display = "block";
 }
 
 
@@ -170,10 +222,14 @@ function recibirMensaje(comando, contenido) {
         Contenido: contenido
     }));
 
+
+
     switch (comando) {
         case "SOCKET_PRUEBA":
             console.log("Prueba recibida." + contenido.prueba1);
             break;
+
+
 
 
         case "SOCKET_PROTOCOLO":
@@ -184,11 +240,14 @@ function recibirMensaje(comando, contenido) {
             break;
 
 
+
+
         case protocolo.AutenticarJugador:
             console.log("[App] Jugador autenticado");
 
             if (contenido.id == -1) {
-                finalizarVerificacion(contenido.error);
+                finalizarVerificacion();
+                mostrarDialogo(contenido.error, "#ff0000");
                 JUGADOR_A_VERIFICAR = null;
                 return;
             }
@@ -199,16 +258,33 @@ function recibirMensaje(comando, contenido) {
             JUGADOR_A_VERIFICAR.querySelector("button").innerText = "Verificar";
             JUGADOR_A_VERIFICAR.querySelector("button").classList.add("green");
 
-            finalizarVerificacion("Jugador autenticado correctamente.");
+            finalizarVerificacion();
+
+            mostrarDialogo("Jugador verificado correctamente.", "#48e33d");
 
             JUGADOR_A_VERIFICAR = null;
             break;
 
 
+
+
         case protocolo.VerificarJugador:
-            finalizarVerificacion("Jugador verificado correctamente.");
+            finalizarVerificacion();
+
+            mostrarDialogo("Jugador verificado correctamente.", "#48e33d", true);
 
             JUGADOR_A_VERIFICAR = null;
+            break;
+
+
+
+        case protocolo.IniciarJuego:
+            if(contenido.error) {
+                mostrarDialogo(contenido.error, "#ff0000");
+                return;
+            }
+            console.log("[App] Juego iniciado.");
+            cambiarSeccion("game");
             break;
     }
 }

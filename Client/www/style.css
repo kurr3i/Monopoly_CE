@@ -94,6 +94,44 @@ html.client {
                 transition: 0.2s ease-in-out;
         }
 
+        .dialogo-container {
+                position: fixed;
+                inset: 0;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #0000004e;
+        }
+
+        .dialogo {
+                width: min(90vw, 360px);
+                min-height: 50px;
+                padding: 28px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 24px;
+                text-align: center;
+                color: #ffffff;
+                background-color: color-mix(in srgb, var(--dialogo-color, #52d7fc) 85%, transparent);
+                border: 2px solid color-mix(in srgb, var(--dialogo-color, #52d7fc) 55%, #000000);
+        }
+
+        .dialogo p {
+                margin: 0;
+                font-size: 20px;
+                overflow-wrap: anywhere;
+        }
+
+        .dialogo button {
+                min-width: 100px;
+                margin: 0;
+                background-color: var(--dialogo-color, #52d7fc);
+                border-color: color-mix(in srgb, var(--dialogo-color, #52d7fc) 55%, #000000);
+        }
+
         .dialogVerif {
                 position: fixed;
                 top: 50%;
@@ -153,7 +191,7 @@ html.client {
                 margin-bottom: 5px;
         }
 
-        section#lobby {
+        section#lobbySection {
                 align-items: center;
                 display: flex;
                 flex-direction: column;
@@ -183,7 +221,7 @@ html.client {
         }
 
 
-        section#game {
+        section#gameSection {
                 align-items: center;
                 display: flex;
                 flex-direction: column;

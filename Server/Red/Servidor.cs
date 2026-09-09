@@ -127,7 +127,7 @@ namespace Proyecto_MonopoTEC.Server.Red
 
 
                 case Protocolo.ConexionLista:
-                    _juego?.IniciarJuego();
+                    Console.WriteLine("[Server] App conectado al Servidor.");
                     break;
 
 
@@ -152,8 +152,8 @@ namespace Proyecto_MonopoTEC.Server.Red
 
 
 
-                case Protocolo.IniciarPartida:
-                    _juego.IniciarPartida();
+                case Protocolo.IniciarJuego:
+                    _juego.IniciarJuego();
                     break;
             }
         }
