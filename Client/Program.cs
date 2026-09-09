@@ -9,7 +9,8 @@ namespace Proyecto_MonopoTEC.Client
 		{
 			// Iniciar el cliente
 			Cliente cliente = new Cliente(Config.ServerPort, Config.ClientPort);
-
+			
+			// Abrir la comunicación
 			_ = Task.Run(() => cliente.IniciarServer());
 			await cliente.IniciarCliente();
 		}

@@ -19,14 +19,16 @@ namespace Proyecto_MonopoTEC.Server
 			// Iniciar el servidor
 			Servidor servidor = new Servidor(Config.ServerPort);
 
-			// Iniciar el driver
+			// Iniciar el driver del lector RFID
 			RFIDDriver driver = new RFIDDriver(Config.ArduinoPort);
+			driver.Open();
 
-			// Iniciar el juego antes del listener, porque IniciarAsync no retorna mientras el servidor está activo.
+			// Iniciar el juego
 			Juego juego = new Juego(servidor, driver);
 			juego.IniciarJuego();
-			servidor.InstanciarJuego(juego);
 
+			// Instanciar el juego en el servidor
+			servidor.InstanciarJuego(juego);
 			await servidor.IniciarServer();
 
                 }
