@@ -328,7 +328,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             }
             else
             {
-                jugadorVenta.PropiedadesAdquiridas.Display(); // Mostramos las propiedades
+                jugadorVenta.PropiedadesAdquiridas.Display(Server _server); // Mostramos las propiedades
 
                 Console.WriteLine("Ingrese cuál Propiedad desea vender:");
                 _server.EnviarMensaje("Ingrese cuál Propiedad desea vender:", new { }); // *****

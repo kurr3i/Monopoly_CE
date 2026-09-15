@@ -79,7 +79,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <summary>
         /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
         /// </summary>
-        public void Display()
+        public void Display(Servidor server)
         {
             NodeCasilla nodeActual = Head;
 
@@ -87,7 +87,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
 
             if (Size == 0)
             {
-                Console.WriteLine("No tienes propiedades que mostrar");
+                Console.WriteLine("No tienes propiedades que mostrar.");
+                server.EnviarMensaje("No tienes propiedades que mostrar.", new { }); // *****
                 return;
             }
             else
@@ -95,6 +96,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                 do
                 {
                     Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
+                    server.EnviarMensaje("\n" + indice + "." + nodeActual.Data.Nombre, new { }); // *****
+
                     nodeActual = nodeActual.Next; // Avanza a la siguiente
                     indice++;
                 } while (nodeActual != null);

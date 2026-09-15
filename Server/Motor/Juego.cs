@@ -249,7 +249,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
                         break;
                     case "3":
                         Console.WriteLine("Sus propiedades son:");
-                        jugadorActual.PropiedadesAdquiridas.Display();
+                        jugadorActual.PropiedadesAdquiridas.Display(_server);
                         // Falta mostrar las propiedades se podría modificar display para que acepte al servidor como parametro. *****
 
                         Console.WriteLine("Presiona Enter para continuar...");
