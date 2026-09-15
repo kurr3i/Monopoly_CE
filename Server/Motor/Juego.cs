@@ -199,27 +199,40 @@ namespace Proyecto_MonopoTEC.Server.Motor
             {
                 if (jugadorActual.EnCarcel)
                 {
-                    Console.WriteLine("El jugador está en la carcel");
+                    Console.WriteLine($"{jugadorActual.Nombre} está en la carcel, pierde el turno.");
+                    _server.EnviarMensaje($"{jugadorActual.Nombre} está en la carcel, pierde el turno.", new { }); // *****
                     jugadorActual.ReducirCondena();
+
                     if (jugadorActual.TurnosCarcel == 0)
                     {
                         jugadorActual.SalirCarcel();
+                        Console.WriteLine("Saldrá en el siguiente turno.");
+                        _server.EnviarMensaje("Saldrá en el siguiente turno.", new { }); // *****
                     }
                     else
                     {
-                        Console.WriteLine($"Quedan {jugadorActual.TurnosCarcel} turnos en carcel");
+                        Console.WriteLine($"Le quedan {jugadorActual.TurnosCarcel} turnos en carcel.");
+                        _server.EnviarMensaje($"Le quedan {jugadorActual.TurnosCarcel} turnos en carcel.", new { }); // *****
                     }
                     return AccionCasilla.SinAccion;
                 }
 
                 else if (jugadorActual.TurnosPerdidos != 0)
                 {
+                    Console.WriteLine($"{jugadorActual.Nombre} pierde el turno.");
+                    _server.EnviarMensaje($"{jugadorActual.Nombre} pierde el turno.", new { }); // *****
+
+                    Console.WriteLine($"Perderá {jugadorActual.TurnosPerdidos} más para volver a jugar.");
+                    _server.EnviarMensaje($"Perderá {jugadorActual.TurnosPerdidos} más para volver a jugar.", new { }); // *****
+
                     jugadorActual.ReducirTurnoPerdido();
                     return AccionCasilla.SinAccion;
                 }
 
                 Console.Clear();
                 Console.WriteLine("Elige una opción:\n1. Lanzar el dado\n2. Vender propiedad\n3. Ver propiedades");
+                _server.EnviarMensaje("Elige una opción:\n1. Lanzar el dado\n2. Vender propiedad\n3. Ver propiedades", new { }); // *****
+
                 string opcion = ValidarOpcionJugador(Console.ReadLine());
 
                 switch (opcion)
@@ -229,14 +242,18 @@ namespace Proyecto_MonopoTEC.Server.Motor
                         break;
                     case "2":
                         _manejadorAcciones.AccionVenderPropiedad(jugadorActual, Turno);
-                        Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+                        Console.WriteLine("Presiona Enter para continuar...");
+                        _server.EnviarMensaje("Presiona Enter para continuar...", new { }); // *****
                         Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
                         break;
                     case "3":
                         Console.WriteLine("Sus propiedades son:");
                         jugadorActual.PropiedadesAdquiridas.Display();
-                        Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
+                        // Falta mostrar las propiedades se podría modificar display para que acepte al servidor como parametro. *****
+
+                        Console.WriteLine("Presiona Enter para continuar...");
+                        _server.EnviarMensaje("Presiona Enter para continuar...", new { }); // *****
                         Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
                         break;
@@ -247,17 +264,25 @@ namespace Proyecto_MonopoTEC.Server.Motor
             int resultadoDado2 = dado.Lanzar();
 
             Console.WriteLine("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
+            _server.EnviarMensaje("El jugador " + jugadorActual.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2, new { }); // *****
+
             Console.WriteLine("Eso suma: " + (resultadoDado1 + resultadoDado2));
+            _server.EnviarMensaje("Eso suma: " + (resultadoDado1 + resultadoDado2), new { }); // *****
 
             bool pasoPorSalida;
             Casilla casillaJugadorActual = _tableroJuego.AvanzarJugador(jugadorActual, resultadoDado1 + resultadoDado2, out pasoPorSalida);
+
             Console.WriteLine("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + casillaJugadorActual.Nombre);
+            _server.EnviarMensaje("El jugador " + jugadorActual.Nombre + " se ha movido a la casilla: " + casillaJugadorActual.Nombre, new { }); // *****
+
             if (pasoPorSalida)
             {
                 _manejadorAcciones.DarPremio(jugadorActual, Turno);
             }
 
             Console.WriteLine("Presiona Enter para continuar...");
+            _server.EnviarMensaje("Presiona Enter para continuar...", new { }); // *****
+
             Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
 
             return casillaJugadorActual.DevolverAccion(jugadorActual);
@@ -271,6 +296,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
             while (opcion != "1" && opcion != "2" && opcion != "3")
             {
                 Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
+                _server.EnviarMensaje("Opción inválida. Por favor, elige una opción válida.", new { }); // *****
+
                 opcion = Console.ReadLine();
             }
             return opcion;
@@ -313,6 +340,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
             Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
 
+
             // Ejemplo de contexto para el Cliente
             _server.EnviarMensaje(new Mensaje(Protocolo.IniciarJuego, new { jugadorActual = jugadorActual.Nombre }));
 
@@ -328,15 +356,16 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else
                 {
-                    Console.WriteLine("Se eliminó al jugador" + jugadorActual);
+                    Console.WriteLine("Se eliminó al jugador" + jugadorActual.Nombre);
+                    _server.EnviarMensaje("Se eliminó al jugador" + jugadorActual.Nombre, new { }); // *****
                     ColaTurnos.Dequeue();
                 }
-                Console.WriteLine("Presiona Enter para continuar al siguiente turno...");
                 Turno++;
 
                 if (ColaTurnos.Size == 1)
                 {
                     Console.WriteLine($"Ganó jugador {ColaTurnos.Peek().Nombre}");
+                    _server.EnviarMensaje($"Ganó jugador {ColaTurnos.Peek().Nombre}", new { }); // *****
                     break;
                 }
                 else if (Turno == 100)
@@ -346,6 +375,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                 jugadorActual = ColaTurnos.Peek();
 
+                Console.WriteLine("Presiona Enter para continuar...");
+                _server.EnviarMensaje("Presiona Enter para continuar...", new { }); // *****
                 Console.ReadLine(); // Esperar a que el jugador presione Enter antes de continuar
             }
 
