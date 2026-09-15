@@ -24,6 +24,11 @@ namespace Proyecto_MonopoTEC.Server.Motor
     public class ManejadorAcciones
     {
         /// <summary>
+        /// El Server.
+        /// </summary>
+        private readonly Servidor _server;
+
+        /// <summary>
         /// El banco del juego.
         /// </summary>
         private readonly Banco _bancoJuego;
@@ -43,10 +48,11 @@ namespace Proyecto_MonopoTEC.Server.Motor
         /// </summary>
         /// <param name="driver">Nombre del puerto serial utilizado para comunicarse con el Arduino.</param>
         /// <param name="tableroJuego">El tablero del juego.</param>
-        public ManejadorAcciones(RFIDDriver driver, Tablero tableroJuego)
+        public ManejadorAcciones(RFIDDriver driver, Tablero tableroJuego, Servidor server)
         {
             this._bancoJuego = new Banco(driver);
             this._tableroJuego = tableroJuego;
+            this._server = server;
             this._barajaCartas = new ColaCartasEvento();
             _barajaCartas.Inicializar();
         }
@@ -65,7 +71,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
             switch (accion)
             {
                 case AccionCasilla.SinAccion:
-                    Console.WriteLine("Fin del turno.");
                     return true; // El jugador sigue en el juego.
 
                 case AccionCasilla.PermitirComprar:
@@ -75,16 +80,32 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     bool puedeComprar = _bancoJuego.PuedePagar(jugadorActual, propiedadComprar.PrecioCompra); // Evaluamos si puede pagar
                     if (puedeComprar)
                     {
-                        Console.WriteLine("Desea Comprar " + propiedadComprar.Nombre + "Con un precio de " + propiedadComprar.PrecioCompra);
+                        Console.WriteLine($"{jugadorActual.Nombre}, desea Comprar {propiedadComprar.Nombre} con un precio de {propiedadComprar.PrecioCompra}?");
+                        _server.EnviarMensaje($"{jugadorActual.Nombre}, desea Comprar {propiedadComprar.Nombre} con un precio de {propiedadComprar.PrecioCompra}?", new { }); // *****
+
                         Console.WriteLine("1. Sí\n2. No");
+                        _server.EnviarMensaje("1. Sí\n2. No", new { }); // *****
+
                         string decision = ValidarDecisionCompra(Console.ReadLine());
 
                         if (decision == "1")
                         {
                             _bancoJuego.ComprarPropiedad(jugadorActual, propiedadComprar, numeroTurno); // Ejecutamos la compra
+
+                            Console.WriteLine($"{jugadorActual.Nombre} compró la propiedad {propiedadCompra.Nombre}.");
+                            _server.EnviarMensaje($"{jugadorActual.Nombre} compró la propiedad {propiedadCompra.Nombre}.", new { }); // *****
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{jugadorActual.Nombre} no compró la propiedad {propiedadCompra.Nombre}.");
+                            _server.EnviarMensaje($"{jugadorActual.Nombre} no compró la propiedad {propiedadCompra.Nombre}.", new { }); // *****
                         }
                     }
-                    Console.WriteLine("Fin del turno.");
+                    else
+                    {
+                        Console.WriteLine($"{jugadorActual.Nombre} no puede comprar la propiedad {propiedadCompra.Nombre}.");
+                        _server.EnviarMensaje($"{jugadorActual.Nombre} no puede comprar la propiedad {propiedadCompra.Nombre}.", new { }); // *****
+                    }
                     return true;
 
                 case AccionCasilla.CobrarAlquiler:
@@ -94,10 +115,16 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     if (puedePagar)
                     {
                         _bancoJuego.PagarAlquiler(jugadorActual, propiedadAlquilar.Propietario, propiedadAlquilar.Alquiler, numeroTurno); // Se realizá el cobro del alquiler
-                        Console.WriteLine("Fin del turno.");
+
+                        Console.WriteLine($"Por caer en {propiedadAlquilar.Nombre}, {jugadorActual.Nombre} le paga {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}.");
+                        _server.EnviarMensaje($"Por caer en {propiedadAlquilar.Nombre}, {jugadorActual.Nombre} le paga {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}.", new { }); // *****
+
                         return true; // Sigue en juego
                     }
-                    Console.WriteLine("Fin del turno.");
+
+                    Console.WriteLine($"{jugadorActual.Nombre} no puede pagar {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}, entra en bancarrota.");
+                    _server.EnviarMensaje($"{jugadorActual.Nombre} no puede pagar {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}, entra en bancarrota.", new { }); // *****
+
                     return false; // Sino entra en bancarrota
 
                 case AccionCasilla.DarCarta:
@@ -108,7 +135,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                     _barajaCartas.Advance(); // La carta vuelve al final 
 
-                    Console.WriteLine("Fin del turno.");
                     return sigueEnJuego;
 
                 case AccionCasilla.MandarCarcel:
@@ -116,8 +142,9 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     _tableroJuego.MoverJugadorACarcel(jugadorActual);
 
                     jugadorActual.EntrarCarcel();
+                    Console.WriteLine($"{jugadorActual.Nombre} entra en la carcel.");
+                    _server.EnviarMensaje($"{jugadorActual.Nombre} entra en la carcel.", new { }); // *****
 
-                    Console.WriteLine("Fin del turno.");
                     return true;
 
                 default:
@@ -144,11 +171,19 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 case TipoCartaEvento.GanoColones:
                     {
                         _bancoJuego.GananciaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le damos la ganancia
+
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
+
                         return true; // El jugador sigue en el juego.
                     }
+
                 case TipoCartaEvento.PerdioColones:
                     {
                         bool puedePagar = _bancoJuego.PuedePagar(jugadorActual, cartaEvento.Valor); // Se verifica que pueda pagar o no
+                        
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
 
                         if (puedePagar)
                         {
@@ -156,12 +191,19 @@ namespace Proyecto_MonopoTEC.Server.Motor
                             return true;
                         }
                     }
+
+                    Console.WriteLine($"{jugadorActual.Nombre} no puede pagar {cartaEvento.Valor} colones, entra en bancarrota.");
+                    _server.EnviarMensaje($"{jugadorActual.Nombre} no puede pagar {cartaEvento.Valor} colones, entra en bancarrota.", new { }); // *****
+
                     return false;
 
                 case TipoCartaEvento.Avanzar:
                     {
                         bool pasoPorSalida;
                         _tableroJuego.AvanzarJugador(jugadorActual, cartaEvento.Valor, out pasoPorSalida); // Se avanza
+
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
 
                         if (pasoPorSalida)
                         {
@@ -178,6 +220,9 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     {
                         _tableroJuego.RetrocederJugador(jugadorActual, cartaEvento.Valor); // Se retocede
 
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
+
                         AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion, jugadorActual);
                         bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
 
@@ -187,12 +232,19 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 case TipoCartaEvento.PerderTurno:
                     {
                         jugadorActual.PerderTurno(cartaEvento.Valor);
+
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
+
                         return true;
                     }
                 case TipoCartaEvento.AvanzarSalida:
                     {
                         _tableroJuego.MoverJugadorASalida(jugadorActual);
                         _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
+
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
 
                         return true;
                     }
@@ -201,7 +253,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
                         bool pasoPorSalida;
 
                         _tableroJuego.MoverJugadorAParque(jugadorActual, out pasoPorSalida); // Se mueve el jugador al parque y se obtiene si se pasó por salida
-
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
                         if (pasoPorSalida)
                         {
                             _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
@@ -211,6 +264,9 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 case TipoCartaEvento.VayaCarcel:
                     {
                         _tableroJuego.MoverJugadorACarcel(jugadorActual);
+
+                        Console.WriteLine(cartaEvento.Descripcion);
+                        _server.EnviarMensaje(cartaEvento.Descripcion, new { }); // *****
 
                         jugadorActual.EntrarCarcel();
                         return true;
@@ -231,6 +287,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             while (opcion != "1" && opcion != "2")
             {
                 Console.WriteLine("Opión inválida. Por favor, elige una opción válida.");
+                _server.EnviarMensaje("Opión inválida. Por favor, elige una opción válida.", new { }); // *****
                 opcion = Console.ReadLine();
             }
             return opcion;
@@ -250,6 +307,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             while (!int.TryParse(opcion, out indicePropiedad) || indicePropiedad < 1 || indicePropiedad > limiteIndice)
             {
                 Console.WriteLine("Opción inválida. Ingrese un número válido.");
+                _server.EnviarMensaje("Opión inválida. Por favor, elige una opción válida.", new { }); // *****
                 opcion = Console.ReadLine();
             }
 
@@ -265,13 +323,16 @@ namespace Proyecto_MonopoTEC.Server.Motor
         {
             if (jugadorVenta.PropiedadesAdquiridas.Size == 0)
             {
-                Console.WriteLine("Sin Propiedades para vender");
+                Console.WriteLine("Sin Propiedades para vender.");
+                _server.EnviarMensaje("Sin Propiedades para vender.", new { }); // *****
             }
             else
             {
                 jugadorVenta.PropiedadesAdquiridas.Display(); // Mostramos las propiedades
 
                 Console.WriteLine("Ingrese cuál Propiedad desea vender:");
+                _server.EnviarMensaje("Ingrese cuál Propiedad desea vender:", new { }); // *****
+
                 int indicePropiedadVender = ValidarIndiceVenta(jugadorVenta.PropiedadesAdquiridas.Size, Console.ReadLine()); // Evaluamos el ingreso
 
                 Propiedad casillaVenta = (Propiedad)jugadorVenta.PropiedadesAdquiridas.GetAt(indicePropiedadVender); // Obtenemos la Propiedad que se va a vender y hacemos cast
@@ -289,6 +350,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
         public void DarPremio(Jugador jugador, int numeroTurno)
         {
             _bancoJuego.PremioPorInicio(jugador, numeroTurno);
+            Console.WriteLine("Ganas 400 colones por pasar por el inicio");
+            _server.EnviarMensaje("Ganas 400 colones por pasar por el inicio", new { }); // *****
         }
     }
 }

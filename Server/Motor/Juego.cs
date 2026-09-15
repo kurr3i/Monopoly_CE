@@ -46,7 +46,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             _tableroJuego = new Tablero();
             _tableroJuego.Inicializar();
 
-            _manejadorAcciones = new ManejadorAcciones(driver, _tableroJuego);
+            _manejadorAcciones = new ManejadorAcciones(driver, _tableroJuego, _server);
         }
 
         /// <summary>
@@ -338,20 +338,26 @@ namespace Proyecto_MonopoTEC.Server.Motor
             ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
             Turno = 0;
 
-            Console.WriteLine("El juego ha comenzado. El jugador actual es: " + jugadorActual.Nombre);
 
+            Console.WriteLine("El juego ha comenzado.");
+            _server.EnviarMensaje("El juego ha comenzado.", new { }); // *****
 
             // Ejemplo de contexto para el Cliente
             _server.EnviarMensaje(new Mensaje(Protocolo.IniciarJuego, new { jugadorActual = jugadorActual.Nombre }));
 
             while (true) // Bucle infinito para el juego
             {
+                Console.WriteLine("El jugador actual es: " + jugadorActual.Nombre);
+                _server.EnviarMensaje("El jugador actual es: " + jugadorActual.Nombre, new { }); // *****
+
                 AccionCasilla accion = PrepararTurno();
                 Console.WriteLine(accion);
 
                 bool sigueEnJuego = _manejadorAcciones.EjecutarAccion(accion, jugadorActual, Turno);
                 if (sigueEnJuego)
                 {
+                    Console.WriteLine("Fin del turno.");
+                    _server.EnviarMensaje("Fin del turno.", new { }); // *****
                     ColaTurnos.Advance();
                 }
                 else
