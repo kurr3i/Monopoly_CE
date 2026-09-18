@@ -8,8 +8,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
 	/// </summary>
 	public class NodeCartaEvento
 	{
-		public CartaEvento Data { get; set; }
-		public NodeCartaEvento Next { get; set; }
-		public NodeCartaEvento Previous { get; set; }
+		public CartaEvento? Data { get; set; }
+		public NodeCartaEvento? Next { get; set; }
+		public NodeCartaEvento? Previous { get; set; }
 	}
 }

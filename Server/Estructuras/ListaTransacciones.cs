@@ -10,8 +10,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
     /// </summary>
     public class ListaTransacciones
     {
-        public NodeTransaccion Head { get; private set; }
-        public NodeTransaccion Tail { get; private set; }
+        public NodeTransaccion? Head { get; private set; }
+        public NodeTransaccion? Tail { get; private set; }
         public int Size { get; private set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             }
             else // Si la lista no está vacía, agregamos el nuevo nodo al final
             {
-                Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
+                Tail!.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
                 newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
                 Tail = newNode; // Actualizamos la cola para que sea el nuevo nodo
             }
@@ -42,7 +42,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// </summary>
         public void RecorrerDesdeInicio()
         {
-            NodeTransaccion nodeActual = Head;
+            NodeTransaccion nodeActual = Head!;
 
             if (Size == 0)
             {
@@ -52,8 +52,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             {
                 do
                 {
-                    Console.WriteLine(nodeActual.Data.ID); // Depurar
-                    nodeActual = nodeActual.Next; // Avanza a la siguiente
+                    Console.WriteLine(nodeActual.Data!.ID); // Depurar
+                    nodeActual = nodeActual.Next!; // Avanza a la siguiente
 
                 } while (nodeActual != null);
             }
@@ -65,7 +65,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// </summary>
         public void RecorrerDesdeFinal()
         {
-            NodeTransaccion nodeActual = Tail;
+            NodeTransaccion nodeActual = Tail!;
 
             if (Size == 0)
             {
@@ -75,8 +75,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             {
                 do
                 {
-                    Console.WriteLine(nodeActual.Data.ID); // Depurar
-                    nodeActual = nodeActual.Previous; // Avanza a la siguiente
+                    Console.WriteLine(nodeActual.Data!.ID); // Depurar
+                    nodeActual = nodeActual.Previous!; // Avanza a la siguiente
 
                 } while (nodeActual != null);
             }
@@ -90,24 +90,24 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <param name="jugadorTransaccion">Jugador que realizó la transacción.</param>
         public Transaccion BuscarPorJugador(Jugador jugadorTransaccion)
         {
-            NodeTransaccion nodoTransaccionActual = Head;
+            NodeTransaccion nodoTransaccionActual = Head!;
 
             if (nodoTransaccionActual == null)
             {
                 Console.WriteLine("No hay transacciones");
-                return null;
+                return null!;
             }
 
             while (nodoTransaccionActual != null)
             {
-                if (nodoTransaccionActual.Data.JugadorOrigen == jugadorTransaccion)
+                if (nodoTransaccionActual.Data!.JugadorOrigen == jugadorTransaccion)
                 {
                     return nodoTransaccionActual.Data;
                 }
-                nodoTransaccionActual = nodoTransaccionActual.Next;
+                nodoTransaccionActual = nodoTransaccionActual.Next!;
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -116,24 +116,24 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <param name="tipoTransaccion">El tipo de transaccion que se desea buscar.</param>
         public Transaccion BuscarPorTipo(TipoTransaccion tipoTransaccion)
         {
-            NodeTransaccion nodoTransaccionActual = Head;
+            NodeTransaccion nodoTransaccionActual = Head!;
 
             if (nodoTransaccionActual == null)
             {
                 Console.WriteLine("No hay transacciones");
-                return null;
+                return null!;
             }
 
             while (nodoTransaccionActual != null)
             {
-                if (nodoTransaccionActual.Data.Tipo == tipoTransaccion)
+                if (nodoTransaccionActual.Data!.Tipo == tipoTransaccion)
                 {
                     return nodoTransaccionActual.Data;
                 }
-                nodoTransaccionActual = nodoTransaccionActual.Next;
+                nodoTransaccionActual = nodoTransaccionActual.Next!;
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// </summary>
         public void Display()
         {
-            NodeTransaccion nodeActual = Head;
+            NodeTransaccion nodeActual = Head!;
             int indice = 1;
 
             if (Size == 0)
@@ -156,7 +156,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                     string origen;
                     string destino;
 
-                    if (nodeActual.Data.JugadorOrigen != null)
+                    if (nodeActual.Data!.JugadorOrigen != null)
                     {
                         origen = nodeActual.Data.JugadorOrigen.Nombre;
                     }
@@ -184,7 +184,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                     Console.WriteLine($"Monto: {nodeActual.Data.Monto}");
                     Console.WriteLine($"Descripcion: {nodeActual.Data.Descripcion}");
 
-                    nodeActual = nodeActual.Next; // Avanza a la siguiente
+                    nodeActual = nodeActual.Next!; // Avanza a la siguiente
                     indice++;
                 } while (nodeActual != null);
             }

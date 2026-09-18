@@ -9,9 +9,10 @@ namespace Proyecto_MonopoTEC.Server.Modelo
     /// </summary>
     public class Tablero
     {
-        public NodeCasilla Head { get; private set; }
-        public NodeCasilla Tail { get; private set; }
+        public NodeCasilla? Head { get; private set; }
+        public NodeCasilla? Tail { get; private set; }
         public int Size { get; private set; }
+
 
         /// <summary>
         /// Agrega una nueva casilla al final del tablero.
@@ -31,11 +32,11 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             }
             else
             {
-                Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
+                Tail!.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
                 newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
                 Tail = newNode; // Actualizamos la cola para que sea el nuevo nodo
 
-                Head.Previous = Tail; // Conectamos la cabeza con la nueva cola
+                Head!.Previous = Tail; // Conectamos la cabeza con la nueva cola
                 Tail.Next = Head; // Conectamos la nueva cola con la cabeza
             }
 
@@ -63,18 +64,18 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         public Casilla AvanzarJugador(Jugador jugador, int movimiento, out bool pasoPorSalida)
         {
             Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
-            NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+            NodeCasilla nodoCasillaActual = Head!; // Nodo que representa la casilla actual del jugador
             pasoPorSalida = false;
 
             while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
 
             for (int i = 0; i < movimiento; i++) // Avanzamos el número de casillas indicado por el movimiento 
             {
 
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
 
                 if (nodoCasillaActual.Data is CasillaEspecial casillaEspecial && casillaEspecial.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
                 {
@@ -82,9 +83,9 @@ namespace Proyecto_MonopoTEC.Server.Modelo
                 }
             }
 
-            jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la nueva casilla
+            jugador.CambiarPosicion(nodoCasillaActual.Data!); // Actualizamos la posición del jugador a la nueva casilla
 
-            return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
+            return nodoCasillaActual.Data!; // Retornamos la casilla en la que termina el jugador después del movimiento
         }
 
         /// <summary>
@@ -96,21 +97,21 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         public Casilla RetrocederJugador(Jugador jugador, int movimiento)
         {
             Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
-            NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+            NodeCasilla nodoCasillaActual = Head!; // Nodo que representa la casilla actual del jugador
 
             while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
 
             for (int i = 0; i < movimiento; i++) // Retrocedemos el número de casillas indicado por el movimiento 
             {
-                nodoCasillaActual = nodoCasillaActual.Previous;
+                nodoCasillaActual = nodoCasillaActual.Previous!;
             }
 
-            jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la nueva casilla
+            jugador.CambiarPosicion(nodoCasillaActual.Data!); // Actualizamos la posición del jugador a la nueva casilla
 
-            return nodoCasillaActual.Data; // Retornamos la casilla en la que termina el jugador después del movimiento
+            return nodoCasillaActual.Data!; // Retornamos la casilla en la que termina el jugador después del movimiento
         }
 
         /// <summary>
@@ -119,11 +120,11 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="jugador">El jugador que será enviado a la cárcel.</param>
         public void MoverJugadorACarcel(Jugador jugador)
         {
-            NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
+            NodeCasilla nodoCasillaActual = Head!; // Empezamos desde la cabeza
 
             while (nodoCasillaActual.Data is not CasillaEspecial casillaCarcel || casillaCarcel.Subtipo != SubtipoCasillaEspecial.Carcel) // Avanzamos hasta encontrar el nodo que contiene la carcel
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
 
             jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la carcel
@@ -137,19 +138,19 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         public void MoverJugadorAParque(Jugador jugador, out bool pasoPorSalida)
         {
             Casilla casillaActual = jugador.Posicion; // La casilla actual del jugador antes de moverse
-            NodeCasilla nodoCasillaActual = Head; // Nodo que representa la casilla actual del jugador
+            NodeCasilla nodoCasillaActual = Head!; // Nodo que representa la casilla actual del jugador
             pasoPorSalida = false;
 
             while (nodoCasillaActual.Data != casillaActual) // Buscar el nodo que contiene la casilla actual del jugador
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
 
             while (nodoCasillaActual.Data is not CasillaEspecial casillaEspecial || casillaEspecial.Subtipo != SubtipoCasillaEspecial.ParqueDiversiones) // Avanzamos hasta encontrar el nodo que contiene el parque de diversiones
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
 
-                if (nodoCasillaActual.Data is CasillaEspecial casillaParque && casillaParque.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
+                if (nodoCasillaActual!.Data is CasillaEspecial casillaParque && casillaParque.Subtipo == SubtipoCasillaEspecial.Salida) // Esto es para el out de si pasa por la salida o no
                 {
                     pasoPorSalida = true;
                 }
@@ -164,11 +165,11 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="jugador">El jugador que será avanzado hasta la salida.</param>
         public void MoverJugadorASalida(Jugador jugador)
         {
-            NodeCasilla nodoCasillaActual = Head; // Empezamos desde la cabeza
+            NodeCasilla nodoCasillaActual = Head!; // Empezamos desde la cabeza
 
-            while (nodoCasillaActual.Data is not CasillaEspecial casillaSalida || casillaSalida.Subtipo != SubtipoCasillaEspecial.Salida) // Avanzamos hasta encontrar el nodo que contiene la salida
+            while (nodoCasillaActual!.Data is not CasillaEspecial casillaSalida || casillaSalida.Subtipo != SubtipoCasillaEspecial.Salida) // Avanzamos hasta encontrar el nodo que contiene la salida
             {
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
 
             jugador.CambiarPosicion(nodoCasillaActual.Data); // Actualizamos la posición del jugador a la salida

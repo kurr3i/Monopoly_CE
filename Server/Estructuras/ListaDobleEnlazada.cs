@@ -1,4 +1,6 @@
 ﻿using Proyecto_MonopoTEC.Server.Modelo;
+using Proyecto_MonopoTEC.Server.Red;
+using Proyecto_MonopoTEC.Compartido;
 
 namespace Proyecto_MonopoTEC.Server.Estructuras
 {
@@ -8,8 +10,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
     /// </summary>
     public class ListaDobleEnlazada
     {
-        public NodeCasilla Head { get; private set; }
-        public NodeCasilla Tail { get; private set; }
+        public NodeCasilla? Head { get; private set; }
+        public NodeCasilla? Tail { get; private set; }
         public int Size { get; private set; }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             }
             else // Si la lista no está vacía, agregamos el nuevo nodo al final
             {
-                Tail.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
+                Tail!.Next = newNode; // El siguiente nodo de la cola actual será el nuevo nodo
                 newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola actual
                 Tail = newNode; // Actualizamos la cola para que sea el nuevo nodo
             }
@@ -41,7 +43,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <param name="data">Dato que comparará para encontrar el nodo a eliminar.</param>
         public void Remove(Casilla data)
         {
-            NodeCasilla nodeActual = Head;
+            NodeCasilla nodeActual = Head!;
 
             if (Size == 1)
             {
@@ -51,25 +53,25 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             }
             else
             {
-                while (nodeActual.Data != data)
+                while (nodeActual!.Data != data)
                 {
-                    nodeActual = nodeActual.Next;
+                    nodeActual = nodeActual.Next!;
                 }
 
                 if (nodeActual == Head)
                 {
                     Head = Head.Next;
-                    Head.Previous = null;
+                    Head!.Previous = null!;
                 }
                 else if (nodeActual == Tail)
                 {
                     Tail = Tail.Previous;
-                    Tail.Next = null;
+                    Tail!.Next = null!;
                 }
                 else
                 {
-                    nodeActual.Next.Previous = nodeActual.Previous;
-                    nodeActual.Previous.Next = nodeActual.Next;
+                    nodeActual.Next!.Previous = nodeActual.Previous;
+                    nodeActual.Previous!.Next = nodeActual.Next;
                 }
 
                 Size--;
@@ -81,24 +83,25 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// </summary>
         public void Display(Servidor server)
         {
-            NodeCasilla nodeActual = Head;
+            NodeCasilla nodeActual = Head!;
 
             int indice = 1;
 
             if (Size == 0)
             {
-                Console.WriteLine("No tienes propiedades que mostrar.");
-                server.EnviarMensaje("No tienes propiedades que mostrar.", new { }); // *****
+                Console.WriteLine("[ListaDobleEnlazada] No tienes propiedades que mostrar.");
+                server.EnviarMensaje(Protocolo.PropiedadesVenta, new { propiedades = Array.Empty<object>(), mensaje = "No tienes propiedades que mostrar." });
                 return;
             }
             else
             {
                 do
                 {
-                    Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
-                    server.EnviarMensaje("\n" + indice + "." + nodeActual.Data.Nombre, new { }); // *****
+                    Console.WriteLine("[ListaDobleEnlazada] PropiedadesVenta");
+                    Console.WriteLine("\n" + indice + "." + nodeActual.Data!.Nombre); // Muestra la propiedad
+                    server.EnviarMensaje(Protocolo.PropiedadesVenta, new { indice, propiedad = nodeActual.Data.Nombre });
 
-                    nodeActual = nodeActual.Next; // Avanza a la siguiente
+                    nodeActual = nodeActual.Next!; // Avanza a la siguiente
                     indice++;
                 } while (nodeActual != null);
             }
@@ -111,16 +114,32 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         public Casilla GetAt(int indicePropiedad)
         {
             int indiceActual = 1;
-            NodeCasilla nodoCasillaActual = Head;
+            NodeCasilla nodoCasillaActual = Head!;
 
             while (indiceActual < indicePropiedad)
             {
                 indiceActual++;
-                nodoCasillaActual = nodoCasillaActual.Next;
+                nodoCasillaActual = nodoCasillaActual.Next!;
             }
-            return nodoCasillaActual.Data;
+            return nodoCasillaActual.Data!;
 
         }
+
+        public Casilla? GetById(int id)
+        {
+            NodeCasilla? nodoActual = Head;
+
+            while (nodoActual != null)
+            {
+                if (nodoActual.Data?.ID == id)
+                    return nodoActual.Data;
+
+                nodoActual = nodoActual.Next;
+            }
+
+            return null;
+        }
+
 
 
     }

@@ -15,7 +15,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         {
             this.PrecioCompra = precioCompra;
             this.Alquiler = alquiler;
-            this.Propietario = null;
+            this.Propietario = null!;
         }
 
         /// <summary>

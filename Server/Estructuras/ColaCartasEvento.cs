@@ -8,8 +8,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
     /// </summary>
     public class ColaCartasEvento
     {
-        public NodeCartaEvento Head { get; private set; }
-        public NodeCartaEvento Tail { get; private set; }
+        public NodeCartaEvento? Head { get; private set; }
+        public NodeCartaEvento? Tail { get; private set; }
         public int Size { get; private set; }
 
         /// <summary>
@@ -30,11 +30,11 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             }
             else // Si la cola no está vacía, agregamos el nuevo nodo al final y lo conectamos con el primero
             {
-                Tail.Next = newNode; // El siguiente nodo de la cola (tail) actual será el nuevo nodo
+                Tail!.Next = newNode; // El siguiente nodo de la cola (tail) actual será el nuevo nodo
                 newNode.Previous = Tail; // El nodo anterior del nuevo nodo será la cola (tail) actual
                 Tail = newNode; // Actualizamos la cola (tail) para que sea el nuevo nodo
 
-                Head.Previous = Tail; // Conectamos la cabeza con la nueva cola (tail)
+                Head!.Previous = Tail; // Conectamos la cabeza con la nueva cola (tail)
                 Tail.Next = Head; // Conectamos la nueva cola (tail) con la cabeza 
             }
 
@@ -47,7 +47,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <returns>La carta de evento eliminada de la cabeza de la cola.</returns>
         public CartaEvento Dequeue()
         {
-            CartaEvento cartaEliminada = Head.Data;
+            CartaEvento cartaEliminada = Head!.Data!;
 
             if (Size == 1)
             {
@@ -57,8 +57,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             else
             {
                 Head = Head.Next; // Avanzamos la cabeza al siguiente nodo
-                Head.Previous = Tail; // Actualizamos el nodo anterior de la nueva cabeza para que apunte a la cola (tail)
-                Tail.Next = Head; // Actualizamos el siguiente nodo de la cola (tail) para que apunte a la nueva cabeza
+                Head!.Previous = Tail!; // Actualizamos el nodo anterior de la nueva cabeza para que apunte a la cola (tail)
+                Tail!.Next = Head; // Actualizamos el siguiente nodo de la cola (tail) para que apunte a la nueva cabeza
             }
 
             Size--;
@@ -80,7 +80,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         /// <returns>La carta de evento en la cabeza de la cola.</returns>
         public CartaEvento Peek()
         {
-            return Head.Data;
+            return Head!.Data!;
         }
 
         /// <summary>
