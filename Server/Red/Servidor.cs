@@ -160,6 +160,14 @@ namespace Proyecto_MonopoTEC.Server.Red
 
 
         /// <summary>
+        /// Envia un mensaje al cliente (sobrecarga que acepta comando y contenido)
+        /// </summary>
+        public void EnviarMensaje(string comando, object contenido)
+        {
+            EnviarMensaje(new Mensaje(comando, contenido));
+        }
+
+        /// <summary>
         /// Envia un mensaje al cliente
         /// </summary>
         public void EnviarMensaje(Mensaje? mensaje)

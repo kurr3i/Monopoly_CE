@@ -1,4 +1,6 @@
-﻿using Proyecto_MonopoTEC.Server.Modelo;
+﻿using Proyecto_MonopoTEC.Compartido;
+using Proyecto_MonopoTEC.Server.Modelo;
+using Proyecto_MonopoTEC.Server.Red;
 
 namespace Proyecto_MonopoTEC.Server.Estructuras
 {
@@ -88,7 +90,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             if (Size == 0)
             {
                 Console.WriteLine("No tienes propiedades que mostrar.");
-                server.EnviarMensaje("No tienes propiedades que mostrar.", new { }); // *****
+                server.EnviarMensaje(new Mensaje(Protocolo.EnviarProtocolo, new { mensaje = "No tienes propiedades que mostrar." })); // *****
                 return;
             }
             else
@@ -96,7 +98,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                 do
                 {
                     Console.WriteLine("\n" + indice + "." + nodeActual.Data.Nombre); // Muestra la propiedad
-                    server.EnviarMensaje("\n" + indice + "." + nodeActual.Data.Nombre, new { }); // *****
+                    server.EnviarMensaje(new Mensaje(Protocolo.EnviarProtocolo, new { mensaje = "\n" + indice + "." + nodeActual.Data.Nombre })); // *****
 
                     nodeActual = nodeActual.Next; // Avanza a la siguiente
                     indice++;
