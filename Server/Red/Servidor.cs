@@ -1,35 +1,32 @@
-
 using Proyecto_MonopoTEC.Compartido;
 using Proyecto_MonopoTEC.Server.Motor;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Net.Sockets;
+using Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server.Red
 {
-
     /// <summary>
     /// Maneja tanto mensajes entrantes como salientes con el cliente
     /// </summary>
-    /// <param name="ServerPort">Puerto de escucha del servidor</param>
     public class Servidor
     {
         private readonly int _ServerPort;
         private StreamWriter? _clientWriter;
-
+        private readonly RegistroPartida _logger;
         private Juego _juego;
 
-        public Servidor(int ServerPort = 5000)
+        public Servidor(int ServerPort, RegistroPartida logger)
         {
             _ServerPort = ServerPort;
+            _logger = logger;
         }
 
         /// <summary>
         /// Instancia el juego con el servidor, necesario para enviar mensajes al juego directamente.
-        /// Es similar al modelo Modelo-Vista-Controlador
         /// </summary>
-        /// <param name="juego">Instancia del Juego</param>
         public void InstanciarJuego(Juego juego)
         {
             _juego = juego;
@@ -40,60 +37,50 @@ namespace Proyecto_MonopoTEC.Server.Red
         /// </summary>
         public async Task IniciarServer()
         {
-            // Creación del Socket
             using Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            // Configuración del Socket
             serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, _ServerPort));
 
-            // Se abre a escuchar mensajes
             serverSocket.Listen(1);
             Console.WriteLine($"[Server] Servidor esperando Cliente en el puerto {_ServerPort}");
+            _logger.GuardarRegistro($"Servidor esperando Cliente en el puerto {_ServerPort}", "Server");
 
-            // Bucle de conexión
             while (true)
             {
-                // Se acepta la conexión del Client
                 using Socket clientSocket = await serverSocket.AcceptAsync();
                 Console.WriteLine("[Server] Cliente conectado al Servidor");
+                _logger.GuardarRegistro("Cliente conectado al Servidor", "Red");
 
-                // Se instancia el Reader y Writer, encargados de manejar la comunicación con el Socket
                 using NetworkStream stream = new NetworkStream(clientSocket, ownsSocket: false);
                 using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                 using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
                 _clientWriter = writer;
 
-                // Bucle de escucha de mensajes
                 try
                 {
-                    // Se lee el mensaje desde el Client
                     string? json;
                     while ((json = await reader.ReadLineAsync()) is not null)
                     {
-                        // Comprobaciones
                         if (string.IsNullOrWhiteSpace(json))
                             continue;
 
-                        // Se procesa el mensaje
                         try
                         {
                             Mensaje? message = JsonSerializer.Deserialize<Mensaje>(json);
-
-                            // Llamada al manejo de mensajes
                             RecibirMensaje(message);
                         }
                         catch (JsonException)
                         {
-                            // Caso de excepción
                             Console.WriteLine("[Server] Mensaje JSON inválido.");
+                            _logger.GuardarRegistro("Mensaje JSON inválido recibido", "Red");
                         }
                     }
                 }
                 catch (IOException)
                 {
-                    // Caso de error
                     Console.WriteLine("[Server] Cliente desconectado del Servidor.");
+                    _logger.GuardarRegistro("Cliente desconectado del Servidor.", "Red");
                 }
                 finally
                 {
@@ -102,55 +89,42 @@ namespace Proyecto_MonopoTEC.Server.Red
             }
         }
 
-
         /// <summary>
         /// Maneja mensajes entrantes y los procesa según el protocolo
         /// </summary>
-        /// <param name="mensaje"></param>
         public void RecibirMensaje(Mensaje? mensaje)
         {
-            // Comprobaciones
             if (mensaje == null)
                 return;
 
-            Console.WriteLine("[Server] Cliente >>> Server: " + JsonSerializer.Serialize(mensaje));
+            string jsonMsg = JsonSerializer.Serialize(mensaje);
+            Console.WriteLine("[Server] Cliente >>> Server: " + jsonMsg);
+            _logger.GuardarRegistro($"Mensaje recibido: {jsonMsg}", "Red");
 
-            // Casos del protocolo
             switch (mensaje.Comando)
             {
-
-
                 case Protocolo.Prueba:
                     _juego?.PruebaConexion(mensaje);
                     break;
 
-
-
                 case Protocolo.ConexionLista:
                     Console.WriteLine("[Server] App conectado al Servidor.");
+                    _logger.GuardarRegistro("App conectado al Servidor", "Red");
                     break;
-
-
 
                 case Protocolo.AutenticarJugador:
                     int id = mensaje.GetDato<int>("id");
                     string nombre = mensaje.GetDato<string>("nombre");
-
                     _juego?.AutenticarJugador(id, nombre);
                     break;
 
-
-
                 case Protocolo.VerificarJugador:
                     int idVerificacion = mensaje.GetDato<int>("id");
-
                     if (_juego?.VerificarJugador(idVerificacion) == true)
                     {
                         EnviarMensaje(new Mensaje(Protocolo.VerificarJugador, new { id = 0 }));
                     }
                     break;
-
-
 
                 case Protocolo.IniciarJuego:
                     _juego.IniciarJuego();
@@ -158,30 +132,25 @@ namespace Proyecto_MonopoTEC.Server.Red
             }
         }
 
-
         /// <summary>
         /// Envia un mensaje al cliente
         /// </summary>
         public void EnviarMensaje(Mensaje? mensaje)
         {
-            // Comprobaciones
             if (_clientWriter == null)
                 return;
 
-            // Procesamiento del mensaje
             string json = JsonSerializer.Serialize(mensaje);
             try
             {
-                // Se envía el mensaje al Client
                 _clientWriter.WriteLine(json);
                 Console.WriteLine("[Server] Cliente <<< Server: " + json);
+                _logger.GuardarRegistro($"Mensaje enviado: {json}", "Server");
             }
             catch (IOException)
             {
-                // Caso de error
                 _clientWriter = null;
             }
         }
-
     }
 }
