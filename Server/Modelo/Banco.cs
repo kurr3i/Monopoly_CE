@@ -62,7 +62,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
                 numeroTurno,
                 TipoTransaccion.PagoBanco,
                 jugadorOrigen,
-                null,
+                null!,
                 montoPagar,
                 $"El jugador {jugadorOrigen.Nombre} le paga al banco un monto de {montoPagar} colones."
                 );
@@ -150,7 +150,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             numeroTurno,
             TipoTransaccion.CompraPropiedad,
             jugadorCompra,
-            null,
+            null!,
             propiedadCompra.PrecioCompra,
             $"El jugador {jugadorCompra.Nombre} compra al banco la propiedad {propiedadCompra.Nombre} por un monto de {propiedadCompra.PrecioCompra} colones."
             );
@@ -169,14 +169,14 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         public void VenderPropiedad(Jugador jugadorVenta, Propiedad propiedadVenta, int numeroTurno)
         {
             jugadorVenta.AumentarSaldo(propiedadVenta.PrecioCompra);
-            propiedadVenta.Propietario = null;
+            propiedadVenta.Propietario = null!;
             jugadorVenta.PropiedadesAdquiridas.Remove(propiedadVenta);
 
             Transaccion nuevaTransaccion = new Transaccion( // Generamos una nueva transacción
             siguienteIdTransaccion,
             numeroTurno,
             TipoTransaccion.VentaPropiedad,
-            null,
+            null!,
             jugadorVenta,
             propiedadVenta.PrecioCompra,
             $"El banco le compra a {jugadorVenta.Nombre} la propiedad {propiedadVenta.Nombre} por un monto de {propiedadVenta.PrecioCompra} colones."
@@ -201,7 +201,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             siguienteIdTransaccion,
             numeroTurno,
             TipoTransaccion.GananciaEvento,
-            null,
+            null!,
             jugadorGanancia,
             ganancia,
             $"El banco le paga a {jugadorGanancia.Nombre} por un evento un monto de {ganancia} colones."
@@ -229,7 +229,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             numeroTurno,
             TipoTransaccion.PerdidaEvento,
             jugadorPerdida,
-            null,
+            null!,
             perdida,
             $"El jugador {jugadorPerdida.Nombre} le paga al banco por un evento un monto de {perdida} colones."
             );
@@ -246,7 +246,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public void PremioPorInicio(Jugador jugadorPremio, int numeroTurno)
         {
-            const int premioInicio = 400;
+            const int premioInicio = 500;
 
             jugadorPremio.AumentarSaldo(premioInicio);
 
@@ -254,7 +254,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             siguienteIdTransaccion,
             numeroTurno,
             TipoTransaccion.PremioPorInicio,
-            null,
+            null!,
             jugadorPremio,
             premioInicio,
             $"El banco le paga a {jugadorPremio.Nombre} por pasar por el inicio un monto de {premioInicio} colones."

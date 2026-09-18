@@ -18,7 +18,7 @@ namespace Proyecto_MonopoTEC.Server.Red
         private readonly int _ServerPort;
         private StreamWriter? _clientWriter;
 
-        private Juego _juego;
+        private Juego? _juego;
 
         public Servidor(int ServerPort = 5000)
         {
@@ -45,7 +45,7 @@ namespace Proyecto_MonopoTEC.Server.Red
 
             // Configuración del Socket
             serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            serverSocket.Bind(new IPEndPoint(IPAddress.Any, _ServerPort));
+            serverSocket.Bind(new IPEndPoint(IPAddress.Parse(Config.ServerIp), _ServerPort));
 
             // Se abre a escuchar mensajes
             serverSocket.Listen(1);
@@ -119,19 +119,14 @@ namespace Proyecto_MonopoTEC.Server.Red
             switch (mensaje.Comando)
             {
 
-
-                case Protocolo.Prueba:
-                    _juego?.PruebaConexion(mensaje);
-                    break;
-
-
-
+                // Caso de conexión establecida con el App
                 case Protocolo.ConexionLista:
                     Console.WriteLine("[Server] App conectado al Servidor.");
+                    _juego?.EnviarJugadoresRegistrados();
                     break;
 
 
-
+                // Caso para autenticar un nuevo jugador
                 case Protocolo.AutenticarJugador:
                     int id = mensaje.GetDato<int>("id");
                     string nombre = mensaje.GetDato<string>("nombre");
@@ -140,21 +135,33 @@ namespace Proyecto_MonopoTEC.Server.Red
                     break;
 
 
-
+                // Caso para verificar un jugador en específico
                 case Protocolo.VerificarJugador:
                     int idVerificacion = mensaje.GetDato<int>("id");
 
                     if (_juego?.VerificarJugador(idVerificacion) == true)
                     {
-                        EnviarMensaje(new Mensaje(Protocolo.VerificarJugador, new { id = 0 }));
+                        EnviarMensaje(Protocolo.VerificarJugador, new { id = idVerificacion });
                     }
                     break;
 
 
 
+                // Caso para iniciar el juego
                 case Protocolo.IniciarJuego:
-                    _juego.IniciarJuego();
+                    _ = Task.Run(() => _juego?.IniciarJuego());
                     break;
+
+
+                // Caso para recibir la accion de un jugador
+                case Protocolo.AccionJugador:
+                    int jugadorId = mensaje.GetDato<int>("id");
+                    string accion = mensaje.GetDato<string>("accion");
+                    string valor = mensaje.GetContenido("valor", out string? datoValor) ? datoValor ?? "" : accion;
+                    _juego?.RecibirAccion(jugadorId, accion, valor);
+                    break;
+
+
             }
         }
 
@@ -162,13 +169,14 @@ namespace Proyecto_MonopoTEC.Server.Red
         /// <summary>
         /// Envia un mensaje al cliente
         /// </summary>
-        public void EnviarMensaje(Mensaje? mensaje)
+        public void EnviarMensaje(string comando, object contenido)
         {
             // Comprobaciones
             if (_clientWriter == null)
                 return;
 
             // Procesamiento del mensaje
+            Mensaje mensaje = new Mensaje(comando, contenido);
             string json = JsonSerializer.Serialize(mensaje);
             try
             {

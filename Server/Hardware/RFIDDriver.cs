@@ -31,6 +31,7 @@ namespace Proyecto_MonopoTEC.Server.Hardware
                         {
                                 _serialPort.Open();
                                 Thread.Sleep(2000); // Tiempo de arranque
+                                Console.WriteLine("[RFIDDriver] Puerto abierto y conectado correctamente.");
                         }
                         catch (Exception ex)
                         {

@@ -41,7 +41,7 @@ namespace Proyecto_MonopoTEC.Client.Red
                         try
                         {
                                 // Se conecta al servidor
-                                await _serverSocket.ConnectAsync(new IPEndPoint(IPAddress.Loopback, _ServerPort));
+                                await _serverSocket.ConnectAsync(new IPEndPoint(IPAddress.Parse(Config.ServerIp), _ServerPort));
 
                                 Console.WriteLine("[Client] Cliente conectado al Servidor.");
 
