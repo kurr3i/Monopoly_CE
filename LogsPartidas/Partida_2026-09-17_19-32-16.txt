@@ -1,0 +1,4 @@
+--- Registro de Partida Iniciado: 17/9/2026 7:32:16 p. m. ---
+19:32:16: [Server] Iniciado el servidor.
+19:32:16: [Hardware] Error al abrir el puerto serial: Access to the port 'COM7' is denied.
+19:32:16: [Server] Servidor esperando Cliente en el puerto 5000

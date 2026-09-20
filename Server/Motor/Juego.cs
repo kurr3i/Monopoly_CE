@@ -6,10 +6,10 @@ using Proyecto_MonopoTEC.Server.Red;
 using Proyecto_MonopoTEC.Server.Modelo;
 using Proyecto_MonopoTEC.Server.Estructuras;
 using Proyecto_MonopoTEC.Server.Hardware;
+using Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server.Motor
 {
-
     /// <summary>
     /// Representa el juego.
     /// </summary>
@@ -20,6 +20,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
         private Servidor _server;
         private RFIDDriver _driver;
+        private readonly RegistroPartida _logger;
 
         private Jugador? jugador1;
         private Jugador? jugador2;
@@ -44,14 +45,11 @@ namespace Proyecto_MonopoTEC.Server.Motor
         private int _jugadorDesbloqueadoId = -1;
         private int _partidaIniciada;
 
-        /// <summary>
-        /// Inicializa una nueva instancia de la clase Juego.
-        /// </summary>
-        /// <param name="puertoArduino">Nombre del puerto serial utilizado para comunicarse con el Arduino.</param>
-        public Juego(Servidor server, RFIDDriver driver)
+        public Juego(Servidor server, RFIDDriver driver, RegistroPartida logger)
         {
             _server = server;
             _driver = driver;
+            _logger = logger;
 
             _tableroJuego = new Tablero();
             _tableroJuego.Inicializar();
@@ -168,7 +166,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
         /// Método empleado para inicializar un jugador. 
         /// </summary>
         /// <returns>Retorna el objeto jugador inicializado.</returns>
-        private Jugador InicializarJugador(int id, string UID, string nombre, Casilla posicion) // Nota: Este método posteriormente se debe modificar para que se inicialice el jugador con los ingresos del cliente y el arduino.
+        private Jugador InicializarJugador(int id, string UID, string nombre, Casilla posicion)
         {
             return new Jugador(id, UID, nombre, posicion);
         }
@@ -234,11 +232,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else
                 {
-                    // Si no existe, agregarlo a la lista
                     UIDs[id] = UID;
                 }
-
-                // Inicializar el jugador según la ID y responder
 
                 if (id == 0)
                 {
@@ -278,7 +273,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 });
 
                 return true;
-
             }
 
             return false;
@@ -330,12 +324,10 @@ namespace Proyecto_MonopoTEC.Server.Motor
         private ColaCircular InicializarTurnos(Jugador jugador1, Jugador jugador2, Jugador jugador3, Jugador jugador4)
         {
             ColaCircular cola = new ColaCircular();
-
             cola.Enqueue(jugador1);
             cola.Enqueue(jugador2);
             cola.Enqueue(jugador3);
             cola.Enqueue(jugador4);
-
             return cola;
         }
 
@@ -371,7 +363,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     }
                     return AccionCasilla.SinAccion;
                 }
-
                 else if (jugadorActual.TurnosPerdidos != 0)
                 {
                     Console.WriteLine($"{jugadorActual.Nombre} pierde el turno.");
@@ -439,6 +430,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             if (pasoPorSalida)
             {
                 _manejadorAcciones.DarPremio(jugadorActual, Turno);
+                _logger.GuardarRegistro($"Jugador {jugadorActual.Nombre} pasó por Salida y recibió premio.", "Juego");
             }
 
             Console.WriteLine("[Juego] Esperando acciones.");
@@ -448,7 +440,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
             EsperarAccion(jugadorActual, "continuar");
 
             return casillaJugadorActual.DevolverAccion(jugadorActual);
-
         }
 
 
@@ -466,6 +457,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             if (jugador1 == null || jugador2 == null || jugador3 == null || jugador4 == null || jugador1.UID == "" || jugador2.UID == "" || jugador3.UID == "" || jugador4.UID == "")
             {
                 Console.WriteLine("[Juego] Jugadores insuficientes para comenzar.");
+                _logger.GuardarRegistro("Intento de iniciar juego con jugadores insuficientes.", "Juego");
 
                 _server.EnviarMensaje(Protocolo.IniciarJuego, new { error = "Jugadores insuficientes para comenzar." });
                 return;
@@ -479,12 +471,11 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
 
                 Console.WriteLine("[Juego] Iniciando juego...");
+                _logger.GuardarRegistro("Iniciando juego...", "Juego");
 
                 ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
                 Turno = 0;
-
                 jugadorActual = ColaTurnos.Peek();
-
                 dado = new Dado();
 
                 IniciarPartida();
@@ -509,7 +500,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
             _server.EnviarMensaje(Protocolo.IniciarJuego, new { jugadorActual = jugadorActual!.Nombre });
 
-            while (true) // Bucle infinito para el juego
+            while (true)
             {
                 Console.WriteLine("El jugador actual es: " + jugadorActual.Nombre);
                 
@@ -556,14 +547,12 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else if (Turno == 100)
                 {
-                    //Se debe evaluar quien tiene más dinero y valor en propiedades
+                    _logger.GuardarRegistro("Se alcanzó el límite de 100 turnos.", "Juego");
                 }
 
                 jugadorActual = ColaTurnos.Peek();
                 _jugadorDesbloqueadoId = -1;
             }
-
-
         }
     }
 }
