@@ -41,7 +41,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             this.ID = id;
             this.UID = UID;
             this.Nombre = nombre;
-            this.Saldo = 500;
+            this.Saldo = 1000;
             this.Posicion = posicion;
             // Falta un estado o contador que se pueda emplear para evalúar si el jugador está en la cárcel o no.
             this.Activo = true; // Si el jugador está activo o no en la partida (perdió)
