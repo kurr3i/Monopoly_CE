@@ -62,6 +62,7 @@
                                                 <p id="activePlayerDetails">Usa el lector RFID para desbloquear sus
                                                         acciones.</p>
                                                 <div id="actionArea" class="action-area"></div>
+                                                <button id="transactionHistoryButton" class="secondary-button">Ver transacciones</button>
                                                 <div id="gameNotice" class="game-notice">El jugador activo debe
                                                         desbloquear su turno.</div>
                                         </div>
@@ -85,6 +86,7 @@
                         <div class="panel results-panel">
                                 <div class="panel-heading"><span>Clasificación final</span><span>Saldo</span></div>
                                 <div id="resultsList" class="results-list"></div>
+                                <button id="endGameButton" class="primary-button">Terminar juego</button>
                         </div>
                 </section>
         </main>
@@ -124,8 +126,29 @@
                 </div>
         </div>
         <div id="toast" class="toast hidden"><span id="toastText"></span></div>
+        <div id="shutdownOverlay" class="shutdown-overlay hidden">
+                <div class="shutdown-card">
+                        <h2>Juego terminado.</h2>
+                </div>
+        </div>
         <div id="eventPopup" class="event-popup hidden">
                 <p id="eventPopupLabel">Resultado</p><strong id="eventPopupText"></strong>
+        </div>
+        <div id="transactionHistoryModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="transactionHistoryClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Historial</p>
+                        <h2>Transacciones</h2>
+                        <textarea id="transactionHistoryText" readonly></textarea>
+                </div>
+        </div>
+        <div id="lastTransactionModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="lastTransactionClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Última transacción</p>
+                        <h2>Movimiento</h2>
+                        <textarea id="lastTransactionText" readonly></textarea>
+                </div>
         </div>
         <script src="app.js"></script>
 </body>
