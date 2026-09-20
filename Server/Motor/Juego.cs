@@ -6,7 +6,7 @@ using Proyecto_MonopoTEC.Server.Red;
 using Proyecto_MonopoTEC.Server.Modelo;
 using Proyecto_MonopoTEC.Server.Estructuras;
 using Proyecto_MonopoTEC.Server.Hardware;
-using Server.Persistencia;
+using Proyecto_MonopoTEC.Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server.Motor
 {
@@ -20,7 +20,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
         private Servidor _server;
         private RFIDDriver _driver;
-        private readonly RegistroPartida _logger;
+        private readonly RegistroTransacciones _registro;
 
         private Jugador? jugador1;
         private Jugador? jugador2;
@@ -45,16 +45,16 @@ namespace Proyecto_MonopoTEC.Server.Motor
         private int _jugadorDesbloqueadoId = -1;
         private int _partidaIniciada;
 
-        public Juego(Servidor server, RFIDDriver driver, RegistroPartida logger)
+        public Juego(Servidor server, RFIDDriver driver, RegistroTransacciones registro)
         {
             _server = server;
             _driver = driver;
-            _logger = logger;
+            _registro = registro;
 
             _tableroJuego = new Tablero();
             _tableroJuego.Inicializar();
 
-            _manejadorAcciones = new ManejadorAcciones(driver, _tableroJuego, _server, EsperarAccion);
+            _manejadorAcciones = new ManejadorAcciones(_registro, _driver, _server, _tableroJuego, EsperarAccion);
         }
 
 
@@ -192,6 +192,61 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     posicionNombre = jugador.Posicion.Nombre
                 });
             }
+        }
+
+        public void EnviarTransaccion(Transaccion transaccion)
+        {
+            _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new
+            {
+                id = transaccion.ID,
+                fechaHora = transaccion.FechaHora,
+                numeroTurno = transaccion.NumeroTurno,
+                tipo = transaccion.Tipo.ToString(),
+                jugadorOrigen = transaccion.JugadorOrigen?.Nombre ?? "Banco",
+                jugadorDestino = transaccion.JugadorDestino?.Nombre ?? "Banco",
+                monto = transaccion.Monto,
+                descripcion = transaccion.Descripcion
+            });
+        }
+
+        public void EnviarUltimaTransaccion()
+        {
+            Transaccion? transaccion = _registro.VerUltimaTransaccion();
+            if (transaccion == null)
+            {
+                _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = (object?)null });
+                return;
+            }
+
+            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new
+            {
+                transaccion = new
+                {
+                    id = transaccion.ID,
+                    fechaHora = transaccion.FechaHora,
+                    numeroTurno = transaccion.NumeroTurno,
+                    tipo = transaccion.Tipo.ToString(),
+                    jugadorOrigen = transaccion.JugadorOrigen?.Nombre ?? "Banco",
+                    jugadorDestino = transaccion.JugadorDestino?.Nombre ?? "Banco",
+                    monto = transaccion.Monto,
+                    descripcion = transaccion.Descripcion
+                }
+            });
+        }
+
+        public void EnviarHistorialTransacciones()
+        {
+            Transaccion[] transacciones = _registro.VerListaTransacciones();
+            _server.EnviarMensaje(Protocolo.TransaccionesLista, new { transacciones = transacciones.Select(t => new {
+                id = t.ID,
+                fechaHora = t.FechaHora,
+                numeroTurno = t.NumeroTurno,
+                tipo = t.Tipo.ToString(),
+                jugadorOrigen = t.JugadorOrigen?.Nombre ?? "Banco",
+                jugadorDestino = t.JugadorDestino?.Nombre ?? "Banco",
+                monto = t.Monto,
+                descripcion = t.Descripcion
+            }).ToArray() });
         }
 
 
@@ -344,7 +399,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 if (jugadorActual!.EnCarcel)
                 {
                     Console.WriteLine($"{jugadorActual.Nombre} está en la carcel, pierde el turno.");
-                    
+
                     _server.EnviarMensaje(Protocolo.JugadorEnCarcel, new { jugador = jugadorActual.Nombre, mensaje = $"{jugadorActual.Nombre} está en la carcel, pierde el turno." });
                     jugadorActual.ReducirCondena();
 
@@ -420,6 +475,8 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
             _server.EnviarMensaje(Protocolo.DadosLanzados, new { jugador = jugadorActual.Nombre, dado1 = resultadoDado1, dado2 = resultadoDado2, resultado = resultadoDado1 + resultadoDado2 });
 
+            Thread.Sleep(1200);
+
             bool pasoPorSalida;
             Casilla casillaJugadorActual = _tableroJuego.AvanzarJugador(jugadorActual, resultadoDado1 + resultadoDado2, out pasoPorSalida);
 
@@ -430,7 +487,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             if (pasoPorSalida)
             {
                 _manejadorAcciones.DarPremio(jugadorActual, Turno);
-                _logger.GuardarRegistro($"Jugador {jugadorActual.Nombre} pasó por Salida y recibió premio.", "Juego");
+                Console.WriteLine($"Jugador {jugadorActual.Nombre} pasó por Salida y recibió premio.");
             }
 
             Console.WriteLine("[Juego] Esperando acciones.");
@@ -457,7 +514,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
             if (jugador1 == null || jugador2 == null || jugador3 == null || jugador4 == null || jugador1.UID == "" || jugador2.UID == "" || jugador3.UID == "" || jugador4.UID == "")
             {
                 Console.WriteLine("[Juego] Jugadores insuficientes para comenzar.");
-                _logger.GuardarRegistro("Intento de iniciar juego con jugadores insuficientes.", "Juego");
 
                 _server.EnviarMensaje(Protocolo.IniciarJuego, new { error = "Jugadores insuficientes para comenzar." });
                 return;
@@ -471,7 +527,6 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
 
                 Console.WriteLine("[Juego] Iniciando juego...");
-                _logger.GuardarRegistro("Iniciando juego...", "Juego");
 
                 ColaTurnos = InicializarTurnos(jugador1, jugador2, jugador3, jugador4);
                 Turno = 0;
@@ -503,7 +558,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             while (true)
             {
                 Console.WriteLine("El jugador actual es: " + jugadorActual.Nombre);
-                
+
                 _server.EnviarMensaje(Protocolo.TurnoIniciado, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, turno = Turno });
 
 
@@ -547,7 +602,17 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else if (Turno == 100)
                 {
-                    _logger.GuardarRegistro("Se alcanzó el límite de 100 turnos.", "Juego");
+                    Console.WriteLine("Se ha alcanzado el turno 100.");
+
+                    _server.EnviarMensaje(Protocolo.JuegoTerminado, new
+                    {
+                        ganador = "Nadie",
+                        jugadores = new[] { jugador1, jugador2, jugador3, jugador4 }
+                            .Where(jugador => jugador != null)
+                            .OrderByDescending(jugador => jugador!.Saldo)
+                            .Select(jugador => new { jugador = jugador!.Nombre, saldo = jugador.Saldo })
+                    });
+                    break;
                 }
 
                 jugadorActual = ColaTurnos.Peek();

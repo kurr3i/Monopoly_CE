@@ -4,7 +4,6 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Net.Sockets;
-using Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server.Red
 {
@@ -15,13 +14,11 @@ namespace Proyecto_MonopoTEC.Server.Red
     {
         private readonly int _ServerPort;
         private StreamWriter? _clientWriter;
-        private readonly RegistroPartida _logger;
         private Juego? _juego;
 
-        public Servidor(int ServerPort, RegistroPartida logger)
+        public Servidor(int ServerPort)
         {
             _ServerPort = ServerPort;
-            _logger = logger;
         }
 
         /// <summary>
@@ -44,13 +41,11 @@ namespace Proyecto_MonopoTEC.Server.Red
 
             serverSocket.Listen(1);
             Console.WriteLine($"[Server] Servidor esperando Cliente en el puerto {_ServerPort}");
-            _logger.GuardarRegistro($"Servidor esperando Cliente en el puerto {_ServerPort}", "Server");
 
             while (true)
             {
                 using Socket clientSocket = await serverSocket.AcceptAsync();
                 Console.WriteLine("[Server] Cliente conectado al Servidor");
-                _logger.GuardarRegistro("Cliente conectado al Servidor", "Red");
 
                 using NetworkStream stream = new NetworkStream(clientSocket, ownsSocket: false);
                 using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
@@ -73,14 +68,12 @@ namespace Proyecto_MonopoTEC.Server.Red
                         catch (JsonException)
                         {
                             Console.WriteLine("[Server] Mensaje JSON inválido.");
-                            _logger.GuardarRegistro("Mensaje JSON inválido recibido", "Red");
                         }
                     }
                 }
                 catch (IOException)
                 {
                     Console.WriteLine("[Server] Cliente desconectado del Servidor.");
-                    _logger.GuardarRegistro("Cliente desconectado del Servidor.", "Red");
                 }
                 finally
                 {
@@ -99,7 +92,6 @@ namespace Proyecto_MonopoTEC.Server.Red
 
             string jsonMsg = JsonSerializer.Serialize(mensaje);
             Console.WriteLine("[Server] Cliente >>> Server: " + jsonMsg);
-            _logger.GuardarRegistro($"Mensaje recibido: {jsonMsg}", "Red");
 
             switch (mensaje.Comando)
             {
@@ -107,7 +99,6 @@ namespace Proyecto_MonopoTEC.Server.Red
                 // Caso de conexión establecida con el App
                 case Protocolo.ConexionLista:
                     Console.WriteLine("[Server] App conectado al Servidor.");
-                    _logger.GuardarRegistro("App conectado al Servidor", "Red");
                     
                     _juego?.EnviarJugadoresRegistrados();
                     break;
@@ -146,6 +137,18 @@ namespace Proyecto_MonopoTEC.Server.Red
                     _juego?.RecibirAccion(jugadorId, accion, valor);
                     break;
 
+                case Protocolo.SolicitarUltimaTransaccion:
+                    _juego?.EnviarUltimaTransaccion();
+                    break;
+
+                case Protocolo.SolicitarTransacciones:
+                    _juego?.EnviarHistorialTransacciones();
+                    break;
+
+                case Protocolo.CerrarJuego:
+                    Console.WriteLine("[Server] Cierre solicitado por el cliente.");
+                    Environment.Exit(0);
+                    break;
 
             }
         }
@@ -165,7 +168,6 @@ namespace Proyecto_MonopoTEC.Server.Red
             {
                 _clientWriter.WriteLine(json);
                 Console.WriteLine("[Server] Cliente <<< Server: " + json);
-                _logger.GuardarRegistro($"Mensaje enviado: {json}", "Server");
             }
             catch (IOException)
             {

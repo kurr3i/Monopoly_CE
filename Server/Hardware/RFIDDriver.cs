@@ -1,5 +1,4 @@
 using System.IO.Ports;
-using Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server.Hardware
 {
@@ -14,19 +13,11 @@ namespace Proyecto_MonopoTEC.Server.Hardware
         private readonly SerialPort _serialPort;
 
         /// <summary>
-        /// Logger para el registro de la partida
-        /// </summary>
-        private readonly RegistroPartida _logger;
-
-
-        /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="RFIDDriver"/>.
         /// </summary>
         /// <param name="portName">Nombre del puerto serie a usar (ej. "COM7").</param>
-        /// <param name="logger">Logger para el registro de la partida</param>
-        public RFIDDriver(string portName, RegistroPartida logger)
+        public RFIDDriver(string portName)
         {
-            _logger = logger;
             _serialPort = new SerialPort(portName, 9600);
             _serialPort.ReadTimeout = 10000;
         }
@@ -41,13 +32,12 @@ namespace Proyecto_MonopoTEC.Server.Hardware
             {
                 _serialPort.Open();
                 Thread.Sleep(2000);
-                _logger.GuardarRegistro($"Puerto serial {_serialPort.PortName} abierto correctamente.", "Hardware");
+                Console.WriteLine("[RFIDDriver] Puerto serial abierto.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("[RFIDDriver] Error al abrir el puerto serial: " + ex.Message);
                 Console.WriteLine("[RFIDDriver] Revisar si el Arduino se encuentra conectado.");
-                _logger.GuardarRegistro($"Error al abrir el puerto serial: {ex.Message}", "Hardware");
                 return;
             }
         }
@@ -80,7 +70,7 @@ namespace Proyecto_MonopoTEC.Server.Hardware
 
                     // Solicitar UID
                     Console.WriteLine("[RFIDDriver] Solicitando UID...");
-                    _logger.GuardarRegistro($"Solicitando UID... Mensaje: {message}", "Hardware");
+                    Console.WriteLine($"[RFIDDriver] Mensaje: {message}");
 
                     // Cuerpo del mensaje
                     _serialPort.WriteLine($"COM_START_READ|{message}|{CompareUID}");
@@ -92,19 +82,16 @@ namespace Proyecto_MonopoTEC.Server.Hardware
                     if (response.Contains("TIMEOUT"))
                     {
                         Console.WriteLine("[RFIDDriver] Tiempo de espera agotado. Reintentando...");
-                        _logger.GuardarRegistro("Tiempo de espera agotado en RFID. Reintentando...", "Hardware");
                         Thread.Sleep(2000);
                     }
                     else if (response.Contains("INVALID"))
                     {
                         Console.WriteLine("[RFIDDriver] UID incorrecta. Reintentando...");
-                        _logger.GuardarRegistro("UID incorrecta leída. Reintentando...", "Hardware");
                         Thread.Sleep(2000);
                     }
                     else
                     {
                         Console.WriteLine($"[RFIDDriver] Respuesta: {response}");
-                        _logger.GuardarRegistro($"UID leída exitosamente: {response}", "Hardware");
                         Thread.Sleep(2000);
                         return response;
                     }
@@ -114,13 +101,11 @@ namespace Proyecto_MonopoTEC.Server.Hardware
                 catch (TimeoutException)
                 {
                     Console.WriteLine("[RFIDDriver] El puerto COM no responde. Reintentando...");
-                    _logger.GuardarRegistro("El puerto COM no responde (Timeout Exception).", "Hardware");
                     Thread.Sleep(3000);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[RFIDDriver] Ocurrio un error: {ex.Message}. Reintentando...");
-                    _logger.GuardarRegistro($"Error en lectura RFID: {ex.Message}", "Hardware");
                     Thread.Sleep(3000);
                 }
             }

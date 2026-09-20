@@ -5,7 +5,6 @@ namespace Proyecto_MonopoTEC.Compartido
                 public const string EnviarProtocolo = "SOCKET_PROTOCOLO";
 
                 public const string ConexionLista = "SOCKET_CONEXION_LISTA";
-                public const string Prueba = "SOCKET_PRUEBA";
                 public const string AutenticarJugador = "SOCKET_AUTENTICAR_JUGADOR";
                 public const string VerificarJugador = "SOCKET_VERIFICAR_JUGADOR";
                 public const string IniciarJuego = "SOCKET_INICIAR_JUEGO";
@@ -37,13 +36,18 @@ namespace Proyecto_MonopoTEC.Compartido
                 public const string SolicitarPropiedades = "SOCKET_SOLICITAR_PROPIEDADES";
                 public const string PropiedadVendida = "SOCKET_PROPIEDAD_VENDIDA";
                 public const string PremioSalida = "SOCKET_PREMIO_SALIDA";
-                public const string MensajeJuego = "SOCKET_MENSAJE_JUEGO";
                 public const string AccionJugador = "SOCKET_ACCION_JUGADOR";
                 public const string ErrorAccion = "SOCKET_ERROR_ACCION";
                 public const string JuegoTerminado = "SOCKET_JUEGO_TERMINADO";
                 public const string JugadorRegistrado = "SOCKET_JUGADOR_REGISTRADO";
                 public const string JugadorDesbloqueado = "SOCKET_JUGADOR_DESBLOQUEADO";
                 public const string SolicitarPagoRFID = "SOCKET_SOLICITAR_PAGO_RFID";
+                public const string TransaccionRegistrada = "SOCKET_TRANSACCION_REGISTRADA";
+                public const string SolicitarUltimaTransaccion = "SOCKET_SOLICITAR_ULTIMA_TRANSACCION";
+                public const string UltimaTransaccion = "SOCKET_ULTIMA_TRANSACCION";
+                public const string SolicitarTransacciones = "SOCKET_SOLICITAR_TRANSACCIONES";
+                public const string TransaccionesLista = "SOCKET_TRANSACCIONES_LISTA";
+                public const string CerrarJuego = "SOCKET_CERRAR_JUEGO";
 
 
                 public static Dictionary<string, string> devolverProtocolo()
@@ -51,7 +55,6 @@ namespace Proyecto_MonopoTEC.Compartido
                         return new Dictionary<string, string>
                         {
                         { nameof(ConexionLista), ConexionLista },
-                        { nameof(Prueba), Prueba },
                         { nameof(AutenticarJugador), AutenticarJugador },
                         { nameof(VerificarJugador), VerificarJugador },
                         { nameof(IniciarJuego), IniciarJuego },
@@ -83,13 +86,18 @@ namespace Proyecto_MonopoTEC.Compartido
                         { nameof(SolicitarPropiedades), SolicitarPropiedades },
                         { nameof(PropiedadVendida), PropiedadVendida },
                         { nameof(PremioSalida), PremioSalida },
-                        { nameof(MensajeJuego), MensajeJuego },
                         { nameof(AccionJugador), AccionJugador },
                         { nameof(ErrorAccion), ErrorAccion },
                         { nameof(JuegoTerminado), JuegoTerminado },
                         { nameof(JugadorRegistrado), JugadorRegistrado },
                         { nameof(JugadorDesbloqueado), JugadorDesbloqueado },
                         { nameof(SolicitarPagoRFID), SolicitarPagoRFID },
+                        { nameof(TransaccionRegistrada), TransaccionRegistrada },
+                        { nameof(SolicitarUltimaTransaccion), SolicitarUltimaTransaccion },
+                        { nameof(UltimaTransaccion), UltimaTransaccion },
+                        { nameof(SolicitarTransacciones), SolicitarTransacciones },
+                        { nameof(TransaccionesLista), TransaccionesLista },
+                        { nameof(CerrarJuego), CerrarJuego },
                         };
                 }
         }

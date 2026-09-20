@@ -24,7 +24,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
     public class Transaccion
     {
         public int ID { get; private set; }
-        public DateTime FechaHora { get; private set; }
+        public DateTime FechaHora { get; set; }
         public int NumeroTurno { get; private set; }
         public TipoTransaccion Tipo { get; private set; }
         public Jugador JugadorOrigen { get; private set; }

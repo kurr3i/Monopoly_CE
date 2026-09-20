@@ -3,7 +3,7 @@ using Proyecto_MonopoTEC.Compartido;
 using Proyecto_MonopoTEC.Server.Hardware;
 using Proyecto_MonopoTEC.Server.Motor;
 using Proyecto_MonopoTEC.Server.Red;
-using Server.Persistencia;
+using Proyecto_MonopoTEC.Server.Persistencia;
 
 namespace Proyecto_MonopoTEC.Server
 {
@@ -11,28 +11,27 @@ namespace Proyecto_MonopoTEC.Server
     {
         static async Task Main(string[] args)
         {
-            // Instanciar e iniciar el logger
-            RegistroPartida logger = new RegistroPartida();
-            logger.Iniciar();
-            logger.GuardarRegistro("Iniciado el servidor.", "Server");
-
 
             // Debug: Revisar si se usa el Arduino Virtual
-                if (Config.ArduinoVirtual)
-                {
-                    RunVirtual(logger);
-                }
-        
+            if (Config.ArduinoVirtual)
+            {
+                RunVirtual();
+            }
+
+
+            // Instanciar e iniciar el registro
+            RegistroTransacciones registro = new RegistroTransacciones();
+            registro.Iniciar();
 
             // Iniciar el servidor
-            Servidor servidor = new Servidor(Config.ServerPort, logger);
+            Servidor servidor = new Servidor(Config.ServerPort);
 
             // Iniciar el driver del lector RFID
-            RFIDDriver driver = new RFIDDriver(Config.ArduinoPort, logger);
+            RFIDDriver driver = new RFIDDriver(Config.ArduinoPort);
             driver.Open();
 
             // Iniciar el juego
-            Juego juego = new Juego(servidor, driver, logger);
+            Juego juego = new Juego(servidor, driver, registro);
 
             // Instanciar el juego en el servidor y arrancar
             servidor.InstanciarJuego(juego);
@@ -43,7 +42,7 @@ namespace Proyecto_MonopoTEC.Server
         /// <summary>
         /// Función para iniciar el Arduino Virtual
         /// </summary>
-        static void RunVirtual(RegistroPartida logger)
+        static void RunVirtual()
         {
             try
             {
@@ -53,14 +52,11 @@ namespace Proyecto_MonopoTEC.Server
                     Arguments = "../Hardware/firmware/RFID_VIRTUAL/RFID_VIRTUAL.py",
                     UseShellExecute = false
                 })!;
-                
-                logger.GuardarRegistro("Arduino Virtual iniciado correctamente", "Hardware");
+
             }
             catch (Exception ex)
             {
-                string errorMsg = $"No se pudo iniciar el Arduino virtual: {ex.Message}";
-                Console.WriteLine(errorMsg);
-                logger.GuardarRegistro(errorMsg, "Hardware");
+                Console.WriteLine($"No se pudo iniciar el Arduino virtual: {ex.Message}");
             }
         }
     }
