@@ -186,70 +186,70 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             CasillaEvento loteria1 = new CasillaEvento(2, "Loteria 1");
             Add(loteria1);
 
-            Propiedad pococi = new Propiedad(3, "Pococí", 200, 50);
+            Propiedad pococi = new Propiedad(3, "Pococí", 200, 100);
             Add(pococi);
 
-            Propiedad guacimo = new Propiedad(4, "Guácimo", 250, 60);
+            Propiedad guacimo = new Propiedad(4, "Guácimo", 250, 125);
             Add(guacimo);
 
-            Propiedad sanCarlos = new Propiedad(5, "San Carlos", 300, 70);
+            Propiedad sanCarlos = new Propiedad(5, "San Carlos", 300, 150);
             Add(sanCarlos);
 
-            Propiedad zarcero = new Propiedad(6, "Zarcero", 350, 80);
+            Propiedad zarcero = new Propiedad(6, "Zarcero", 350, 175);
             Add(zarcero);
 
-            CasillaEspecial carcel = new CasillaEspecial(7, "Carcel - San Lucas", SubtipoCasillaEspecial.Carcel);
+            CasillaEspecial carcel = new CasillaEspecial(7, "San Lucas - Carcel", SubtipoCasillaEspecial.Carcel);
             Add(carcel);
 
-            Propiedad heredia = new Propiedad(8, "Heredia", 400, 90);
+            Propiedad heredia = new Propiedad(8, "Heredia", 400, 200);
             Add(heredia);
 
-            Propiedad sarapiqui = new Propiedad(9, "Sarapiquí", 450, 100);
+            Propiedad sarapiqui = new Propiedad(9, "Sarapiquí", 450, 225);
             Add(sarapiqui);
 
-            Propiedad quepos = new Propiedad(10, "Quepos", 500, 110);
+            Propiedad quepos = new Propiedad(10, "Quepos", 500, 250);
             Add(quepos);
 
             CasillaEvento loteria2 = new CasillaEvento(11, "Loteria 2");
             Add(loteria2);
 
-            Propiedad golfito = new Propiedad(12, "Golfito", 550, 120);
+            Propiedad golfito = new Propiedad(12, "Golfito", 550, 275);
             Add(golfito);
 
             CasillaEspecial parqueDeDiversiones = new CasillaEspecial(13, "Parque de Diversiones", SubtipoCasillaEspecial.ParqueDiversiones);
             Add(parqueDeDiversiones);
 
-            Propiedad liberia = new Propiedad(14, "Liberia", 600, 130);
+            Propiedad liberia = new Propiedad(14, "Liberia", 600, 300);
             Add(liberia);
 
-            Propiedad nicoya = new Propiedad(15, "Nicoya", 650, 140);
+            Propiedad nicoya = new Propiedad(15, "Nicoya", 650, 325);
             Add(nicoya);
 
             CasillaEvento loteria3 = new CasillaEvento(16, "Loteria 3");
             Add(loteria3);
 
-            Propiedad cartago = new Propiedad(17, "Cartago", 700, 150);
+            Propiedad cartago = new Propiedad(17, "Cartago", 700, 350);
             Add(cartago);
 
-            Propiedad turrialba = new Propiedad(18, "Turrialba", 750, 160);
+            Propiedad turrialba = new Propiedad(18, "Turrialba", 750, 375);
             Add(turrialba);
 
-            CasillaEspecial vayaCarcel = new CasillaEspecial(19, "Vaya a la Carcel - La Cali", SubtipoCasillaEspecial.VayaCarcel);
+            CasillaEspecial vayaCarcel = new CasillaEspecial(19, "La Cali - Para la Carcel", SubtipoCasillaEspecial.VayaCarcel);
             Add(vayaCarcel);
 
-            Propiedad desamparados = new Propiedad(20, "Desamparados", 800, 170);
+            Propiedad desamparados = new Propiedad(20, "Desamparados", 800, 400);
             Add(desamparados);
 
-            Propiedad perezZeledon = new Propiedad(21, "Perez Zeledón", 850, 180);
+            Propiedad perezZeledon = new Propiedad(21, "Perez Zeledón", 850, 425);
             Add(perezZeledon);
 
             CasillaEvento loteria4 = new CasillaEvento(22, "Loteria 4");
             Add(loteria4);
 
-            Propiedad chepe = new Propiedad(23, "Chepe", 800, 170);
+            Propiedad chepe = new Propiedad(23, "Chepe", 900, 450);
             Add(chepe);
 
-            Propiedad escazu = new Propiedad(24, "Escazú", 850, 180);
+            Propiedad escazu = new Propiedad(24, "Escazú", 950, 475);
             Add(escazu);
         }
     }

@@ -61,7 +61,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion PagarAlBanco(Jugador jugadorOrigen, int montoPagar, int numeroTurno)
         {
-            _rfidDriver.ReadUID($"PAGUE {montoPagar}", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
+            _rfidDriver.ReadUID($"J{jugadorOrigen.ID+1} PAGUE {montoPagar} CRC", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
 
             jugadorOrigen.DisminuirSaldo(montoPagar); // Solo le restamos el monto
 
@@ -91,7 +91,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion PagarAlquiler(Jugador jugadorOrigen, Jugador jugadorDestino, int montoPagar, int numeroTurno)
         {
-            _rfidDriver.ReadUID($"PAGUE {montoPagar}", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
+            _rfidDriver.ReadUID($"J{jugadorOrigen.ID+1} PAGUE {montoPagar} CRC", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
 
             jugadorOrigen.DisminuirSaldo(montoPagar); // Le quitamos el monto que debe pagar al jugador de origen
             jugadorDestino.AumentarSaldo(montoPagar); // Le damos el monto al jugador destino
@@ -122,7 +122,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion PagarAlJugador(Jugador jugadorOrigen, Jugador jugadorDestino, int montoPagar, int numeroTurno)
         {
-            _rfidDriver.ReadUID($"PAGUE {montoPagar}", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
+            _rfidDriver.ReadUID($"J{jugadorOrigen.ID+1} PAGUE {montoPagar} CRC", jugadorOrigen.UID); // Solicitamos la logica del lector de tarjeta
 
             jugadorOrigen.DisminuirSaldo(montoPagar); // Le quitamos el monto que debe pagar al jugador de origen
             jugadorDestino.AumentarSaldo(montoPagar); // Le damos el monto al jugador destino
@@ -152,7 +152,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion ComprarPropiedad(Jugador jugadorCompra, Propiedad propiedadCompra, int numeroTurno)
         {
-            _rfidDriver.ReadUID($"PAGUE {propiedadCompra.PrecioCompra}", jugadorCompra.UID); // Solicitamos la logica del lector de tarjeta
+            _rfidDriver.ReadUID($"J{jugadorCompra.ID+1} PAGUE {propiedadCompra.PrecioCompra} CRC", jugadorCompra.UID); // Solicitamos la logica del lector de tarjeta
 
             jugadorCompra.DisminuirSaldo(propiedadCompra.PrecioCompra);
 
@@ -240,7 +240,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion PerdidaPorEvento(Jugador jugadorPerdida, int perdida, int numeroTurno)
         {
-            _rfidDriver.ReadUID($"PAGUE {perdida}", jugadorPerdida.UID); // Solicitamos la logica del lector de tarjeta
+            _rfidDriver.ReadUID($"J{jugadorPerdida.ID+1} PAGUE {perdida} CRC", jugadorPerdida.UID); // Solicitamos la logica del lector de tarjeta
 
             jugadorPerdida.DisminuirSaldo(perdida);
 
@@ -268,7 +268,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public Transaccion PremioPorInicio(Jugador jugadorPremio, int numeroTurno)
         {
-            const int premioInicio = 500;
+            const int premioInicio = 450;
 
             jugadorPremio.AumentarSaldo(premioInicio);
 

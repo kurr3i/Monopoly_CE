@@ -89,25 +89,25 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         public void Inicializar()
         {
             CartaEvento hallazgo = new CartaEvento(
-                200,
+                250,
                 TipoCartaEvento.GanoColones,
                 "El hallazgo en el pantalón de manta. " +
                 "Te pusiste un pantalón que tenías " +
                 "guardado desde los últimos zapateos " +
                 "en las Fiestas de Palmares y " +
-                "encontraste doscientos colones"
+                "encontraste doscientos cincuenta colones"
                 );
             Enqueue(hallazgo);
 
             CartaEvento platina = new CartaEvento(
-                150,
+                400,
                 TipoCartaEvento.PerdioColones,
                 "El impuesto de la platina. Caíste " +
                 "en un hueco enorme en la carretera " +
                 "hacia Alajuela y terminaste estallando " +
                 "una llanta y doblando el aro de tu carro." +
                 " Tuviste que llamar a la grúa de emergencia." +
-                " Paga 150 colones."
+                " Paga 400 colones."
                 );
             Enqueue(platina);
 
@@ -150,7 +150,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
             CartaEvento ride = new CartaEvento(
                 0,
                 TipoCartaEvento.AvanzarSalida,
-                "¡El \"Raid\" de la salvación! Te quedaste a pie " +
+                "¡El \"Ride\" de la salvación! Te quedaste a pie " +
                 "en medio del colapso vial de San José y la meta " +
                 "se ve lejísimos. De la nada, apareció un compa en " +
                 "una ZS Miedo rugiendo el motor y te ofreció " +

@@ -79,35 +79,6 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
         }
 
         /// <summary>
-        /// Recorre la lista y muestra en pantalla el nombre de la casilla de cada nodo.
-        /// </summary>
-        public void Display(Servidor server)
-        {
-            NodeCasilla nodeActual = Head!;
-
-            int indice = 1;
-
-            if (Size == 0)
-            {
-                Console.WriteLine("[ListaDobleEnlazada] No tienes propiedades que mostrar.");
-                server.EnviarMensaje(Protocolo.PropiedadesVenta, new { propiedades = Array.Empty<object>(), mensaje = "No tienes propiedades que mostrar." });
-                return;
-            }
-            else
-            {
-                do
-                {
-                    Console.WriteLine("[ListaDobleEnlazada] PropiedadesVenta");
-                    Console.WriteLine("\n" + indice + "." + nodeActual.Data!.Nombre); // Muestra la propiedad
-                    server.EnviarMensaje(Protocolo.PropiedadesVenta, new { indice, propiedad = nodeActual.Data.Nombre });
-
-                    nodeActual = nodeActual.Next!; // Avanza a la siguiente
-                    indice++;
-                } while (nodeActual != null);
-            }
-        }
-
-        /// <summary>
         /// Recorre la lista y devuelve la casilla correspondiente al índice seleccionado.
         /// </summary>
         /// <param name="indicePropiedad">Índice de la propiedad que se desea obtener.</param>

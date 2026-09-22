@@ -53,6 +53,25 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             this.Monto = monto;
             this.Descripcion = descripcion;
         }
+
+
+        /// <summary>
+        /// Convierte la transacción a un objeto JSON.
+        /// </summary>
+        public object ConvertirTexto()
+        {
+            return new
+            {
+                id = ID,
+                fechaHora = FechaHora,
+                numeroTurno = NumeroTurno,
+                tipo = Tipo.ToString(),
+                jugadorOrigen = JugadorOrigen?.Nombre ?? "Banco",
+                jugadorDestino = JugadorDestino?.Nombre ?? "Banco",
+                monto = Monto,
+                descripcion = Descripcion
+            };
+        }
     }
 
 }
