@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Proyecto_MonopoTEC.Server.Hardware;
 using Proyecto_MonopoTEC.Server.Modelo;
 using Proyecto_MonopoTEC.Server.Estructuras;
@@ -85,48 +86,67 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
             switch (accion)
             {
+                // Caso sin accion
                 case AccionCasilla.SinAccion:
                     return true; // El jugador sigue en el juego.
 
+
+                // Caso de compra
                 case AccionCasilla.PermitirComprar:
 
                     Propiedad propiedadComprar = (Propiedad)jugadorActual.Posicion; // Hacemos cast para poder tratarla como una propiedad
 
                     bool puedeComprar = _bancoJuego.PuedePagar(jugadorActual, propiedadComprar.PrecioCompra); // Evaluamos si puede pagar
+
                     if (puedeComprar)
                     {
 
                         Console.WriteLine($"{jugadorActual.Nombre}, desea Comprar {propiedadComprar.Nombre} con un precio de {propiedadComprar.PrecioCompra}?");
 
-                        _server.EnviarMensaje(Protocolo.CompraPropiedad, new { jugador = jugadorActual.Nombre, propiedad = propiedadComprar.Nombre, precio = propiedadComprar.PrecioCompra });
-
+                        _server.EnviarMensaje(Protocolo.CompraPropiedad, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            propiedad = propiedadComprar.Nombre,
+                            precio = propiedadComprar.PrecioCompra
+                        }
+                        );
 
                         Console.WriteLine("[ManejadorAcciones] Esperando respuesta de compra.");
-                        _server.EnviarMensaje(Protocolo.CompraPropiedad, new { opciones = new[] { "comprar", "rechazar" } });
-
                         string decision = ValidarDecisionCompra(jugadorActual, _esperarAccion(jugadorActual, "compra"));
 
                         if (decision == "1")
                         {
 
-                            _server.EnviarMensaje(Protocolo.SolicitarPagoRFID, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, monto = propiedadComprar.PrecioCompra, concepto = "Compra de propiedad" });
-
+                            _server.EnviarMensaje(Protocolo.PagoRFID, new
+                            {
+                                jugadorId = jugadorActual.ID,
+                                jugador = jugadorActual.Nombre,
+                                monto = propiedadComprar.PrecioCompra,
+                                concepto = "Compra de propiedad"
+                            }
+                            );
 
                             Transaccion transaccionCompra = _bancoJuego.ComprarPropiedad(jugadorActual, propiedadComprar, numeroTurno); // Ejecutamos la compra
 
-                            Console.WriteLine($"{jugadorActual.Nombre} compró la propiedad {propiedadComprar.Nombre}.");
-                            _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new { id = transaccionCompra.ID, fechaHora = transaccionCompra.FechaHora, numeroTurno = transaccionCompra.NumeroTurno, tipo = transaccionCompra.Tipo.ToString(), jugadorOrigen = transaccionCompra.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionCompra.JugadorDestino?.Nombre ?? "Banco", monto = transaccionCompra.Monto, descripcion = transaccionCompra.Descripcion });
-                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = new { id = transaccionCompra.ID, fechaHora = transaccionCompra.FechaHora, numeroTurno = transaccionCompra.NumeroTurno, tipo = transaccionCompra.Tipo.ToString(), jugadorOrigen = transaccionCompra.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionCompra.JugadorDestino?.Nombre ?? "Banco", monto = transaccionCompra.Monto, descripcion = transaccionCompra.Descripcion } });
 
-                            _server.EnviarMensaje(Protocolo.PropiedadComprada, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, propiedad = propiedadComprar.Nombre, precio = propiedadComprar.PrecioCompra, saldo = jugadorActual.Saldo });
+                            Console.WriteLine($"{jugadorActual.Nombre} compró la propiedad {propiedadComprar.Nombre}.");
+
+                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionCompra.ConvertirTexto() });
+
+                            _server.EnviarMensaje(Protocolo.PropiedadComprada, new
+                            {
+                                jugadorId = jugadorActual.ID,
+                                propiedad = propiedadComprar.Nombre,
+                                precio = propiedadComprar.PrecioCompra,
+                                saldo = jugadorActual.Saldo
+                            }
+                                );
 
                         }
                         else
                         {
 
                             Console.WriteLine($"{jugadorActual.Nombre} no compró la propiedad {propiedadComprar.Nombre}.");
-
-                            _server.EnviarMensaje(Protocolo.CompraRechazada, new { jugador = jugadorActual.Nombre, propiedad = propiedadComprar.Nombre });
 
                         }
 
@@ -136,13 +156,12 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     {
 
                         Console.WriteLine($"{jugadorActual.Nombre} no puede comprar la propiedad {propiedadComprar.Nombre}.");
-                        _server.EnviarMensaje(Protocolo.CompraNoPermitida, new { jugador = jugadorActual.Nombre, propiedad = propiedadComprar.Nombre, precio = propiedadComprar.PrecioCompra });
 
                     }
                     return true;
 
 
-
+                // Caso de cobro de alquiler
                 case AccionCasilla.CobrarAlquiler:
                     Propiedad propiedadAlquilar = (Propiedad)jugadorActual.Posicion; // Hacemos cast para poder tratarla como una propiedad
 
@@ -150,27 +169,49 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     if (puedePagar)
                     {
 
-                        _server.EnviarMensaje(Protocolo.SolicitarPagoRFID, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, monto = propiedadAlquilar.Alquiler, concepto = "Pago de alquiler" });
+                        _server.EnviarMensaje(Protocolo.PagoRFID, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            jugador = jugadorActual.Nombre,
+                            monto = propiedadAlquilar.Alquiler,
+                            concepto = "Pago de alquiler"
+                        }
+                        );
 
                         Transaccion transaccionAlquiler = _bancoJuego.PagarAlquiler(jugadorActual, propiedadAlquilar.Propietario, propiedadAlquilar.Alquiler, numeroTurno); // Se realizá el cobro del alquiler
 
 
                         Console.WriteLine($"Por caer en {propiedadAlquilar.Nombre}, {jugadorActual.Nombre} le paga {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}.");
-                        _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new { id = transaccionAlquiler.ID, fechaHora = transaccionAlquiler.FechaHora, numeroTurno = transaccionAlquiler.NumeroTurno, tipo = transaccionAlquiler.Tipo.ToString(), jugadorOrigen = transaccionAlquiler.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionAlquiler.JugadorDestino?.Nombre ?? "Banco", monto = transaccionAlquiler.Monto, descripcion = transaccionAlquiler.Descripcion });
-                        _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = new { id = transaccionAlquiler.ID, fechaHora = transaccionAlquiler.FechaHora, numeroTurno = transaccionAlquiler.NumeroTurno, tipo = transaccionAlquiler.Tipo.ToString(), jugadorOrigen = transaccionAlquiler.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionAlquiler.JugadorDestino?.Nombre ?? "Banco", monto = transaccionAlquiler.Monto, descripcion = transaccionAlquiler.Descripcion } });
 
-                        _server.EnviarMensaje(Protocolo.AlquilerPagado, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, propietarioId = propiedadAlquilar.Propietario.ID, propietario = propiedadAlquilar.Propietario.Nombre, propiedad = propiedadAlquilar.Nombre, monto = propiedadAlquilar.Alquiler, saldo = jugadorActual.Saldo, saldoPropietario = propiedadAlquilar.Propietario.Saldo });
+                        _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionAlquiler.ConvertirTexto() });
+
+                        _server.EnviarMensaje(Protocolo.AlquilerPagado, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            propietarioId = propiedadAlquilar.Propietario.ID,
+                            propiedad = propiedadAlquilar.Nombre,
+                            monto = propiedadAlquilar.Alquiler,
+                            saldo = jugadorActual.Saldo,
+                            saldoPropietario = propiedadAlquilar.Propietario.Saldo
+                        });
 
                         return true; // Sigue en juego
                     }
 
                     Console.WriteLine($"{jugadorActual.Nombre} no puede pagar {propiedadAlquilar.Alquiler} colones de alquiler a {propiedadAlquilar.Propietario.Nombre}, entra en bancarrota.");
 
-                    _server.EnviarMensaje(Protocolo.Bancarrota, new { jugador = jugadorActual.Nombre, acreedor = propiedadAlquilar.Propietario.Nombre, monto = propiedadAlquilar.Alquiler });
+                    _server.EnviarMensaje(Protocolo.Bancarrota, new
+                    {
+                        jugadorId = jugadorActual.ID,
+                        monto = propiedadAlquilar.Alquiler
+                    }
+                    );
 
                     return false; // Sino entra en bancarrota
 
 
+
+                // Caso de dar carta
                 case AccionCasilla.DarCarta:
                     CartaEvento cartaSacada = _barajaCartas.Peek();
 
@@ -181,14 +222,31 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                     return sigueEnJuego;
 
+
+
+                // Caso de mandar a la carcel
                 case AccionCasilla.MandarCarcel:
 
                     _tableroJuego.MoverJugadorACarcel(jugadorActual);
 
                     jugadorActual.EntrarCarcel();
                     Console.WriteLine($"{jugadorActual.Nombre} entra en la carcel.");
-                    _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = jugadorActual.Posicion.Nombre, posicion = jugadorActual.Posicion.ID, pasoPorSalida = false });
-                    _server.EnviarMensaje(Protocolo.JugadorEntraCarcel, new { jugador = jugadorActual.Nombre });
+
+                    _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                    {
+                        jugadorId = jugadorActual.ID,
+                        casilla = jugadorActual.Posicion.Nombre,
+                        posicion = jugadorActual.Posicion.ID,
+                        pasoPorSalida = false
+                    }
+                    );
+
+                    _server.EnviarMensaje(Protocolo.JugadorCarcel, new
+                    {
+                        jugadorId = jugadorActual.ID,
+                        mensaje = $"{jugadorActual.Nombre} entra en la carcel."
+                    }
+                    );
 
                     return true;
 
@@ -213,17 +271,31 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
             switch (tipo)
             {
+
+                // Caso de carta de ganancia
                 case TipoCartaEvento.GanoColones:
                     {
-                        _bancoJuego.GananciaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le damos la ganancia
+                        Transaccion transaccionGananciaEvento = _bancoJuego.GananciaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le damos la ganancia
 
                         Console.WriteLine(cartaEvento.Descripcion);
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionGananciaEvento.ConvertirTexto() });
 
                         return true; // El jugador sigue en el juego.
                     }
 
+
+                // Caso de carta de pérdida
                 case TipoCartaEvento.PerdioColones:
                     {
 
@@ -231,40 +303,77 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                         Console.WriteLine(cartaEvento.Descripcion);
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         if (puedePagar)
                         {
-                            _server.EnviarMensaje(Protocolo.SolicitarPagoRFID, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, monto = cartaEvento.Valor, concepto = "Pago de carta de evento" });
+                            _server.EnviarMensaje(Protocolo.PagoRFID, new
+                            {
+                                jugadorId = jugadorActual.ID,
+                                jugador = jugadorActual.Nombre,
+                                monto = cartaEvento.Valor,
+                                concepto = "Pago de carta de evento"
+                            }
+                            );
 
                             Transaccion transaccionPerdidaEvento = _bancoJuego.PerdidaPorEvento(jugadorActual, cartaEvento.Valor, numeroTurno); // Le rebajamos la perdida
-                            _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new { id = transaccionPerdidaEvento.ID, fechaHora = transaccionPerdidaEvento.FechaHora, numeroTurno = transaccionPerdidaEvento.NumeroTurno, tipo = transaccionPerdidaEvento.Tipo.ToString(), jugadorOrigen = transaccionPerdidaEvento.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionPerdidaEvento.JugadorDestino?.Nombre ?? "Banco", monto = transaccionPerdidaEvento.Monto, descripcion = transaccionPerdidaEvento.Descripcion });
-                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = new { id = transaccionPerdidaEvento.ID, fechaHora = transaccionPerdidaEvento.FechaHora, numeroTurno = transaccionPerdidaEvento.NumeroTurno, tipo = transaccionPerdidaEvento.Tipo.ToString(), jugadorOrigen = transaccionPerdidaEvento.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionPerdidaEvento.JugadorDestino?.Nombre ?? "Banco", monto = transaccionPerdidaEvento.Monto, descripcion = transaccionPerdidaEvento.Descripcion } });
+
+                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionPerdidaEvento.ConvertirTexto() });
                             return true;
                         }
                     }
 
                     Console.WriteLine($"{jugadorActual.Nombre} no puede pagar {cartaEvento.Valor} colones, entra en bancarrota.");
 
-                    _server.EnviarMensaje(Protocolo.Bancarrota, new { jugador = jugadorActual.Nombre, monto = cartaEvento.Valor });
+                    _server.EnviarMensaje(Protocolo.Bancarrota, new
+                    {
+                        jugadorId = jugadorActual.ID,
+                        monto = cartaEvento.Valor
+                    }
+                    );
 
                     return false;
 
+
+                // Caso de carta de avanzar
                 case TipoCartaEvento.Avanzar:
                     {
                         bool pasoPorSalida;
                         Casilla casillaObjetivo = _tableroJuego.AvanzarJugador(jugadorActual, cartaEvento.Valor, out pasoPorSalida); // Se avanza
 
                         Console.WriteLine(cartaEvento.Descripcion);
-                        _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = casillaObjetivo.Nombre, posicion = casillaObjetivo.ID, pasoPorSalida });
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            casilla = casillaObjetivo.Nombre,
+                            posicion = casillaObjetivo.ID,
+                            pasoPorSalida
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         if (pasoPorSalida)
                         {
                             Transaccion transaccionPremio = _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
-                            _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new { id = transaccionPremio.ID, fechaHora = transaccionPremio.FechaHora, numeroTurno = transaccionPremio.NumeroTurno, tipo = transaccionPremio.Tipo.ToString(), jugadorOrigen = transaccionPremio.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionPremio.JugadorDestino?.Nombre ?? "Banco", monto = transaccionPremio.Monto, descripcion = transaccionPremio.Descripcion });
-                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = new { id = transaccionPremio.ID, fechaHora = transaccionPremio.FechaHora, numeroTurno = transaccionPremio.NumeroTurno, tipo = transaccionPremio.Tipo.ToString(), jugadorOrigen = transaccionPremio.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionPremio.JugadorDestino?.Nombre ?? "Banco", monto = transaccionPremio.Monto, descripcion = transaccionPremio.Descripcion } });
+                            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionPremio.ConvertirTexto() });
                         }
 
 
@@ -275,14 +384,31 @@ namespace Proyecto_MonopoTEC.Server.Motor
                     }
 
 
+                // Caso de carta de retroceder
                 case TipoCartaEvento.Retroceder:
                     {
                         Casilla casillaObjetivo = _tableroJuego.RetrocederJugador(jugadorActual, cartaEvento.Valor); // Se retocede
 
                         Console.WriteLine(cartaEvento.Descripcion);
-                        _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = casillaObjetivo.Nombre, posicion = casillaObjetivo.ID, pasoPorSalida = false });
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            casilla = casillaObjetivo.Nombre,
+                            posicion = casillaObjetivo.ID,
+                            pasoPorSalida = false
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         AccionCasilla nuevaAccion = _tableroJuego.ObtenerAccion(jugadorActual.Posicion, jugadorActual);
                         bool sigueEnJuego = EjecutarAccion(nuevaAccion, jugadorActual, numeroTurno); // Se ejecuta la nueva acción
@@ -290,54 +416,123 @@ namespace Proyecto_MonopoTEC.Server.Motor
                         return sigueEnJuego;
                     }
 
+
+                // Caso de carta de perder turno
                 case TipoCartaEvento.PerderTurno:
                     {
                         jugadorActual.PerderTurno(cartaEvento.Valor);
 
                         Console.WriteLine(cartaEvento.Descripcion);
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         return true;
                     }
+
+
+                // Caso de carta de avanzar a la salida
                 case TipoCartaEvento.AvanzarSalida:
                     {
                         _tableroJuego.MoverJugadorASalida(jugadorActual);
                         Transaccion transaccionSalida = _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
 
                         Console.WriteLine(cartaEvento.Descripcion);
-                        _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = jugadorActual.Posicion.Nombre, posicion = jugadorActual.Posicion.ID, pasoPorSalida = false });
-                        _server.EnviarMensaje(Protocolo.TransaccionRegistrada, new { id = transaccionSalida.ID, fechaHora = transaccionSalida.FechaHora, numeroTurno = transaccionSalida.NumeroTurno, tipo = transaccionSalida.Tipo.ToString(), jugadorOrigen = transaccionSalida.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionSalida.JugadorDestino?.Nombre ?? "Banco", monto = transaccionSalida.Monto, descripcion = transaccionSalida.Descripcion });
-                        _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = new { id = transaccionSalida.ID, fechaHora = transaccionSalida.FechaHora, numeroTurno = transaccionSalida.NumeroTurno, tipo = transaccionSalida.Tipo.ToString(), jugadorOrigen = transaccionSalida.JugadorOrigen?.Nombre ?? "Banco", jugadorDestino = transaccionSalida.JugadorDestino?.Nombre ?? "Banco", monto = transaccionSalida.Monto, descripcion = transaccionSalida.Descripcion } });
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            casilla = jugadorActual.Posicion.Nombre,
+                            posicion = jugadorActual.Posicion.ID,
+                            pasoPorSalida = false
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionSalida.ConvertirTexto() });
+
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         return true;
                     }
+
+
+                // Caso de carta de avanzar al parque
                 case TipoCartaEvento.AvanzarParque:
                     {
                         bool pasoPorSalida;
 
                         _tableroJuego.MoverJugadorAParque(jugadorActual, out pasoPorSalida); // Se mueve el jugador al parque y se obtiene si se pasó por salida
-                        Console.WriteLine(cartaEvento.Descripcion);
-                        _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = jugadorActual.Posicion.Nombre, posicion = jugadorActual.Posicion.ID, pasoPorSalida });
 
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+                        Console.WriteLine(cartaEvento.Descripcion);
+
+                        _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            casilla = jugadorActual.Posicion.Nombre,
+                            posicion = jugadorActual.Posicion.ID,
+                            pasoPorSalida
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
+
                         if (pasoPorSalida)
                         {
                             _bancoJuego.PremioPorInicio(jugadorActual, numeroTurno);
                         }
                         return true;
                     }
+
+
+                // Caso de carta de vaya a la carcel
                 case TipoCartaEvento.VayaCarcel:
                     {
                         _tableroJuego.MoverJugadorACarcel(jugadorActual);
                         jugadorActual.EntrarCarcel();
 
                         Console.WriteLine(cartaEvento.Descripcion);
-                        _server.EnviarMensaje(Protocolo.JugadorMovido, new { jugador = jugadorActual.Nombre, jugadorId = jugadorActual.ID, casilla = jugadorActual.Posicion.Nombre, posicion = jugadorActual.Posicion.ID, pasoPorSalida = false });
-                        _server.EnviarMensaje(Protocolo.JugadorEntraCarcel, new { origen = "carta", jugador = jugadorActual.Nombre, mensaje = $"{jugadorActual.Nombre} fue enviado a la cárcel." });
-                        _server.EnviarMensaje(Protocolo.CartaEvento, new { jugadorId = jugadorActual.ID, jugador = jugadorActual.Nombre, tipo = tipo.ToString(), descripcion = cartaEvento.Descripcion, valor = cartaEvento.Valor, saldo = jugadorActual.Saldo });
+
+                        _server.EnviarMensaje(Protocolo.JugadorMovido, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            casilla = jugadorActual.Posicion.Nombre,
+                            posicion = jugadorActual.Posicion.ID,
+                            pasoPorSalida = false
+                        }
+                        );
+
+                        _server.EnviarMensaje(Protocolo.CartaEvento, new
+                        {
+                            jugadorId = jugadorActual.ID,
+                            tipo = tipo.ToString(),
+                            descripcion = cartaEvento.Descripcion,
+                            valor = cartaEvento.Valor,
+                            saldo = jugadorActual.Saldo
+                        }
+                        );
 
                         return true;
                     }
@@ -358,7 +553,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             {
                 Console.WriteLine("Opción inválida. Por favor, elige una opción válida.");
 
-                _server.EnviarMensaje(Protocolo.OpcionCompraInvalida, new { mensaje = "Opción inválida. Por favor, elige una opción válida." });
+                _server.EnviarMensaje(Protocolo.ErrorAccion, new { mensaje = "Opción inválida. Por favor, elige una opción válida." });
                 opcion = _esperarAccion(jugador, "compra");
             }
             return opcion == "comprar" ? "1" : opcion == "rechazar" ? "2" : opcion;
@@ -389,7 +584,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                 Console.WriteLine("Opción inválida. Ingrese un número válido.");
 
-                _server.EnviarMensaje(Protocolo.OpcionInvalida, new { mensaje = "Indica el índice de la lista o el ID de la propiedad." });
+                _server.EnviarMensaje(Protocolo.ErrorAccion, new { mensaje = "Indica el índice de la lista o el ID de la propiedad." });
                 opcion = _esperarAccion(jugador, "venta");
             }
         }
@@ -405,23 +600,53 @@ namespace Proyecto_MonopoTEC.Server.Motor
             {
                 Console.WriteLine("Sin Propiedades para vender.");
 
-                _server.EnviarMensaje(Protocolo.PropiedadesVenta, new { propiedades = Array.Empty<object>(), mensaje = "Sin propiedades para vender." });
+                _server.EnviarMensaje(Protocolo.VentaPropiedad, new
+                {
+                    mensaje = "Sin propiedades para vender."
+                });
+                return;
             }
-            else
+
+            List<object> propiedadesDisponibles = new List<object>();
+            NodeCasilla? nodoActual = jugadorVenta.PropiedadesAdquiridas.Head;
+
+            while (nodoActual != null)
             {
-                Console.WriteLine("[ManejadorAcciones] Esperando selección de propiedad.");
+                if (nodoActual.Data is Propiedad propiedad)
+                {
+                    propiedadesDisponibles.Add(new
+                    {
+                        id = propiedad.ID,
+                        nombre = propiedad.Nombre,
+                        precio = propiedad.PrecioCompra
+                    });
+                }
 
-                _server.EnviarMensaje(Protocolo.SolicitarVenta, new { jugador = jugadorVenta.Nombre, cantidad = jugadorVenta.PropiedadesAdquiridas.Size });
-
-                jugadorVenta.PropiedadesAdquiridas.Display(_server); // Mostramos las propiedades
-
-                Propiedad casillaVenta = ValidarPropiedadVenta(jugadorVenta, _esperarAccion(jugadorVenta, "venta"));
-
-                _bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta, numeroTurno);
-
-                _server.EnviarMensaje(Protocolo.PropiedadVendida, new { jugadorId = jugadorVenta.ID, jugador = jugadorVenta.Nombre, propiedad = casillaVenta.Nombre, saldo = jugadorVenta.Saldo });
+                nodoActual = nodoActual.Next;
             }
 
+            Console.WriteLine("[ManejadorAcciones] Esperando selección de propiedad.");
+
+            _server.EnviarMensaje(Protocolo.VentaPropiedad, new
+            {
+                jugadorId = jugadorVenta.ID,
+                propiedades = propiedadesDisponibles,
+                cantidad = propiedadesDisponibles.Count
+            });
+
+            Propiedad casillaVenta = ValidarPropiedadVenta(jugadorVenta, _esperarAccion(jugadorVenta, "venta"));
+
+            Transaccion transaccionVenta = _bancoJuego.VenderPropiedad(jugadorVenta, casillaVenta, numeroTurno);
+
+            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionVenta.ConvertirTexto() });
+
+            _server.EnviarMensaje(Protocolo.PropiedadVendida, new
+            {
+                jugadorId = jugadorVenta.ID,
+                propiedad = casillaVenta.Nombre,
+                precio = casillaVenta.PrecioCompra,
+                saldo = jugadorVenta.Saldo
+            });
         }
 
         /// <summary>
@@ -431,10 +656,18 @@ namespace Proyecto_MonopoTEC.Server.Motor
         /// <param name="numeroTurno">El turno actual de la partida.</param>
         public void DarPremio(Jugador jugador, int numeroTurno)
         {
-            _bancoJuego.PremioPorInicio(jugador, numeroTurno);
-            Console.WriteLine("Ganas 400 colones por pasar por el inicio");
+            Transaccion transaccionPremio = _bancoJuego.PremioPorInicio(jugador, numeroTurno);
+            Console.WriteLine("Ganas 450 colones por pasar por el inicio");
 
-            _server.EnviarMensaje(Protocolo.PremioSalida, new { jugadorId = jugador.ID, jugador = jugador.Nombre, monto = 400, saldo = jugador.Saldo });
+            _server.EnviarMensaje(Protocolo.UltimaTransaccion, new { transaccion = transaccionPremio.ConvertirTexto() });
+            _server.EnviarMensaje(Protocolo.PremioSalida, new
+            {
+                jugadorId = jugador.ID,
+                monto = 450,
+                saldo = jugador.Saldo,
+                descripcion = $"El banco le paga a {jugador.Nombre} por pasar por el inicio un monto de 450 colones."
+            }
+            );
         }
     }
 }

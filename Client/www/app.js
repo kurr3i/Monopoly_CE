@@ -1,5 +1,4 @@
-// Nota: falta comentar y acomodar
-
+// Estado global del juego
 const Juego = {
         protocolo: null,
         tablero: [],
@@ -8,149 +7,145 @@ const Juego = {
         turno: 0,
         modalJugadorId: null,
         modoModal: "register",
-        propiedadesPendientes: [],
         idJugadorDesbloqueado: null,
         modoPropiedad: null,
         colaEventos: [],
         mostrandoEvento: false,
-        cierreEnCurso: false
+        reciboPendiente: null,
+        cierreEnCurso: false,
+        dadosAnimando: false
 };
 
+// Tablero base del juego, representado por casillas con id, nombre, tipo y precio.
 const Tablero = [
         [1, "Salida", "especial"], [2, "Loteria 1", "evento"], [3, "Pococí", "propiedad", 200], [4, "Guácimo", "propiedad", 250],
-        [5, "San Carlos", "propiedad", 300], [6, "Zarcero", "propiedad", 350], [7, "Carcel - San Lucas", "especial"], [8, "Heredia", "propiedad", 400],
+        [5, "San Carlos", "propiedad", 300], [6, "Zarcero", "propiedad", 350], [7, "San Lucas - Carcel", "especial"], [8, "Heredia", "propiedad", 400],
         [9, "Sarapiquí", "propiedad", 450], [10, "Quepos", "propiedad", 500], [11, "Loteria 2", "evento"], [12, "Golfito", "propiedad", 550],
         [13, "Parque de Diversiones", "especial"], [14, "Liberia", "propiedad", 600], [15, "Nicoya", "propiedad", 650], [16, "Loteria 3", "evento"],
-        [17, "Cartago", "propiedad", 700], [18, "Turrialba", "propiedad", 750], [19, "Vaya a la Carcel - La Cali", "especial"], [20, "Desamparados", "propiedad", 800],
-        [21, "Perez Zeledón", "propiedad", 850], [22, "Loteria 4", "evento"], [23, "Chepe", "propiedad", 800], [24, "Escazú", "propiedad", 850]
+        [17, "Cartago", "propiedad", 700], [18, "Turrialba", "propiedad", 750], [19, "La Cali - Para la Carcel", "especial"], [20, "Desamparados", "propiedad", 800],
+        [21, "Perez Zeledón", "propiedad", 850], [22, "Loteria 4", "evento"], [23, "Chepe", "propiedad", 900], [24, "Escazú", "propiedad", 950]
 ].map(([id, nombre, tipo, precio]) => ({ id, nombre, tipo, precio, propietario: null }));
 Juego.tablero = Tablero;
 
+// Conexión WebSocket y elementos del DOM.
 const socket = new WebSocket("ws://localhost:8080/");
 const $ = (selector) => document.querySelector(selector);
 
-const Protocol = Object.freeze({
-        EnviarProtocolo: "SOCKET_PROTOCOLO",
-        ConexionLista: "SOCKET_CONEXION_LISTA",
-        AutenticarJugador: "SOCKET_AUTENTICAR_JUGADOR",
-        VerificarJugador: "SOCKET_VERIFICAR_JUGADOR",
-        IniciarJuego: "SOCKET_INICIAR_JUEGO",
-        JuegoComenzado: "SOCKET_JUEGO_COMENZADO",
-        TurnoIniciado: "SOCKET_TURNO_INICIADO",
-        SolicitarAccionTurno: "SOCKET_SOLICITAR_ACCION_TURNO",
-        JugadorEnCarcel: "SOCKET_JUGADOR_EN_CARCEL",
-        JugadorSaleCarcel: "SOCKET_JUGADOR_SALE_CARCEL",
-        TurnosCarcel: "SOCKET_TURNOS_CARCEL",
-        TurnoPerdido: "SOCKET_TURNO_PERDIDO",
-        DadosLanzados: "SOCKET_DADOS_LANZADOS",
-        JugadorMovido: "SOCKET_JUGADOR_MOVIDO",
-        SolicitarContinuar: "SOCKET_SOLICITAR_CONTINUAR",
-        OpcionInvalida: "SOCKET_OPCION_INVALIDA",
-        FinTurno: "SOCKET_FIN_TURNO",
-        JugadorEliminado: "SOCKET_JUGADOR_ELIMINADO",
-        Ganador: "SOCKET_GANADOR",
-        CompraPropiedad: "SOCKET_COMPRA_PROPIEDAD",
-        PropiedadComprada: "SOCKET_PROPIEDAD_COMPRADA",
-        CompraRechazada: "SOCKET_COMPRA_RECHAZADA",
-        CompraNoPermitida: "SOCKET_COMPRA_NO_PERMITIDA",
-        AlquilerPagado: "SOCKET_ALQUILER_PAGADO",
-        Bancarrota: "SOCKET_BANCARROTA",
-        CartaEvento: "SOCKET_CARTA_EVENTO",
-        JugadorEntraCarcel: "SOCKET_JUGADOR_ENTRA_CARCEL",
-        OpcionCompraInvalida: "SOCKET_OPCION_COMPRA_INVALIDA",
-        PropiedadesVenta: "SOCKET_PROPIEDADES_VENTA",
-        SolicitarVenta: "SOCKET_SOLICITAR_VENTA",
-        SolicitarPropiedades: "SOCKET_SOLICITAR_PROPIEDADES",
-        PropiedadVendida: "SOCKET_PROPIEDAD_VENDIDA",
-        PremioSalida: "SOCKET_PREMIO_SALIDA",
-        AccionJugador: "SOCKET_ACCION_JUGADOR",
-        ErrorAccion: "SOCKET_ERROR_ACCION",
-        JuegoTerminado: "SOCKET_JUEGO_TERMINADO",
-        JugadorRegistrado: "SOCKET_JUGADOR_REGISTRADO",
-        JugadorDesbloqueado: "SOCKET_JUGADOR_DESBLOQUEADO",
-        SolicitarPagoRFID: "SOCKET_SOLICITAR_PAGO_RFID",
-        TransaccionRegistrada: "SOCKET_TRANSACCION_REGISTRADA",
-        SolicitarUltimaTransaccion: "SOCKET_SOLICITAR_ULTIMA_TRANSACCION",
-        UltimaTransaccion: "SOCKET_ULTIMA_TRANSACCION",
-        SolicitarTransacciones: "SOCKET_SOLICITAR_TRANSACCIONES",
-        TransaccionesLista: "SOCKET_TRANSACCIONES_LISTA",
-        CerrarJuego: "SOCKET_CERRAR_JUEGO"
-});
+// Protocolo básico para la comunicación con el servidor.
+// Luego se obtendrá el protocolo completo desde el Cliente
+const Protocolo = {
+        PasoProtocolo: "SOCKET_PROTOCOLO"
+};
 
+// Paleta de colores para los jugadores.
 const colores = ["coral", "mint", "gold", "sky"];
+
+// Secciones del juego.
 const secciones = { lobby: $("#lobbySection"), game: $("#gameSection"), results: $("#resultsSection") };
 
-socket.addEventListener("open", () => { console.log("[App] WebSocket conectado"); setConnection(true); });
+// Manejo inicial del Socket
+socket.addEventListener("open", () => { console.log("[App] WebSocket conectado"); });
+
+
+
+// Caso de cierre
 socket.addEventListener("close", () => {
         if (Juego.cierreEnCurso) return;
         console.warn("[App] WebSocket cerrado");
-        mostrarFalloFatal("El cliente perdió la conexión con el servidor.");
+        mostrarFalloConex("El cliente perdió la conexión con el servidor.");
         cerrarJuego();
 });
+
+
+
+// Caso de error
 socket.addEventListener("error", (error) => {
         if (Juego.cierreEnCurso) return;
         console.error("[App] WebSocket error", error);
-        mostrarFalloFatal("No se pudo comunicar con el servidor.");
+        mostrarFalloConex("No se pudo comunicar con el servidor.");
         cerrarJuego();
 });
+
+
+
+// Manejo de los mensajes del servidor
 socket.addEventListener("message", (event) => {
         try {
+                // Procesamiento
                 const message = JSON.parse(event.data);
                 if (!message || !message.Comando) return;
                 let content = message.Contenido;
                 if (typeof content === "string") content = JSON.parse(content);
-                console.log("[App] App <<< Servidor:", { Comando: message.Comando, Contenido: content });
-                if (message.Comando === Protocol.EnviarProtocolo && Juego.protocolo) {
-                        cerrarJuego();
+
+                // Registro
+                console.log("[App] App <<< Servidor:", { Comando: message.Comando, Contenido: content }, "\n");
+
+                // Revisión de protocolo
+                if (message.Comando === Protocolo.PasoProtocolo) {
+                        Juego.protocolo = content || {};
+                        Object.assign(Protocolo, Juego.protocolo);
+
+                        // Mensaje de verificación
+                        enviarMensaje(Protocolo.ConexionLista);
+
+                        // Llamada a inicializar el juego
+                        actualizarLobby();
                         return;
                 }
+
+                // Traslado de mensajes al handler
                 recibirMensaje(message.Comando, content || {});
         } catch (error) {
+
+                // Mensajes inválidos
                 console.error("[App] Mensaje inválido", error);
         }
 });
 
-function setConnection(connected) {
-        $("#connectionDot").classList.toggle("offline", !connected);
-        $("#connectionText").textContent = connected ? "Cliente conectado" : "Cliente desconectado";
-        $("#serverStatus").textContent = connected ? "Conectado" : "Desconectado";
-}
 
-function mostrarFalloFatal(message) {
+
+// Función para fallos de conexión
+function mostrarFalloConex(message) {
         if (Juego.cierreEnCurso) return;
-        setConnection(false);
         $("#crashMessage").textContent = message;
         $("#crashModal").classList.remove("hidden");
         $("#authModal").classList.add("hidden");
         $("#actionArea").innerHTML = "";
 }
 
-function obtenerValorProtocolo(key) {
-        return Juego.protocolo?.[key] ?? key;
-}
 
-function resolverComando(command) {
-        return Object.keys(Juego.protocolo || {}).find((key) => Juego.protocolo[key] === command) || command;
-}
 
-function enviarMensaje(commandName, content = {}) {
-        const command = obtenerValorProtocolo(commandName);
-        if (socket.readyState !== WebSocket.OPEN || !command) return false;
+// Función para enviar mensajes por WebSocket
+function enviarMensaje(command, content = {}) {
+        if (typeof command !== "string" || !command) return false;
+        if (socket.readyState !== WebSocket.OPEN) return false;
+
+        // Construcción del mensaje
         const message = { Comando: command, Contenido: content };
-        console.log("[App] App >>> Servidor:", message);
+
+        // Registro
+        console.log("[App] App >>> Servidor:", message, "\n");
+
+        // Envío
         socket.send(JSON.stringify(message));
         return true;
 }
 
-function mostrarSeccion(name) {
+
+
+// Función auxiliar para cambiar de sección
+function cambiarSeccion(name) {
         Object.values(secciones).forEach((section) => section.classList.add("hidden"));
         secciones[name].classList.remove("hidden");
 }
 
+
+
+// Función para abrir el modal de autenticación
 function abrirRegistro(id) {
         Juego.modalJugadorId = id;
         Juego.modoModal = "register";
-        $("#modalEyebrow").textContent = `Asiento ${id + 1}`;
+        $("#modalEyebrow").textContent = `Jugador ${id + 1}`;
         $("#modalTitle").textContent = "Nombre del jugador";
         $("#nameStep").classList.remove("hidden");
         $("#rfidStep").classList.add("hidden");
@@ -162,21 +157,27 @@ function abrirRegistro(id) {
         $("#playerName").focus();
 }
 
+
+
+// Función para abrir el modal de verificación
 function abrirVerificador(id) {
         Juego.modalJugadorId = id;
         Juego.modoModal = "verify";
-        $("#modalEyebrow").textContent = `Asiento ${id + 1}`;
+        $("#modalEyebrow").textContent = `Jugador ${id + 1}`;
         $("#modalTitle").textContent = "Verificar jugador";
         $("#rfidStep").classList.remove("hidden");
         $("#authModal").dataset.lockDismiss = "true";
         $("#authModal").classList.remove("hidden");
         $("#closeModal").classList.add("hidden");
-        enviarMensaje("VerificarJugador", { id });
+        enviarMensaje(Protocolo.VerificarJugador, { id });
 }
 
+
+
+// Función para abrir el modal de desbloqueo
 function abrirDesbloqueo() {
-        $("#modalEyebrow").textContent = "Turno protegido";
-        $("#modalTitle").textContent = "Desbloquear acciones";
+        $("#modalEyebrow").textContent = "Verificar jugador";
+        $("#modalTitle").textContent = "Se necesita verificación";
         $("#nameStep").classList.add("hidden");
         $("#rfidStep").classList.remove("hidden");
         $("#rfidStatus").textContent = "Acerca la tarjeta del jugador activo al lector...";
@@ -185,12 +186,18 @@ function abrirDesbloqueo() {
         $("#closeModal").classList.add("hidden");
 }
 
+
+
+// Función para cerrar el modal
 function cerrarModal() {
         $("#authModal").dataset.lockDismiss = "false";
         $("#authModal").classList.add("hidden");
         Juego.modalJugadorId = null;
 }
 
+
+
+// Función para verificar y enviar el nombre del jugador
 function subirNombre() {
         const name = $("#playerName").value.trim();
         if (!name) {
@@ -201,6 +208,7 @@ function subirNombre() {
                 $("#nameError").textContent = "El nombre no puede superar 12 caracteres.";
                 return;
         }
+
         $("#nameStep").classList.add("hidden");
         $("#rfidStep").classList.remove("hidden");
         $("#modalTitle").textContent = "Verificar tarjeta";
@@ -208,71 +216,124 @@ function subirNombre() {
         $("#closeModal").classList.add("hidden");
         $("#authModal").dataset.lockDismiss = "true";
         Juego.modoModal = "registerVerify";
-        enviarMensaje("AutenticarJugador", { id: Juego.modalJugadorId, nombre: name });
+        enviarMensaje(Protocolo.RegistrarJugador, { id: Juego.modalJugadorId, nombre: name });
 }
 
+
+
+// Función para mostrar cajas de diálogo en pantalla
 function mostrarMensaje(category, title, message, dismissible = false, duration = 2500) {
+
         const card = $("#statusCard");
         card.className = `modal-card status-card ${category}`;
+
         $("#statusEyebrow").textContent = category === "success" ? "Listo" : category === "error" ? "Atención" : "Mensaje";
+
         $("#statusTitle").textContent = title;
         $("#statusMessage").textContent = message;
+
         $("#statusMark").textContent = category === "success" ? "✓" : category === "error" ? "!" : "i";
+
         $("#statusOk").classList.toggle("hidden", !dismissible);
         $("#statusModal").classList.remove("hidden");
+
         clearTimeout(mostrarMensaje.timer);
         if (!dismissible) mostrarMensaje.timer = setTimeout(ocultarMensaje, duration);
 }
 
+
+
+// Función para mostrar eventos, en orden
+function mostrarEvento(label, message, duration = 2800, receipt = null) {
+        // Cola de eventos
+        Juego.colaEventos.push({ label, message, duration, receipt });
+        if (Juego.mostrandoEvento) return;
+
+        // Procesar el siguiente evento
+        const procesarSiguienteEvento = () => {
+                const siguiente = Juego.colaEventos.shift();
+                if (!siguiente) {
+                        Juego.mostrandoEvento = false;
+                        $("#eventPopup").classList.add("hidden");
+                        $("#eventPopup").onclick = null;
+                        if (Juego.reciboPendiente) {
+                                mostrarUltimaTransaccion(Juego.reciboPendiente);
+                                Juego.reciboPendiente = null;
+                        }
+                        return;
+                }
+
+                // Mostrar el evento
+                Juego.mostrandoEvento = true;
+                $("#eventPopupLabel").textContent = siguiente.label;
+                $("#eventPopupText").textContent = siguiente.message;
+                $("#eventPopup").classList.remove("hidden");
+                $("#eventPopup").onclick = () => {
+                        clearTimeout(mostrarEvento.timer);
+                        $("#eventPopup").classList.add("hidden");
+                        const recibo = siguiente.receipt ?? Juego.reciboPendiente;
+                        if (recibo) {
+                                mostrarTransaccion(recibo)
+                                Juego.reciboPendiente = null;
+                        }
+                        procesarSiguienteEvento();
+                };
+
+                clearTimeout(mostrarEvento.timer);
+                mostrarEvento.timer = setTimeout(() => {
+                        $("#eventPopup").classList.add("hidden");
+                        const recibo = siguiente.receipt ?? Juego.reciboPendiente;
+                        if (recibo) {
+                                mostrarTransaccion(recibo);
+                                Juego.reciboPendiente = null;
+                        }
+                        procesarSiguienteEvento();
+                }, siguiente.duration);
+        };
+
+        procesarSiguienteEvento();
+}
+
+
+
+// Función para ocultar el caja de diálogo
 function ocultarMensaje() {
         $("#statusModal").classList.add("hidden");
 }
 
-function recibirMensaje(command, content) {
-        const comandoActual = resolverComando(command);
-        if (comandoActual === "SOCKET_PROTOCOLO") {
-                Juego.protocolo = content;
-                enviarMensaje("ConexionLista");
-                mostrarLobby();
-                return;
-        }
 
-        switch (comandoActual) {
-                case "AutenticarJugador":
+
+// Función o handler principal para recibir los mensajes del servidor
+function recibirMensaje(command, content) {
+        switch (command) {
+
+                // Caso de registrar un nuevo jugador
+                case Protocolo.RegistrarJugador:
                         if (content.id === -1) {
                                 cerrarModal();
+
                                 mostrarMensaje("error", "Jugador no registrado", content.error || "No se pudo autenticar.");
                                 return;
                         }
-                        break;
+                        insertarJugador({
+                                id: content.id,
+                                nombre: content.nombre,
+                                saldo: 1000,
+                                posicion: 1,
+                                posicionNombre: "Salida",
+                                activo: true,
+                                propiedades: []
+                        });
 
-                case "JugadorRegistrado":
-                        insertarJugador({ id: content.id, nombre: content.nombre, saldo: content.saldo, posicion: content.posicion, posicionNombre: content.posicionNombre, activo: true, propiedades: [] });
                         cerrarModal();
+
                         mostrarMensaje("success", "Jugador conectado", `${content.nombre} fue registrado correctamente.`);
-                        mostrarLobby();
+
+                        actualizarLobby();
                         break;
 
-                case "JugadorDesbloqueado":
-                        Juego.idJugadorDesbloqueado = content.jugadorId;
-                        cerrarModal();
-                        $("#gameNotice").textContent = "Turno desbloqueado. Ya puedes actuar.";
-                        mostrarAcciones("turno");
-                        mostrarMensaje("success", "Turno desbloqueado", "Ya puedes lanzar los dados y actuar.");
-                        break;
-
-                case "SolicitarPagoRFID":
-                        $("#modalEyebrow").textContent = "Pago protegido";
-                        $("#modalTitle").textContent = "Confirma el pago";
-                        $("#nameStep").classList.add("hidden");
-                        $("#rfidStep").classList.remove("hidden");
-                        $("#rfidStatus").textContent = `${content.concepto}: acerca la tarjeta de ${content.jugador} al lector.`;
-                        $("#authModal").dataset.lockDismiss = "true";
-                        $("#authModal").classList.remove("hidden");
-                        $("#closeModal").classList.add("hidden");
-                        break;
-
-                case "VerificarJugador":
+                // Caso de verificar el jugador
+                case Protocolo.VerificarJugador:
                         if (content.error) {
                                 cerrarModal();
                                 mostrarMensaje("error", "Verificación fallida", content.error);
@@ -282,242 +343,463 @@ function recibirMensaje(command, content) {
                         }
                         break;
 
-                case "JuegoComenzado":
-                        mostrarEvento("Partida", content.mensaje || "La partida ha comenzado.", 2600);
-                        mostrarSeccion("game");
+
+
+                // Caso de iniciar la partida
+                case Protocolo.IniciarJuego:
+                        if (content.error) {
+                                mostrarMensaje("error", "No se puede iniciar", content.error, true);
+                        }
+                        else {
+                                mostrarEvento("Partida", content.mensaje || "La partida ha comenzado.", 2600);
+
+                                cambiarSeccion("game");
+                        }
                         break;
 
-                case "IniciarJuego":
-                        if (content.error) mostrarMensaje("error", "No se puede iniciar", content.error, true);
-                        else mostrarSeccion("game");
+                // Caso de juego terminado
+                case Protocolo.TerminarJuego:
+                        const ganadorFinal = obtenerNombreJugadorPorId(content.ganadorId ?? content.jugadorId ?? content.id ?? content.ganador);
+
+                        mostrarResultados({ ...content, ganador: ganadorFinal });
                         break;
 
-                case "SolicitarAccionTurno":
-                        Juego.idJugadorActual = content.id ?? Juego.idJugadorActual;
-                        mostrarJuego();
-                        mostrarAcciones(content.tipo || "turno");
+                // Caso de cerrar el juego
+                case Protocolo.CerrarJuego:
+                        cerrarJuego();
                         break;
 
-                case "DadosLanzados":
-                        mostrarAcciones("turno");
-                        mostrarResultadoDados(content);
+
+
+                // Caso de ganador
+                case Protocolo.Ganador:
+                        mostrarMensaje("success", "Partida decidida", `Ganó ${obtenerNombreJugadorPorId(content.jugadorId ?? content.id ?? content.jugador)}.`);
                         break;
 
-                case "SolicitarPropiedades":
-                        Juego.modoPropiedad = "view";
-                        Juego.propiedadesPendientes = [];
-                        mostrarPropiedades();
-                        break;
 
-                case "TurnoIniciado":
+
+                // Caso de iniciar el turno
+                case Protocolo.InicioTurno:
                         Juego.idJugadorActual = content.jugadorId ?? Juego.idJugadorActual;
                         Juego.turno = content.turno ?? Juego.turno;
                         Juego.idJugadorDesbloqueado = null;
-                        mostrarJuego();
+
+                        actualizarJuego();
                         break;
 
-                case "JugadorMovido":
-                        Juego.slotAnimadoId = content.posicion;
-                        actualizarJugador(content.jugadorId, { posicion: content.posicion, posicionNombre: content.casilla });
-                        mostrarJuego();
-                        break;
+                // Caso de solicitar las acciones de un jugador
+                case Protocolo.AccionesTurno:
+                        Juego.idJugadorActual = content.id ?? Juego.idJugadorActual;
 
-                case "PropiedadComprada": {
-                        cerrarModal();
-                        const player = Juego.jugadores.find((item) => item.id === content.jugadorId);
-                        if (player) {
-                                player.saldo = content.saldo ?? player.saldo;
-                                player.propiedades = [...(player.propiedades || []), content.propiedad];
-                        }
-                        const property = Juego.tablero.find((item) => item.nombre === content.propiedad);
-                        if (property) property.propietario = content.jugadorId;
-                        mostrarMensaje("success", "Propiedad comprada", `${content.jugador} compró ${content.propiedad}.`);
-                        mostrarJuego();
-                        break;
-                }
-
-                case "CompraRechazada":
-                        mostrarMensaje("message", "Compra rechazada", `${content.jugador} decidió no comprar ${content.propiedad}.`);
-                        break;
-
-                case "CompraNoPermitida":
-                        break;
-
-                case "JugadorEntraCarcel":
-                        if (content.origen === "carta") return;
-                        mostrarEvento("Cárcel", `${content.jugador} fue enviado a la cárcel.`);
-                        break;
-
-                case "JugadorSaleCarcel":
-                        mostrarEvento("Cárcel", `${content.jugador} sale de la cárcel.`);
-                        break;
-
-                case "TurnosCarcel":
-                        mostrarEvento("Cárcel", `${content.jugador} tiene ${content.turnosRestantes} turno(s) restantes en prisión.`);
-                        break;
-
-                case "TurnoPerdido":
-                        mostrarEvento("Turno perdido", `${content.jugador} pierde un turno.`);
-                        break;
-
-                case "TransaccionRegistrada":
-                        break;
-
-                case "UltimaTransaccion":
-                        mostrarUltimaTransaccion(content.transaccion || content);
-                        break;
-
-                case "TransaccionesLista":
-                        mostrarHistorialTransacciones(content.transacciones || []);
-                        break;
-
-                case "PropiedadVendida":
-                        actualizarJugador(content.jugadorId, { saldo: content.saldo });
-                        const jugadorVendido = Juego.jugadores.find((item) => item.id === content.jugadorId);
-                        if (jugadorVendido) {
-                                jugadorVendido.propiedades = (jugadorVendido.propiedades || []).filter((propiedad) => propiedad !== content.propiedad);
-                        }
-                        mostrarMensaje("success", "Propiedad vendida", `${content.jugador} vendió ${content.propiedad}.`);
-                        mostrarJuego();
-                        break;
-
-                case "AlquilerPagado":
-                        cerrarModal();
-                        actualizarJugador(content.jugadorId, { saldo: content.saldo });
-                        actualizarJugador(content.propietarioId, { saldo: content.saldoPropietario });
-                        mostrarJuego();
-                        break;
-
-                case "CartaEvento":
-                case "PremioSalida":
-                        cerrarModal();
-                        actualizarJugador(content.jugadorId, { saldo: content.saldo });
-                        if (content.descripcion) mostrarMensaje("message", "Carta de evento", content.descripcion, true);
-                        mostrarJuego();
-                        break;
-
-                case "Bancarrota":
-                        cerrarModal();
-                        mostrarMensaje("error", "Bancarrota", `${content.jugador} no pudo pagar y queda fuera de la partida.`);
-                        break;
-
-                case "FinTurno":
-                        cerrarModal();
-                        break;
-
-                case "JugadorEliminado":
-                        actualizarJugador(content.jugadorId, { activo: false });
-                        mostrarJuego();
-                        break;
-
-                case "CompraPropiedad":
-                        mostrarCompra(content);
-                        break;
-
-                case "SolicitarVenta":
-                        Juego.modoPropiedad = "sell";
-                        Juego.propiedadesPendientes = [];
-                        mostrarAcciones("venta");
-                        break;
-
-                case "PropiedadesVenta":
-                        if (content.propiedad) Juego.propiedadesPendientes.push({ index: content.indice, name: content.propiedad });
-                        if (Juego.modoPropiedad === "view") mostrarPropiedades();
-                        if (content.mensaje) {
-                                mostrarMensaje("message", "Propiedades", content.mensaje);
+                        actualizarJuego();
+                        if ((content.tipo || "").toLowerCase() === "continuar") {
                                 mostrarAcciones("continuar");
+                                return;
                         }
+
+                        mostrarAcciones(content.tipo || "turno");
                         break;
 
-                case "SolicitarContinuar":
+                // Caso de desbloquear el turno de un jugador
+                case Protocolo.DesbloquearTurno:
+                        Juego.idJugadorDesbloqueado = content.jugadorId;
+                        cerrarModal();
+
+                        $("#gameNotice").textContent = "Turno desbloqueado. Ya puedes actuar.";
+
+                        mostrarAcciones("turno");
+
+                        mostrarMensaje("success", "Jugador verificado", "Ya puedes usar tu turno.");
+                        break;
+
+                // Caso de finalizar turno
+                case Protocolo.FinTurno:
+                        cerrarModal();
+                        break;
+
+
+
+                // Caso de continuar
+                case Protocolo.Continuar:
                         mostrarAcciones("continuar");
                         break;
 
-                case "JuegoTerminado":
-                        mostrarResultados(content);
-                        break;
 
-                case "Ganador":
-                        mostrarMensaje("success", "Partida decidida", `Ganó ${content.jugador}.`);
-                        break;
 
-                case "ErrorAccion":
-                case "OpcionInvalida":
-                case "OpcionCompraInvalida":
+                // Caso de error
+                case Protocolo.ErrorAccion:
                         mostrarMensaje("error", "Acción no disponible", content.mensaje || "Acción inválida.");
                         break;
 
+
+
+                // Caso de mostrar el resultado de los dados
+                case Protocolo.DadosLanzados:
+                        mostrarResultadoDados(content);
+                        break;
+
+
+
+                // Caso de compra de propiedad
+                case Protocolo.CompraPropiedad:
+                        mostrarCompra(content);
+                        break;
+
+                // Caso de propiedad comprada
+                case Protocolo.PropiedadComprada:
+                        cerrarModal();
+
+                        const jugadorIdCompra = content.jugadorId ?? content.id ?? content.jugador;
+
+                        const jugadorCompra = obtenerJugadorPorId(jugadorIdCompra);
+                        if (jugadorCompra) {
+                                jugadorCompra.saldo = content.saldo ?? jugadorCompra.saldo;
+                                jugadorCompra.propiedades = [...(jugadorCompra.propiedades || []), content.propiedad];
+                        }
+
+                        const property = Juego.tablero.find((item) => item.nombre === content.propiedad);
+                        if (property) property.propietario = jugadorIdCompra;
+
+                        actualizarJuego();
+                        break;
+
+
+
+                // Caso de venta de propiedad
+                case Protocolo.VentaPropiedad:
+                        if (content.mensaje) {
+                                mostrarMensaje("message", "Venta de propiedad", content.mensaje, true);
+                                return;
+                        }
+
+                        if (Array.isArray(content.propiedades) && content.propiedades.length > 0) {
+                                abrirModalVentaPropiedades(content.propiedades);
+                                return;
+                        }
+
+                        mostrarMensaje("message", "Venta de propiedad", "No tienes propiedades para vender en este momento.", true);
+                        break;
+
+                // Caso de propiedad vendida
+                case Protocolo.PropiedadVendida:
+                        cerrarModalVentaPropiedades();
+
+                        const jugadorIdVenta = content.jugadorId ?? content.id ?? content.jugador;
+                        const jugadorVendido = obtenerJugadorPorId(jugadorIdVenta);
+
+                        if (jugadorVendido) {
+                                jugadorVendido.saldo = content.saldo ?? jugadorVendido.saldo;
+                                jugadorVendido.propiedades = (jugadorVendido.propiedades || []).filter((propiedad) => propiedad !== content.propiedad);
+                        }
+
+                        mostrarMensaje("success", "Propiedad vendida", `${content.propiedad} fue vendida correctamente.`, true, 2600);
+                        mostrarJuego();
+                        break;
+
+
+
+                // Caso de pagar un alquiler
+                case Protocolo.AlquilerPagado:
+                        cerrarModal();
+
+                        actualizarJugador(content.jugadorId ?? content.id, { saldo: content.saldo });
+
+                        actualizarJugador(content.propietarioId, { saldo: content.saldoPropietario });
+
+                        actualizarJuego();
+                        break;
+
+
+
+
+                // Caso de solicitar el pago de un jugador
+                case Protocolo.PagoRFID:
+                        const nombreJugadorPago = content.jugador || obtenerNombreJugadorPorId(content.jugadorId ?? content.id ?? content.jugador);
+
+                        const montoPago = content.monto ?? 0;
+                        const conceptoPago = content.concepto || "Pago";
+                        const mensajePago = `${nombreJugadorPago} debe pagar ${montoPago} CRC por ${conceptoPago.toLowerCase()}.`;
+
+                        if (!(conceptoPago.toLowerCase()).includes("carta de evento")) {
+                                mostrarMensaje("message", "Pago requerido", mensajePago, true, 3500);
+                        }
+
+                        $("#modalEyebrow").textContent = "Pago requerido";
+                        $("#modalTitle").textContent = "Confirma el pago";
+                        $("#nameStep").classList.add("hidden");
+                        $("#rfidStep").classList.remove("hidden");
+                        $("#rfidStatus").textContent = `${conceptoPago}: acerca la tarjeta de ${nombreJugadorPago} al lector.`;
+                        $("#authModal").dataset.lockDismiss = "true";
+                        $("#authModal").classList.remove("hidden");
+                        $("#closeModal").classList.add("hidden");
+                        break;
+
+
+
+                // Caso de jugador en bancarrota
+                case Protocolo.Bancarrota:
+                        cerrarModal();
+
+                        mostrarMensaje("error", "Bancarrota", `${obtenerNombreJugadorPorId(content.jugadorId ?? content.id ?? content.jugador)} no pudo pagar y queda fuera de la partida.`);
+
+                        break;
+
+                // Caso de jugador eliminado
+                case Protocolo.JugadorEliminado:
+                        actualizarJugador(content.jugadorId ?? content.id, { activo: false });
+
+                        actualizarJuego();
+                        break;
+
+
+
+                // Caso de mover un jugador
+                case Protocolo.JugadorMovido:
+                        const jugadorIdMovimiento = content.jugadorId ?? content.id ?? content.jugador;
+
+                        const casillaNombreMovimiento = content.casilla ?? obtenerNombreCasillaPorId(content.posicion);
+
+                        Juego.slotAnimadoId = content.posicion ?? content.id ?? 1;
+                        actualizarJugador(jugadorIdMovimiento, { posicion: content.posicion ?? 1, posicionNombre: casillaNombreMovimiento });
+
+                        mostrarEvento("Movimiento", `${obtenerNombreJugadorPorId(jugadorIdMovimiento)} llegó a ${casillaNombreMovimiento}.`, 2200);
+
+                        actualizarJuego();
+                        break;
+
+
+
+                // Caso de avisos de la carcel
+                case Protocolo.JugadorCarcel:
+                        mostrarEvento("Cárcel", `${content.mensaje}`, 2400);
+                        break;
+
+
+
+                // Caso de perder el turno
+                case Protocolo.TurnoPerdido:
+                        mostrarEvento("Turno perdido", `${obtenerNombreJugadorPorId(content.jugadorId ?? content.id ?? content.jugador)} pierde un turno.`);
+                        break;
+
+
+
+                // Caso de premio de salida
+                case Protocolo.PremioSalida:
+                        mostrarMensaje("message", "Premio de salida", content.descripcion, true, 2600);
+
+                        cerrarModal();
+
+                        actualizarJugador(content.jugadorId ?? content.id, { saldo: content.saldo });
+
+                        actualizarJuego();
+                        break;
+
+                // Caso de carta de evento
+                case Protocolo.CartaEvento:
+                        if (content.tipo === "VayaCarcel") {
+                                mostrarMensaje("message", "Carta de evento", content.descripcion, true);
+
+                                mostrarEvento("Cárcel", `${obtenerNombreJugadorPorId(content.jugadorId ?? content.id ?? content.jugador)} fue enviado a la cárcel.`, 2400);
+
+                        } else {
+                                mostrarMensaje("message", "Carta de evento", content.descripcion, true);
+                        }
+                        cerrarModal();
+
+                        actualizarJugador(content.jugadorId ?? content.id, { saldo: content.saldo });
+
+                        actualizarJuego();
+                        break;
+
+
+
+                // Caso de mostrar la última transacción
+                case Protocolo.UltimaTransaccion:
+                        const transaccionActiva = content.transaccion || content;
+                        if (Juego.mostrandoEvento) {
+                                Juego.reciboPendiente = transaccionActiva;
+                                return;
+                        }
+                        mostrarUltimaTransaccion(transaccionActiva);
+                        break;
+
+                // Caso de mostrar la primera transacción
+                case Protocolo.PrimeraTransaccion:
+                        mostrarTransaccion(content.transaccion || content, "Primera transacción");
+                        break;
+
+                // Caso de mostrar todas las transacciones
+                case Protocolo.Transacciones:
+                        mostrarHistorialTransacciones(content.transacciones || [], "Todas las transacciones");
+                        break;
+
+                // Caso de mostrar las transacciones de un jugador
+                case Protocolo.TransaccionesPorJugador:
+                        if ((content.transacciones || []).length === 0) {
+                                mostrarTransaccion(null, `Transacciones de ${content.jugador || "jugador"}`);
+                                return;
+                        }
+
+                        mostrarHistorialTransacciones(content.transacciones || [], `Transacciones de ${content.jugador || "jugador"}`);
+                        break;
+
+                // Caso de mostrar las transacciones de un tipo
+                case Protocolo.TransaccionesPorTipo:
+                        if ((content.transacciones || []).length === 0) {
+
+                                mostrarTransaccion(null, `Transacciones tipo ${content.tipo || "solicitado"}`);
+                                return;
+                        }
+                        mostrarHistorialTransacciones(content.transacciones || [], `Transacciones tipo ${content.tipo || "solicitado"}`);
+                        break;
+
+
+
+                // Caso de mensaje general
                 default:
                         if (content.mensaje || content.descripcion) mostrarMensaje("message", "Actualización", content.mensaje || content.descripcion, true);
                         break;
         }
 }
 
+// Función para insertar o actualizar un jugador
 function insertarJugador(player) {
+
+        // Insertar jugador
+        const basePlayer = {
+                id: player.id,
+                nombre: player.nombre,
+                saldo: 1000,
+                posicion: 1,
+                posicionNombre: "Salida",
+                activo: true,
+                propiedades: []
+        };
+
+        // Actualizar jugador
         const existing = Juego.jugadores.findIndex((item) => item.id === player.id);
-        if (existing >= 0) Juego.jugadores[existing] = { ...Juego.jugadores[existing], ...player };
-        else Juego.jugadores.push(player);
+        if (existing >= 0) {
+                Juego.jugadores[existing] = {
+                        ...basePlayer,
+                        ...Juego.jugadores[existing],
+                        ...player
+                };
+                return;
+        }
+
+        Juego.jugadores.push({ ...basePlayer, ...player });
 }
 
+// Función para actualizar un jugador
 function actualizarJugador(id, changes) {
         const player = Juego.jugadores.find((item) => item.id === id);
         if (player) Object.assign(player, changes);
 }
 
-function mostrarLobby() {
+// Getter de jugador por id
+function obtenerJugadorPorId(id) {
+        const identificador = Number(id);
+        if (!Number.isFinite(identificador)) return null;
+        return Juego.jugadores.find((item) => Number(item.id) === identificador) ?? null;
+}
+
+// Getter de nombre de  jugador por id
+function obtenerNombreJugadorPorId(id) {
+        const jugador = obtenerJugadorPorId(id);
+        if (jugador?.nombre) return jugador.nombre;
+
+        const identificador = Number(id);
+        if (id == null || id === undefined || id === "" || !Number.isFinite(identificador)) return "Jugador";
+        return `Jugador ${identificador + 1}`;
+}
+
+// Getter de casilla por id
+function obtenerNombreCasillaPorId(id) {
+        return Juego.tablero.find((item) => item.id === id)?.nombre ?? "Casilla";
+}
+
+// Función para actualizar el lobby
+function actualizarLobby() {
         const players = Juego.jugadores;
+
         const container = $("#lobbyPlayers");
         container.innerHTML = "";
+
         for (let id = 0; id < 4; id += 1) {
                 const player = players.find((item) => item.id === id);
+
                 const card = document.createElement("article");
+
                 card.className = `lobby-seat ${colores[id]}`;
-                card.innerHTML = `<span class="seat-number">0${id + 1}</span><div><p>${player ? escapeHtml(player.nombre) : "Asiento disponible"}</p><small>${player ? "Registrado" : "Listo para conectar"}</small></div>`;
+
+                card.innerHTML = `<span class="seat-number">0${id + 1}</span><div><p>${player ? escapeHtml(player.nombre) : "Espacio disponible"}</p><small>${player ? "Registrado" : "Listo para conectar"}</small></div>`;
+
                 const button = document.createElement("button");
                 button.className = player ? "secondary-button" : "primary-button";
+
                 button.textContent = player ? "Verificar" : "Conectar";
+
                 button.addEventListener("click", () => player ? abrirVerificador(id) : abrirRegistro(id));
+
                 card.append(button);
+
                 container.append(card);
         }
+
         $("#lobbyCount").textContent = `${players.length} / 4`;
         $("#startGameButton").disabled = players.length !== 4;
         $("#lobbyStatus").textContent = players.length === 4 ? "Mesa completa" : "Esperando jugadores";
-        $("#lobbyHint").textContent = players.length === 4 ? "Todos los jugadores pueden iniciar la partida." : "Conecta los cuatro asientos para habilitar la partida.";
+        $("#lobbyHint").textContent = players.length === 4 ? "Ya se puede iniciar la partida." : "Conecta los cuatro jugadores para habilitar la partida.";
 }
 
-function mostrarJuego() {
-        $("#turnNumber").textContent = Juego.turno;
+// Función para actualizar el juego
+function actualizarJuego() {
+        $("#turnNumber").textContent = Juego.turno + 1;
         const active = Juego.jugadores.find((player) => player.id === Juego.idJugadorActual);
+        $("#activePlayerPanel").className = `panel active-panel ${colores[active?.id]}`;
+        $("#activePlayerToken").textContent = active?.id + 1;
+        $("#activePlayerToken").className = `token ${colores[active?.id]}`;
+        $("#activePlayerText").className = `eyebrow ${colores[active?.id]}`;
         $("#activePlayerName").textContent = active?.nombre || "Esperando turno";
-        $("#activePlayerDetails").textContent = active ? `${active.saldo} CRC · ${active.posicionNombre || "En el tablero"}` : "Usa el lector RFID para desbloquear sus acciones.";
-        $("#stateLabel").textContent = `${Juego.jugadores.length} jugadores sincronizados`;
-        mostrarTablero();
-        mostrarJugadores();
+        $("#activePlayerDetails").textContent = active ? `Saldo: ${active.saldo} CRC · Ubicación: ${active.posicionNombre || "En el tablero"}` : "Usa el lector RFID para desbloquear sus acciones.";
+
+        actualizarTablero();
+
+        actualizarJugadores();
 }
 
-function mostrarTablero() {
+// Función para actualizar el tablero
+function actualizarTablero() {
         const board = $("#board");
+
         board.innerHTML = "";
+
         Juego.tablero.forEach((slot, index) => {
                 const playersHere = Juego.jugadores.filter((player) => player.posicion === slot.id && player.activo);
+
                 const card = document.createElement("article");
                 const shouldAnimate = Juego.slotAnimadoId === slot.id;
                 card.className = `slot ${slot.tipo} ${playersHere.length ? "occupied" : ""} ${shouldAnimate ? "jump" : ""}`;
+
                 const position = posicionTabla(index, 7);
                 card.style.gridColumn = position.column;
                 card.style.gridRow = position.row;
-                card.innerHTML = `<span class="slot-id">${String(slot.id).padStart(2, "0")}</span><h3>${escapeHtml(slot.nombre)}</h3>${slot.precio ? `<p>${slot.precio} CRC</p>` : "<p>Casilla especial</p>"}<div class="tokens">${playersHere.map((player) => `<span class="token ${colores[player.id] || "coral"}" title="${escapeHtml(player.nombre)}">${player.id + 1}</span>`).join("")}</div>`;
+
+                card.innerHTML = `<span class="slot-id">${String(slot.id).padStart(2, "0")}</span><h3>${escapeHtml(slot.nombre)}</h3>${slot.precio ? `<p>${slot.precio} CRC</p>` : ""}<div class="tokens">${playersHere.map((player) => `<span class="token ${colores[player.id] || "coral"}" title="${escapeHtml(player.nombre)}">${player.id + 1}</span>`).join("")}</div>`;
+
                 board.append(card);
         });
+
+        // Animación de la casilla
         if (Juego.slotAnimadoId != null) {
                 setTimeout(() => {
                         Juego.slotAnimadoId = null;
-                        mostrarTablero();
+                        actualizarTablero();
                 }, 420);
         }
 }
 
+// Función para obtener la posición de una casilla en el tablero
 function posicionTabla(index, size) {
         if (index < size) return { row: 1, column: index + 1 };
         if (index < size * 2 - 1) return { row: index - size + 2, column: size };
@@ -525,119 +807,146 @@ function posicionTabla(index, size) {
         return { row: size - (index - (size * 3 - 3)), column: 1 };
 }
 
-function mostrarJugadores() {
+// Función para actualizar los jugadores
+function actualizarJugadores() {
         const container = $("#playerCards");
-        container.innerHTML = Juego.jugadores.map((player) => `<article class="player-card ${player.id === Juego.idJugadorActual ? "active" : ""} ${colores[player.id] || "coral"}"><div class="player-card-top"><span class="token">${player.id + 1}</span><strong>${escapeHtml(player.nombre)}</strong><span class="player-status">${player.activo ? "Activo" : "Fuera"}</span></div><div class="player-balance">${player.saldo} <small>CRC</small></div><p>${escapeHtml(player.posicionNombre || "Sin posición")}</p><div class="property-tags">${(player.propiedades || []).map((property) => `<span>${escapeHtml(property)}</span>`).join("") || "Sin propiedades"}</div></article>`).join("");
+
+        container.innerHTML = Juego.jugadores.map((player) => `<article class="player-card ${player.id === Juego.idJugadorActual ? "active" : ""} ${colores[player.id] || "coral"}"><div class="player-card-top"><span class="token ${colores[player.id] || "coral"}">${player.id + 1}</span><strong>${escapeHtml(player.nombre)}</strong><span class="player-status">${player.activo ? "En juego" : "Fuera de juego"}</span></div><div class="player-balance">${player.saldo} <small>CRC</small></div><p>${escapeHtml(player.posicionNombre || "Sin posición")}</p><div class="property-tags">${(player.propiedades || []).map((property) => `<span>${escapeHtml(property)}</span>`).join("") || "Sin propiedades"}</div></article>`).join("");
 }
 
+// Función para bloquear los botones
+function bloquearAcciones() {
+        document.querySelectorAll("#actionArea button").forEach((button) => {
+                if (button.dataset.action !== "desbloquear") {
+                        button.disabled = true;
+                }
+        });
+}
+
+// Función para mostrar las acciones
 function mostrarAcciones(type) {
         const area = $("#actionArea");
         area.innerHTML = "";
+
         if (type === "turno") {
                 if (Juego.idJugadorDesbloqueado !== Juego.idJugadorActual) {
-                        area.append(botonAccion("Desbloquear turno", "desbloquear", "primary-button"));
+                        area.append(botonAccion("Verificar acceso", "desbloquear", "primary-button"));
+
                         $("#gameNotice").textContent = "Verifica tu tarjeta una vez para habilitar el turno.";
+
                 } else {
-                        area.append(botonAccion("Lanzar dados", "dice", "primary-button"), botonAccion("Vender propiedad", "sell", "secondary-button"));
+
+                        area.append(botonAccion("Lanzar dados", "dado", "primary-button"), botonAccion("Vender propiedad", "venta", "secondary-button"));
                 }
+
         } else if (type === "compra") {
+
                 area.append(botonAccion("Comprar", "comprar", "primary-button"), botonAccion("Pasar", "rechazar", "secondary-button"));
+
         } else if (type === "venta") {
-                const input = document.createElement("input");
-                input.id = "saleIndex";
-                input.type = "number";
-                input.min = "1";
-                input.placeholder = "Número de propiedad";
-                area.append(input, botonAccion("Confirmar venta", "venta", "primary-button"));
+                area.append(botonAccion("Solicitar venta", "venta", "primary-button"));
         } else {
+
                 area.append(botonAccion("Continuar", "continuar", "primary-button"));
         }
+
+        document.querySelectorAll("#actionArea button").forEach((button) => {
+                button.disabled = false;
+        });
 }
 
-function mostrarPropiedades() {
-        const area = $("#actionArea");
-        area.innerHTML = "";
-        const list = document.createElement("div");
-        list.className = "property-list";
-        list.innerHTML = Juego.propiedadesPendientes.length
-                ? Juego.propiedadesPendientes.map((property) => `<span>${property.index}. ${escapeHtml(property.name)}</span>`).join("")
-                : "<span>Sin propiedades adquiridas.</span>";
-        area.append(list, botonAccion("Continuar", "continuar", "primary-button"));
-}
-
+// Función para mostrar la compra
 function mostrarCompra(content) {
         if (!content.propiedad) return;
         $("#activePlayerDetails").textContent = `${content.propiedad} · ${content.precio} CRC`;
         mostrarAcciones("compra");
 }
 
+function abrirModalVentaPropiedades(propiedades) {
+        const container = $("#propertySaleList");
+        container.innerHTML = "";
+
+        if (!Array.isArray(propiedades) || propiedades.length === 0) {
+                mostrarMensaje("message", "Venta de propiedad", "No tienes propiedades para vender.", true);
+                return;
+        }
+
+        propiedades.forEach((propiedad) => {
+                const button = document.createElement("button");
+                button.className = "secondary-button";
+                button.textContent = `${propiedad.nombre} · ${propiedad.precio} CRC`;
+                button.addEventListener("click", () => {
+                        $("#propertySaleModal").classList.add("hidden");
+                        enviarMensaje(Protocolo.AccionJugador, {
+                                id: Juego.idJugadorActual,
+                                accion: "venta",
+                                valor: String(propiedad.id ?? propiedad.nombre)
+                        });
+                });
+                container.append(button);
+        });
+
+        $("#propertySaleModal").classList.remove("hidden");
+}
+
+function cerrarModalVentaPropiedades() {
+        $("#propertySaleModal").classList.add("hidden");
+}
+
+// Función para crear botones
 function botonAccion(label, action, className) {
         const button = document.createElement("button");
+
         button.className = className;
+        button.dataset.action = action;
         button.textContent = label;
+
         button.addEventListener("click", () => {
-                const value = action === "venta" ? $("#saleIndex")?.value : action;
-                if (action === "venta" && !value) return mostrarMensaje("error", "Venta no disponible", "Indica el número de propiedad.");
+                if (action === "venta") {
+                        enviarMensaje(Protocolo.AccionJugador, { id: Juego.idJugadorActual, accion: action, valor: action });
+                        button.disabled = true;
+                        return;
+                }
+
                 if (action === "desbloquear") abrirDesbloqueo();
-                if (action === "dice") mostrarAnimacionDados();
-                enviarMensaje("AccionJugador", { id: Juego.idJugadorActual, accion: action, valor: value || action });
+
+                if (action === "dado") mostrarAnimacionDados();
+
+                if (action === "continuar") {
+                        enviarMensaje(Protocolo.AccionJugador, { id: Juego.idJugadorActual, accion: action, valor: action });
+                        return;
+                }
+
+                enviarMensaje(Protocolo.AccionJugador, { id: Juego.idJugadorActual, accion: action, valor: action });
                 if (action !== "continuar") button.disabled = true;
         });
         return button;
 }
 
+// Función para solicitar las transacciones
 function solicitarTransacciones() {
-        enviarMensaje("SolicitarTransacciones");
+        abrirMenuTransacciones();
 }
 
-function mostrarEvento(label, message, duration = 2800) {
-        Juego.colaEventos.push({ label, message, duration });
-        if (Juego.mostrandoEvento) return;
-
-        const procesarSiguienteEvento = () => {
-                const siguiente = Juego.colaEventos.shift();
-                if (!siguiente) {
-                        Juego.mostrandoEvento = false;
-                        $("#eventPopup").classList.add("hidden");
-                        $("#eventPopup").onclick = null;
-                        return;
-                }
-
-                Juego.mostrandoEvento = true;
-                $("#eventPopupLabel").textContent = siguiente.label;
-                $("#eventPopupText").textContent = siguiente.message;
-                $("#eventPopup").classList.remove("hidden");
-                $("#eventPopup").onclick = () => {
-                        clearTimeout(mostrarEvento.timer);
-                        $("#eventPopup").classList.add("hidden");
-                        procesarSiguienteEvento();
-                };
-
-                clearTimeout(mostrarEvento.timer);
-                mostrarEvento.timer = setTimeout(() => {
-                        $("#eventPopup").classList.add("hidden");
-                        procesarSiguienteEvento();
-                }, siguiente.duration);
-        };
-
-        procesarSiguienteEvento();
-}
-
+// Función para mostrar la animación de los dados
 function mostrarAnimacionDados() {
         const popup = $("#eventPopup");
         const label = $("#eventPopupLabel");
         const text = $("#eventPopupText");
 
-        label.textContent = "Lanzando dados";
-        popup.classList.remove("hidden");
-        popup.onclick = () => {
-                clearInterval(mostrarAnimacionDados.timer);
-                popup.classList.add("hidden");
-        };
+        Juego.dadosAnimando = true;
+        popup.onclick = null;
 
+        label.textContent = "Lanzando dados";
+
+        popup.classList.remove("hidden");
+        bloquearAcciones();
+
+        // Render de dados cambiando
         const render = () => {
                 const dado1 = Math.floor(Math.random() * 6) + 1;
                 const dado2 = Math.floor(Math.random() * 6) + 1;
+
                 text.innerHTML = `<div class="dice-row"><span class="dice-box">${dado1}</span><span class="dice-box">${dado2}</span></div><div class="dice-pending"># #</div>`;
         };
 
@@ -646,66 +955,184 @@ function mostrarAnimacionDados() {
         mostrarAnimacionDados.timer = setInterval(render, 120);
 }
 
+// Función para mostrar el resultado de los dados
 function mostrarResultadoDados(content) {
         clearInterval(mostrarAnimacionDados.timer);
+
+        Juego.dadosAnimando = false;
+
         const popup = $("#eventPopup");
         const label = $("#eventPopupLabel");
         const text = $("#eventPopupText");
 
         label.textContent = "Resultado de dados";
-        text.innerHTML = `<div class="dice-row"><span class="dice-box">${content.dado1}</span><span class="dice-box">${content.dado2}</span></div><div class="dice-result">${content.dado1} + ${content.dado2} = ${content.resultado}</div>`;
+
+        text.innerHTML = `<div class="dice-row"><span class="dice-box gold">${content.dado1}</span><span class="dice-box gold">${content.dado2}</span></div><div class="dice-result">${content.dado1} + ${content.dado2} = ${content.resultado}</div>`;
+
         popup.classList.remove("hidden");
-        popup.onclick = () => popup.classList.add("hidden");
+
+        popup.onclick = () => {
+                popup.classList.add("hidden");
+        };
 
         clearTimeout(mostrarResultadoDados.timer);
+
         mostrarResultadoDados.timer = setTimeout(() => popup.classList.add("hidden"), 3200);
 }
 
-function formatearTransaccion(item) {
-        return `${new Date(item.fechaHora).toLocaleString()}\n${item.jugadorOrigen || "Banco"} → ${item.jugadorDestino || "Banco"}\n${item.tipo}: ${item.monto} CRC\n${item.descripcion}`;
+// Función para convertir las transacciones
+function parsearTransaccion(item) {
+        if (!item) return null;
+
+        const base = item.transaccion ?? item;
+
+        if (!base || typeof base !== "object") return null;
+
+        const claves = Object.keys(base).filter((key) => base[key] !== undefined && base[key] !== null && base[key] !== "");
+
+        if (claves.length === 0) return null;
+        return {
+                id: base.id ?? base.ID ?? 0,
+                fechaHora: base.fechaHora ?? base.FechaHora ?? new Date().toISOString(),
+                numeroTurno: base.numeroTurno ?? base.NumeroTurno ?? 0,
+                tipo: base.tipo ?? base.Tipo ?? "Transaccion",
+                jugadorOrigen: base.jugadorOrigen ?? base.JugadorOrigen ?? "Banco",
+                jugadorDestino: base.jugadorDestino ?? base.JugadorDestino ?? "Banco",
+                monto: base.monto ?? base.Monto ?? 0,
+                descripcion: base.descripcion ?? base.Descripcion ?? "Sin descripción"
+        };
 }
 
-function mostrarHistorialTransacciones(transacciones) {
-        const contenido = (transacciones || []).length
-                ? transacciones.map((item) => formatearTransaccion(item)).join("\n\n")
-                : "No hay transacciones registradas todavía.";
+// Función para formatear las transacciones
+function formatearTransaccion(item) {
+        const transaccion = parsearTransaccion(item);
+        if (!transaccion) return "No hay transacciones registradas.";
+        return `---------------------------------\nFecha: ${new Date(transaccion.fechaHora).toLocaleString()}\nMovimiento: ${transaccion.jugadorOrigen || "Banco"} → ${transaccion.jugadorDestino || "Banco"}\nTipo: ${transaccion.tipo}\nTotal: ${transaccion.monto} CRC\nConcepto: ${transaccion.descripcion}\n---------------------------------`;
+}
 
+// Función para mostrar una transacción
+function mostrarTransaccion(transaccion, titulo = "Última transacción") {
+        const item = parsearTransaccion(transaccion);
+
+        $("#lastTransactionModal h2").textContent = titulo;
+
+        if (!item) {
+                $("#lastTransactionText").textContent = "No hay transacciones registradas.";
+
+                $("#lastTransactionModal").classList.remove("hidden");
+                return;
+        }
+
+        $("#lastTransactionText").textContent = formatearTransaccion(item);
+
+        $("#lastTransactionModal").classList.remove("hidden");
+}
+
+// Función para mostrar el historial de transacciones
+function mostrarHistorialTransacciones(transacciones, titulo = "Transacciones") {
+        const items = (transacciones || []).map((item) => parsearTransaccion(item)).filter(Boolean);
+
+        const contenido = items.length
+                ? items.map((item) => formatearTransaccion(item)).join("\n\n")
+                : "No hay transacciones registradas.";
+
+        $("#transactionHistoryModal h2").textContent = titulo;
         $("#transactionHistoryText").textContent = contenido;
         $("#transactionHistoryModal").classList.remove("hidden");
 }
 
+// Función para mostrar la última transacción
 function mostrarUltimaTransaccion(content) {
-        const transaccion = {
-                fechaHora: content.fechaHora || new Date().toISOString(),
-                jugadorOrigen: content.jugadorOrigen || "Banco",
-                jugadorDestino: content.jugadorDestino || "Banco",
-                tipo: content.tipo || "Transaccion",
-                monto: content.monto ?? 0,
-                descripcion: content.descripcion || "Sin descripción"
-        };
-
-        $("#lastTransactionText").textContent = formatearTransaccion(transaccion);
-        $("#lastTransactionModal").classList.remove("hidden");
+        const transaccion = parsearTransaccion(content);
+        mostrarTransaccion(transaccion, "Última transacción");
 }
 
+// Función para ocultar el historial de transacciones
 function ocultarHistorialTransacciones() {
         $("#transactionHistoryModal").classList.add("hidden");
 }
 
+// Función para ocultar la última transacción
 function ocultarUltimaTransaccion() {
         $("#lastTransactionModal").classList.add("hidden");
 }
 
+// Función para abrir el menu de transacciones
+function abrirMenuTransacciones() {
+        $("#transactionMenuModal").classList.remove("hidden");
+}
+
+// Función para cerrar el menu de transacciones
+function cerrarMenuTransacciones() {
+        $("#transactionMenuModal").classList.add("hidden");
+}
+
+// Función para consultar la última transacción
+function consultarUltimaTransaccion() {
+        cerrarMenuTransacciones();
+        enviarMensaje(Protocolo.UltimaTransaccion);
+}
+
+// Función para consultar la primer transacción
+function consultarPrimeraTransaccion() {
+        cerrarMenuTransacciones();
+        enviarMensaje(Protocolo.PrimeraTransaccion);
+}
+
+// Función para consultar las transacciones por jugador
+function consultarTransaccionesPorJugador() {
+        cerrarMenuTransacciones();
+        const jugadores = Array.from({ length: 4 }, (_, index) => {
+                const jugador = Juego.jugadores.find((item) => item.id === index);
+
+                return jugador ? jugador.nombre : `Jugador ${index + 1}`;
+        });
+
+        const container = $("#playerSelectorList");
+
+        container.innerHTML = jugadores.map((nombre, index) => `<button class="secondary-button" data-jugador="${escapeHtml(nombre)}">${escapeHtml(nombre)}</button>`).join("");
+
+        $("#playerSelectorModal").classList.remove("hidden");
+        container.querySelectorAll("button[data-jugador]").forEach((button) => {
+                button.addEventListener("click", () => {
+                        $("#playerSelectorModal").classList.add("hidden");
+                        enviarMensaje(Protocolo.TransaccionesPorJugador, { jugador: button.dataset.jugador });
+                });
+        });
+}
+
+// Función para consultar las transacciones por tipo
+function consultarTransaccionesPorTipo() {
+        cerrarMenuTransacciones();
+        $("#typeSelectorModal").classList.remove("hidden");
+}
+
+// Función para consultar todas las transacciones
+function consultarTodasTransacciones() {
+        cerrarMenuTransacciones();
+        enviarMensaje(Protocolo.Transacciones);
+}
+
+// Función para mostrar los resultados
 function mostrarResultados(content) {
-        mostrarSeccion("results");
-        $("#winnerName").textContent = content.ganador || "Tenemos un ganador";
-        $("#winnerMessage").textContent = "La partida terminó. Este es el resultado final de la mesa.";
+        cambiarSeccion("results");
+
+        const ganadorNombre = content.ganador || (Number.isFinite(Number(content.ganadorId)) ? obtenerNombreJugadorPorId(content.ganadorId) : "Nadie");
+        const textoGanador = ganadorNombre && ganadorNombre !== "Nadie" ? `Ganador: ${ganadorNombre}` : "Tenemos un ganador";
+
+        $("#winnerName").textContent = textoGanador;
+
+        $("#winnerMessage").textContent = "La partida terminó. Estas son las posiciones.";
+
         $("#resultsList").innerHTML = (content.jugadores || []).map((player, index) => `<div class="result-row"><span class="rank">0${index + 1}</span><strong>${escapeHtml(player.jugador)}</strong><span>${player.saldo} CRC</span></div>`).join("");
 }
 
+// Función para cerrar el juego
 function cerrarJuego() {
         if (Juego.cierreEnCurso) return;
+
         Juego.cierreEnCurso = true;
+
         window.onerror = null;
         window.onunhandledrejection = null;
 
@@ -719,55 +1146,65 @@ function cerrarJuego() {
         $("#eventPopup").classList.add("hidden");
         $("#shutdownOverlay .shutdown-card h2").textContent = "Juego terminado.";
 
+        // Enviar cierre
         try {
+                enviarMensaje(Protocolo.CerrarJuego, {});
                 if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
                         socket.close();
                 }
-                enviarMensaje("CerrarJuego", { motivo: "fin_partida" });
         } catch (_error) {
                 console.warn("No se pudo enviar cierre al servidor.");
         }
-
-        setTimeout(() => {
-                try {
-                        window.close();
-                } catch (_error) {
-                        console.warn("No se pudo cerrar la ventana del cliente.");
-                }
-        }, 250);
 }
 
-function popup(message, error) {
-        $("#toast").classList.toggle("error", Boolean(error));
-        $("#toastText").textContent = message;
-        $("#toast").classList.remove("hidden");
-        clearTimeout(popup.timer);
-        popup.timer = setTimeout(() => $("#toast").classList.add("hidden"), 3200);
-}
-
+// Función para parsear HTML
 function escapeHtml(value) {
         return String(value ?? "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
 }
 
+// Asignación de eventos
 $("#statusModal").addEventListener("click", (event) => {
         if (event.target === $("#statusModal")) ocultarMensaje();
+});
+$("#lastTransactionModal").addEventListener("click", (event) => {
+        if (event.target === $("#lastTransactionModal")) ocultarUltimaTransaccion();
+});
+$("#transactionHistoryModal").addEventListener("click", (event) => {
+        if (event.target === $("#transactionHistoryModal")) ocultarHistorialTransacciones();
 });
 $("#closeModal").addEventListener("click", cerrarModal);
 $("#statusOk").addEventListener("click", ocultarMensaje);
 $("#submitName").addEventListener("click", subirNombre);
 $("#playerName").addEventListener("keydown", (event) => { if (event.key === "Enter") subirNombre(); });
 $("#startGameButton").addEventListener("click", () => {
-        enviarMensaje("IniciarJuego");
+        enviarMensaje(Protocolo.IniciarJuego);
 });
 $("#transactionHistoryButton").addEventListener("click", solicitarTransacciones);
+$("#latestTransactionButton").addEventListener("click", consultarUltimaTransaccion);
+$("#firstTransactionButton").addEventListener("click", consultarPrimeraTransaccion);
+$("#playerTransactionButton").addEventListener("click", consultarTransaccionesPorJugador);
+$("#typeTransactionButton").addEventListener("click", consultarTransaccionesPorTipo);
+$("#allTransactionsButton").addEventListener("click", consultarTodasTransacciones);
+$("#transactionMenuClose").addEventListener("click", cerrarMenuTransacciones);
+$("#playerSelectorClose").addEventListener("click", () => $("#playerSelectorModal").classList.add("hidden"));
+$("#typeSelectorClose").addEventListener("click", () => $("#typeSelectorModal").classList.add("hidden"));
+$("#propertySaleClose").addEventListener("click", cerrarModalVentaPropiedades);
 $("#transactionHistoryClose").addEventListener("click", ocultarHistorialTransacciones);
 $("#lastTransactionClose").addEventListener("click", ocultarUltimaTransaccion);
 $("#endGameButton").addEventListener("click", () => cerrarJuego());
+Array.from(document.querySelectorAll("[data-tipo]")).forEach((button) => {
+        button.addEventListener("click", () => {
+                $("#typeSelectorModal").classList.add("hidden");
+                enviarMensaje(Protocolo.TransaccionesPorTipo, { tipo: button.dataset.tipo });
+        });
+});
 $("#eventPopup").addEventListener("click", () => {
+        if (Juego.dadosAnimando) return;
         $("#eventPopup").classList.add("hidden");
         clearTimeout(mostrarEvento.timer);
         clearTimeout(mostrarResultadoDados.timer);
         clearInterval(mostrarAnimacionDados.timer);
 });
 
-mostrarLobby();
+// Actualizar el lobby al inicio
+actualizarLobby();
