@@ -12,9 +12,10 @@ namespace Proyecto_MonopoTEC.Server
         static async Task Main(string[] args)
         {
 
-            // Debug: Revisar si se usa el Arduino Virtual
-            if (Config.ArduinoVirtual)
+            // Revisar si se usa el Arduino Virtual
+            if (Config.ArduinoVirtual && !Config.Skip)
             {
+#pragma warning disable CS0162
                 RunVirtual();
             }
 
@@ -41,6 +42,7 @@ namespace Proyecto_MonopoTEC.Server
 
         /// <summary>
         /// Función para iniciar el Arduino Virtual
+        /// No forma parte formal del proyecto
         /// </summary>
         static void RunVirtual()
         {
@@ -57,6 +59,8 @@ namespace Proyecto_MonopoTEC.Server
             catch (Exception ex)
             {
                 Console.WriteLine($"No se pudo iniciar el Arduino virtual: {ex.Message}");
+
+                Environment.Exit(1);
             }
         }
     }

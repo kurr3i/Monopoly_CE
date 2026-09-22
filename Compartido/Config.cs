@@ -41,5 +41,11 @@ namespace Proyecto_MonopoTEC.Compartido
                 /// Puerto del servidor web
                 /// </summary>
                 public const int ClientPort = 8080;
+
+
+                /// <summary>
+                /// Debug para saltar autenticación
+                /// </summary>
+                public const bool Skip = false;
         }
 }

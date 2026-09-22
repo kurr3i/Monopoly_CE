@@ -1,4 +1,5 @@
 using System.IO.Ports;
+using Proyecto_MonopoTEC.Compartido;
 
 namespace Proyecto_MonopoTEC.Server.Hardware
 {
@@ -38,6 +39,8 @@ namespace Proyecto_MonopoTEC.Server.Hardware
             {
                 Console.WriteLine("[RFIDDriver] Error al abrir el puerto serial: " + ex.Message);
                 Console.WriteLine("[RFIDDriver] Revisar si el Arduino se encuentra conectado.");
+
+                Environment.Exit(1);
                 return;
             }
         }
@@ -53,6 +56,7 @@ namespace Proyecto_MonopoTEC.Server.Hardware
         /// <exception cref="ArgumentException">Si el mensaje es demasiado largo.</exception>
         public string ReadUID(string message, string CompareUID = "0")
         {
+
             // Verifica la longitud adecuada del mensaje
             if (message.Length > 16)
             {
@@ -71,6 +75,23 @@ namespace Proyecto_MonopoTEC.Server.Hardware
                     // Solicitar UID
                     Console.WriteLine("[RFIDDriver] Solicitando UID...");
                     Console.WriteLine($"[RFIDDriver] Mensaje: {message}");
+
+
+#pragma warning disable CS0162
+                    // DEBUG TEMPORAL PARA SALTAR AUTENTICACIÓN
+                    if (Config.Skip)
+                    {
+
+                        if (CompareUID != "0")
+                        {
+                            return CompareUID;
+                        }
+                        else
+                        {
+                            Random random = new Random();
+                            return random.Next(0, 10000).ToString();
+                        }
+                    }
 
                     // Cuerpo del mensaje
                     _serialPort.WriteLine($"COM_START_READ|{message}|{CompareUID}");

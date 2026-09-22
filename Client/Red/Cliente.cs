@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 using Proyecto_MonopoTEC.Compartido;
 
@@ -22,11 +23,13 @@ namespace Proyecto_MonopoTEC.Client.Red
 
                 private int _ServerPort = 5000;
                 private int _ClientPort = 8080;
+                private string _ServerIp = "127.0.0.1";
 
-                public Cliente(int ServerPort = 5000, int ClientPort = 8080)
+                public Cliente(int ServerPort = 5000, int ClientPort = 8080, string ServerIp = "127.0.0.1")
                 {
                         _ServerPort = ServerPort;
                         _ClientPort = ClientPort;
+                        _ServerIp = ServerIp;
                 }
 
 
@@ -38,10 +41,12 @@ namespace Proyecto_MonopoTEC.Client.Red
                         // Se crea el Socket
                         _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+                        Console.WriteLine($"[Client] Conectando al Servidor en {_ServerIp}:{_ServerPort}");
+
                         try
                         {
                                 // Se conecta al servidor
-                                await _serverSocket.ConnectAsync(new IPEndPoint(IPAddress.Parse(Config.ServerIp), _ServerPort));
+                                await _serverSocket.ConnectAsync(new IPEndPoint(IPAddress.Parse(_ServerIp), _ServerPort));
 
                                 Console.WriteLine("[Client] Cliente conectado al Servidor.");
 
@@ -67,11 +72,13 @@ namespace Proyecto_MonopoTEC.Client.Red
                                 // Caso de error
                                 Console.WriteLine("[Client] No se pudo conectar al Servidor: " + ex.Message);
                                 Console.WriteLine("[Client] Revisar si el Servidor se está ejecutando.");
+                                Environment.Exit(1);
                         }
                         catch (IOException)
                         {
                                 // Caso de error
                                 Console.WriteLine("[Client] La conexión con el Servidor se cerró.");
+                                Environment.Exit(0);
                         }
                         finally
                         {
@@ -93,6 +100,9 @@ namespace Proyecto_MonopoTEC.Client.Red
 
                         Console.WriteLine($"[Client] Cliente esperando App en el puerto {_ClientPort}");
 
+                        // Abrir la página web
+			Process.Start(new ProcessStartInfo($"http://localhost:{Config.ClientPort}") { UseShellExecute = true });
+
                         // Bucle de escucha de mensajes del websocket
                         while (true)
                         {
@@ -109,9 +119,11 @@ namespace Proyecto_MonopoTEC.Client.Red
 
                                         // Se envía el protocolo al App manualmente
                                         await MensajeAlApp(JsonSerializer.Serialize(new Mensaje(
-                                                Protocolo.EnviarProtocolo,
+                                                Protocolo.PasoProtocolo,
                                                 Protocolo.devolverProtocolo()
-                                                )), "Cliente");
+                                                )
+                                                ), "Cliente"
+                                                );
 
 
                                         _ = Task.Run(() => WebSocketHandler(wsContext.WebSocket));
@@ -187,6 +199,8 @@ namespace Proyecto_MonopoTEC.Client.Red
                         {
                                 // Caso de error
                                 Console.WriteLine("[Client] App desconectado del Cliente.");
+                                MensajeAlServer(JsonSerializer.Serialize(new Mensaje(Protocolo.CerrarJuego, new {})));
+                                Environment.Exit(0);
                         }
                         finally
                         {
@@ -237,6 +251,7 @@ namespace Proyecto_MonopoTEC.Client.Red
                         if (_serverWriter == null)
                         {
                                 Console.WriteLine("[Client] No se pudo enviar: No conectado al Servidor.");
+                                Environment.Exit(0);
                                 return;
                         }
 
@@ -245,12 +260,21 @@ namespace Proyecto_MonopoTEC.Client.Red
                                 // Se envía el mensaje
                                 _serverWriter.WriteLine(json);
                                 _serverWriter.Flush();
-                                Console.WriteLine("[Client] App >>> Cliente >>> Servidor: " + json);
+                                Console.WriteLine("[Client] App >>> Cliente >>> Servidor: " + json + "\n");
+
+                                // Comprobación de cierre
+                                if (JsonSerializer.Deserialize<Mensaje>(json)!.Comando == Protocolo.CerrarJuego)
+                                {
+                                        Console.WriteLine("[Client] Conexión cerrada manualmente.");
+                                        Environment.Exit(0);
+                                }
                         }
                         catch (IOException)
                         {
                                 // Caso de error
                                 Console.WriteLine("[Client] No se pudo enviar el mensaje al Servidor: Conexión cerrada.");
+
+                                Environment.Exit(0);
                         }
                 }
 
@@ -277,17 +301,28 @@ namespace Proyecto_MonopoTEC.Client.Red
                                         // Determinar el origen y si es por protocolo
                                         if (origen == "Servidor")
                                         {
-                                                Console.WriteLine("[Client] App <<< Cliente <<< Servidor: " + json);
+                                                Console.WriteLine("[Client] App <<< Cliente <<< Servidor: " + json + "\n");
                                         }
                                         else
                                         {
-                                                Console.WriteLine("[Client] App <<< Cliente: Protocolo");
+                                                Console.WriteLine("[Client] App <<< Cliente: Protocolo \n");
+                                        }
+
+                                        // Comprobación de cierre
+                                        if (JsonSerializer.Deserialize<Mensaje>(json)!.Comando == Protocolo.CerrarJuego)
+                                        {
+                                                Console.WriteLine("[Client] Conexión cerrada manualmente.");
+                                                Environment.Exit(0);
                                         }
                                 }
                                 catch (WebSocketException)
                                 {
                                         // Caso de error
                                         Console.WriteLine("[Client] No se pudo enviar al WebSocket: conexión cerrada.");
+
+                                        MensajeAlServer(JsonSerializer.Serialize(new Mensaje(Protocolo.CerrarJuego, "")));
+
+                                        Environment.Exit(0);
                                 }
                         }
                 }
