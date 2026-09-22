@@ -10,44 +10,39 @@
 
 <body>
         <div class="background-grid" aria-hidden="true"></div>
+
+        <!-- ===== Header ===== -->
         <header class="topbar">
                 <div class="brand"><span class="brand-mark">M</span><span>MonopoTEC</span></div>
-                <div class="connection"><span id="connectionDot" class="dot offline"></span><span
-                                id="connectionText">Conectando...</span></div>
         </header>
 
+        <!-- ===== Secciones principales ===== -->
         <main>
+                <!-- Lobby / registro de jugadores -->
                 <section id="lobbySection" class="screen">
                         <div class="lobby-intro">
-                                <p class="eyebrow">Partida local · 4 jugadores</p>
-                                <h1>La mesa está lista.</h1>
-                                <p class="lead">Nombra cada jugador, verifica su tarjeta RFID y abre la partida cuando
-                                        todos estén en posición.</p>
+                                <h1>Sala de espera</h1>
+                                <p class="lead">Nombra cada jugador, pasa su tarjeta RFID e inicia la partida cuando todos estén en posición.</p>
                         </div>
                         <div class="lobby-layout">
                                 <div class="panel roster-panel">
-                                        <div class="panel-heading"><span>Jugadores</span><strong id="lobbyCount">0 /
-                                                        4</strong></div>
+                                        <div class="panel-heading"><span>Jugadores</span><strong id="lobbyCount">0 / 4</strong></div>
                                         <div id="lobbyPlayers" class="lobby-players"></div>
-                                        <button id="startGameButton" class="primary-button" disabled>Iniciar
-                                                partida</button>
+                                        <button id="startGameButton" class="primary-button" disabled>Iniciar partida</button>
                                 </div>
                                 <aside class="panel lobby-aside">
                                         <p class="eyebrow">Estado de mesa</p>
                                         <h2 id="lobbyStatus">Esperando jugadores</h2>
-                                        <p id="lobbyHint">Conecta un asiento para comenzar la configuración.</p>
-                                        <div class="mini-stats"><span>Servidor</span><strong
-                                                        id="serverStatus">Desconectado</strong></div>
-                                        <div class="mini-stats"><span>Acceso</span><strong>Listo</strong></div>
+                                        <p id="lobbyHint">Conecta los cuatro jugadores para comenzar la partida.</p>
                                 </aside>
                         </div>
                 </section>
 
+                <!-- Tablero principal -->
                 <section id="gameSection" class="screen hidden">
                         <div class="game-heading">
                                 <div>
-                                        <p class="eyebrow">Partida en curso</p>
-                                        <h1>La mesa de MonopoTEC</h1>
+                                        <h1>Tablero de juego</h1>
                                 </div>
                                 <div class="turn-badge"><span>Turno</span><strong id="turnNumber">0</strong></div>
                         </div>
@@ -56,30 +51,25 @@
                                         <div id="board" class="board"></div>
                                 </div>
                                 <aside class="side-column">
-                                        <div class="panel active-panel">
-                                                <p class="eyebrow">Jugador activo</p>
+                                        <div class="panel active-panel" id="activePlayerPanel">
+                                                <p class="eyebrow" id="activePlayerText">
+                                                        <span class="token" id="activePlayerToken">0</span>
+                                                        Jugador actual
+                                                </p>
                                                 <h2 id="activePlayerName">Esperando turno</h2>
-                                                <p id="activePlayerDetails">Usa el lector RFID para desbloquear sus
-                                                        acciones.</p>
+                                                <p id="activePlayerDetails">Usa el lector RFID para desbloquear sus acciones.</p>
                                                 <div id="actionArea" class="action-area"></div>
                                                 <button id="transactionHistoryButton" class="secondary-button">Ver transacciones</button>
-                                                <div id="gameNotice" class="game-notice">El jugador activo debe
-                                                        desbloquear su turno.</div>
+                                                <div id="gameNotice" class="game-notice">El jugador activo debe desbloquear su turno.</div>
                                         </div>
-                                        <div class="players-section">
-                                                <div class="section-heading">
-                                                        <p class="eyebrow">Jugadores</p><span
-                                                                id="stateLabel">Sincronizando...</span>
-                                                </div>
-                                                <div id="playerCards" class="player-cards"></div>
-                                        </div>
+                                        <div id="playerCards" class="player-cards"></div>
                                 </aside>
                         </div>
                 </section>
 
+                <!-- Resultados finales -->
                 <section id="resultsSection" class="screen hidden">
                         <div class="results-hero">
-                                <p class="eyebrow">Partida finalizada</p>
                                 <h1 id="winnerName">Tenemos un ganador.</h1>
                                 <p id="winnerMessage" class="lead">Resultados de la mesa</p>
                         </div>
@@ -91,24 +81,26 @@
                 </section>
         </main>
 
+        <!-- ===== Modales de autenticación y sistema ===== -->
         <div id="authModal" class="modal hidden">
-                <div class="modal-card"><button id="closeModal" class="modal-close" aria-label="Cerrar">×</button>
-                        <p class="eyebrow" id="modalEyebrow">Asiento</p>
+                <div class="modal-card">
+                        <button id="closeModal" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow" id="modalEyebrow">Jugador</p>
                         <h2 id="modalTitle">Verificar tarjeta</h2>
                         <div id="nameStep">
                                 <label for="playerName">Nombre del jugador</label>
-                                <input id="playerName" maxlength="12" autocomplete="off"
-                                        placeholder="Máximo 12 caracteres">
+                                <input id="playerName" maxlength="12" autocomplete="off" placeholder="Máximo 12 caracteres">
                                 <button id="submitName" class="primary-button">Continuar</button>
                                 <p id="nameError" class="error-text"></p>
                         </div>
                         <div id="rfidStep" class="hidden">
                                 <div class="scan-icon">RFID</div>
-                                <p>Acerca la tarjeta al lector del asiento.</p><strong id="rfidStatus">Esperando
-                                        verificación...</strong>
+                                <p>Pasa la tarjeta correspondiente por el lector.</p>
+                                <strong id="rfidStatus">Esperando verificación...</strong>
                         </div>
                 </div>
         </div>
+
         <div id="crashModal" class="modal hidden">
                 <div class="modal-card crash-card">
                         <div class="crash-mark">!</div>
@@ -117,40 +109,97 @@
                         <p id="crashMessage">No se pudo mantener la conexión con el servidor.</p>
                 </div>
         </div>
+
         <div id="statusModal" class="modal hidden">
                 <div id="statusCard" class="modal-card status-card">
                         <div id="statusMark" class="status-mark">i</div>
                         <p id="statusEyebrow" class="eyebrow">Estado</p>
                         <h2 id="statusTitle">Mensaje</h2>
-                        <p id="statusMessage"></p><button id="statusOk" class="primary-button hidden">OK</button>
+                        <p id="statusMessage"></p>
+                        <button id="statusOk" class="primary-button hidden">OK</button>
                 </div>
         </div>
-        <div id="toast" class="toast hidden"><span id="toastText"></span></div>
+
         <div id="shutdownOverlay" class="shutdown-overlay hidden">
                 <div class="shutdown-card">
                         <h2>Juego terminado.</h2>
                 </div>
         </div>
+
         <div id="eventPopup" class="event-popup hidden">
-                <p id="eventPopupLabel">Resultado</p><strong id="eventPopupText"></strong>
+                <p id="eventPopupLabel">Resultado</p>
+                <strong id="eventPopupText"></strong>
         </div>
+
+        <!-- ===== Historial y recibos ===== -->
+        <div id="transactionMenuModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="transactionMenuClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Historial de transacciones</p>
+                        <h2>Ver transacciones</h2>
+                        <div class="transaction-menu-actions">
+                                <button id="latestTransactionButton" class="secondary-button">Última transacción</button>
+                                <button id="firstTransactionButton" class="secondary-button">Primera transacción</button>
+                                <button id="playerTransactionButton" class="secondary-button">Por jugador</button>
+                                <button id="typeTransactionButton" class="secondary-button">Por tipo</button>
+                                <button id="allTransactionsButton" class="primary-button">Todas</button>
+                        </div>
+                </div>
+        </div>
+
+        <div id="playerSelectorModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="playerSelectorClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Jugador</p>
+                        <h2>Selecciona un jugador</h2>
+                        <div id="playerSelectorList" class="transaction-menu-actions"></div>
+                </div>
+        </div>
+
+        <div id="typeSelectorModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="typeSelectorClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Tipo</p>
+                        <h2>Selecciona un tipo</h2>
+                        <div class="transaction-menu-actions">
+                                <button data-tipo="Compra" class="secondary-button">Compra</button>
+                                <button data-tipo="Pago" class="secondary-button">Pago</button>
+                                <button data-tipo="Evento" class="secondary-button">Evento</button>
+                        </div>
+                </div>
+        </div>
+
+        <div id="propertySaleModal" class="modal hidden">
+                <div class="modal-card transaction-card">
+                        <button id="propertySaleClose" class="modal-close" aria-label="Cerrar">×</button>
+                        <p class="eyebrow">Venta</p>
+                        <h2>Selecciona una propiedad</h2>
+                        <div id="propertySaleList" class="transaction-menu-actions"></div>
+                </div>
+        </div>
+
         <div id="transactionHistoryModal" class="modal hidden">
                 <div class="modal-card transaction-card">
                         <button id="transactionHistoryClose" class="modal-close" aria-label="Cerrar">×</button>
-                        <p class="eyebrow">Historial</p>
+                        <p class="eyebrow">Historial de transacciones</p>
                         <h2>Transacciones</h2>
-                        <textarea id="transactionHistoryText" readonly></textarea>
+                        <div class="transaction-decoration">
+                                <textarea id="transactionHistoryText" readonly></textarea>
+                        </div>
                 </div>
         </div>
+
         <div id="lastTransactionModal" class="modal hidden">
                 <div class="modal-card transaction-card">
                         <button id="lastTransactionClose" class="modal-close" aria-label="Cerrar">×</button>
-                        <p class="eyebrow">Última transacción</p>
+                        <p class="eyebrow">Historial de transacciones</p>
                         <h2>Movimiento</h2>
-                        <textarea id="lastTransactionText" readonly></textarea>
+                        <div class="transaction-decoration">
+                                <textarea id="lastTransactionText" readonly></textarea>
+                        </div>
                 </div>
         </div>
+
         <script src="app.js"></script>
 </body>
-
 </html>

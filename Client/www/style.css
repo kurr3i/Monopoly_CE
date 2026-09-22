@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
+/* ===== Variables base y paleta de colores ===== */
 :root {
         --ink: #182126;
         --muted: #6a7778;
@@ -15,6 +16,12 @@
 
 * {
         box-sizing: border-box;
+}
+
+html,
+body {
+        -webkit-user-select: none;
+        user-select: none;
 }
 
 body {
@@ -46,6 +53,7 @@ button:disabled {
         cursor: not-allowed;
 }
 
+/* ===== Fondo y diseños ===== */
 .background-grid {
         position: fixed;
         inset: 0;
@@ -64,6 +72,7 @@ button:disabled {
         align-items: center;
 }
 
+/* ===== Título ===== */
 .brand {
         display: flex;
         gap: 10px;
@@ -84,33 +93,12 @@ button:disabled {
         font-family: 'DM Mono', monospace;
 }
 
-.connection {
-        display: flex;
-        gap: 9px;
-        align-items: center;
-        color: var(--muted);
-        font: 12px 'DM Mono', monospace;
-        text-transform: uppercase;
-}
-
-.dot {
-        width: 8px;
-        height: 8px;
-        background: var(--mint);
-        border-radius: 50%;
-        box-shadow: 0 0 0 5px rgba(117, 185, 156, .18);
-}
-
-.dot.offline {
-        background: var(--coral);
-        box-shadow: 0 0 0 5px rgba(232, 121, 98, .15);
-}
-
 main {
         width: min(1440px, calc(100% - 48px));
         margin: 0 auto 60px;
 }
 
+/* ===== Secciones y tamaños ===== */
 .screen {
         animation: reveal .45s ease both;
 }
@@ -121,7 +109,7 @@ main {
 
 .lobby-intro {
         max-width: 720px;
-        padding: 76px 0 44px;
+        padding: 10px 0 45px;
 }
 
 .eyebrow {
@@ -130,6 +118,22 @@ main {
         font: 500 11px 'DM Mono', monospace;
         letter-spacing: .12em;
         text-transform: uppercase;
+}
+
+.eyebrow.coral {
+        color: var(--coral);
+}
+
+.eyebrow.mint {
+        color: var(--mint);
+}
+
+.eyebrow.gold {
+        color: var(--gold);
+}
+
+.eyebrow.sky {
+        color: var(--sky);
 }
 
 .lobby-intro h1,
@@ -145,8 +149,8 @@ main {
 .lead {
         max-width: 600px;
         margin: 22px 0 0;
-        color: var(--muted);
-        font-size: 17px;
+        color: #464646;
+        font-size: 20px;
         line-height: 1.65;
 }
 
@@ -156,6 +160,7 @@ main {
         gap: 20px;
 }
 
+/* ===== Paneles y jugadores ===== */
 .panel {
         background: rgba(255, 253, 248, .88);
         border: 1px solid var(--line);
@@ -167,12 +172,11 @@ main {
         padding: 28px;
 }
 
-.panel-heading,
-.section-heading {
+.panel-heading {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font: 500 12px 'DM Mono', monospace;
+        font: 500 16px 'DM Mono', monospace;
         text-transform: uppercase;
         letter-spacing: .08em;
 }
@@ -228,8 +232,7 @@ main {
 }
 
 .primary-button,
-.secondary-button,
-.quiet-button {
+.secondary-button {
         padding: 12px 17px;
         font-weight: 700;
 }
@@ -242,13 +245,6 @@ main {
 .secondary-button {
         color: var(--ink);
         background: #e7e2d8;
-}
-
-.quiet-button {
-        padding: 5px 8px;
-        color: var(--muted);
-        background: transparent;
-        font-size: 11px;
 }
 
 .lobby-seat button {
@@ -269,24 +265,11 @@ main {
         line-height: 1.6;
 }
 
-.mini-stats {
-        display: flex;
-        justify-content: space-between;
-        padding: 15px 0;
-        border-top: 1px solid var(--line);
-        font: 12px 'DM Mono', monospace;
-        text-transform: uppercase;
-}
-
-.mini-stats strong {
-        color: var(--mint);
-}
-
 .game-heading {
         display: flex;
         justify-content: space-between;
-        align-items: end;
-        padding: 34px 0 30px;
+        align-items: start;
+        padding: 3px 0 12px;
 }
 
 .game-heading h1 {
@@ -321,6 +304,7 @@ main {
         align-items: start;
 }
 
+/* ===== Tablero y sección de jugadores ===== */
 .board-panel {
         padding: 18px;
 }
@@ -336,7 +320,7 @@ main {
 .slot {
         position: relative;
         min-height: 125px;
-        padding: 12px;
+        padding: 10px;
         overflow: hidden;
         border: 1px solid var(--line);
         background: #f8f5ed;
@@ -368,26 +352,39 @@ main {
 }
 
 @keyframes slot-jump {
-        0%   { transform: scale(1); }
-        35%  { transform: scale(1.12); }
-        100% { transform: scale(1); }
+        0% {
+                transform: scale(1);
+        }
+
+        35% {
+                transform: scale(1.12);
+        }
+
+        100% {
+                transform: scale(1);
+        }
 }
 
 .slot-id {
-        color: var(--muted);
-        font: 10px 'DM Mono', monospace;
+        color: #6f6f6f;
+        font: 14px 'DM Mono', monospace;
+        background: #ebe3d6;
+        border-radius: 50%;
+        padding: 3px;
 }
 
 .slot h3 {
-        margin: 15px 0 8px;
-        font-size: 14px;
+        margin: 7px 0 3px;
+        font-size: 16px;
         line-height: 1.15;
+        text-align: center;
 }
 
 .slot p {
         margin: 0;
-        color: var(--muted);
-        font: 10px 'DM Mono', monospace;
+        color: #464646;
+        font: 12px 'DM Mono', monospace;
+        text-align: center;
 }
 
 .tokens {
@@ -429,9 +426,24 @@ main {
         gap: 20px;
 }
 
-.active-panel,
-.log-panel {
+.active-panel {
         padding: 24px;
+}
+
+.active-panel.coral {
+        border-top: 4px solid var(--coral);
+}
+
+.active-panel.mint {
+        border-top: 4px solid var(--mint);
+}
+
+.active-panel.gold {
+        border-top: 4px solid var(--gold);
+}
+
+.active-panel.sky {
+        border-top: 4px solid var(--sky);
 }
 
 .active-panel h2 {
@@ -442,14 +454,14 @@ main {
 
 .active-panel>p:not(.eyebrow) {
         margin: 0;
-        color: var(--muted);
-        font-size: 13px;
+        color: #464646;
+        font-size: 14px;
 }
 
 .game-notice {
         margin-top: 15px;
         color: var(--muted);
-        font: 11px 'DM Mono', monospace;
+        font: 12px 'DM Mono', monospace;
         line-height: 1.5;
 }
 
@@ -473,41 +485,6 @@ main {
         background: #fff;
 }
 
-.event-log {
-        max-height: 270px;
-        overflow: auto;
-        margin-top: 15px;
-}
-
-.event-log p {
-        display: flex;
-        gap: 10px;
-        margin: 0;
-        padding: 10px 0;
-        border-top: 1px solid var(--line);
-        font-size: 12px;
-        line-height: 1.4;
-}
-
-.event-log span {
-        flex: none;
-        color: var(--coral);
-        font: 10px 'DM Mono', monospace;
-}
-
-.players-section {
-        margin-top: 24px;
-}
-
-.section-heading {
-        margin-bottom: 12px;
-}
-
-.section-heading>span {
-        color: var(--muted);
-        font-size: 11px;
-}
-
 .player-cards {
         display: grid;
         grid-template-columns: 1fr;
@@ -519,6 +496,10 @@ main {
         border: 1px solid var(--line);
         border-top: 4px solid var(--coral);
         background: var(--panel);
+}
+
+.player-card.coral {
+        border-top-color: var(--coral);
 }
 
 .player-card.mint {
@@ -533,8 +514,20 @@ main {
         border-top-color: var(--sky);
 }
 
-.player-card.active {
-        box-shadow: 0 0 0 2px var(--ink);
+.player-card.active.coral {
+        box-shadow: 0 0 0 2px var(--coral);
+}
+
+.player-card.active.mint {
+        box-shadow: 0 0 0 2px var(--mint);
+}
+
+.player-card.active.gold {
+        box-shadow: 0 0 0 2px var(--gold);
+}
+
+.player-card.active.sky {
+        box-shadow: 0 0 0 2px var(--sky);
 }
 
 .player-card-top {
@@ -544,6 +537,7 @@ main {
 }
 
 .player-card-top strong {
+        font-size: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -558,26 +552,26 @@ main {
 .player-status {
         margin-left: auto;
         color: var(--muted);
-        font: 9px 'DM Mono', monospace;
+        font: 14px 'DM Mono', monospace;
         text-transform: uppercase;
 }
 
 .player-balance {
-        margin: 20px 0 2px;
+        margin: 10px 0 2px;
         font-size: 25px;
         font-weight: 800;
         letter-spacing: -.04em;
 }
 
 .player-balance small {
-        color: var(--muted);
+        color: #464646;
         font: 10px 'DM Mono', monospace;
 }
 
 .player-card p {
         margin: 0 0 12px;
-        color: var(--muted);
-        font-size: 11px;
+        color: #464646;
+        font-size: 14px;
 }
 
 .property-tags {
@@ -588,15 +582,16 @@ main {
 
 .property-tags span {
         padding: 4px 6px;
-        color: var(--muted);
+        color: #464646;
         background: #ebe7de;
-        font-size: 9px;
+        font-size: 12px;
 }
 
 .results-hero {
-        padding: 90px 0 44px;
+        padding: 10px 0 25px;
 }
 
+/* ===== Sección de resultados ===== */
 .results-panel {
         max-width: 760px;
         padding: 27px;
@@ -621,7 +616,7 @@ main {
 }
 
 .result-row span:last-child {
-        font: 13px 'DM Mono', monospace;
+        font: 14px 'DM Mono', monospace;
 }
 
 .modal {
@@ -632,6 +627,20 @@ main {
         place-items: center;
         padding: 20px;
         background: rgba(24, 33, 38, .45);
+        animation: modal-in .25s ease both;
+}
+
+/* ===== Modales ===== */
+#statusModal {
+        z-index: 25;
+}
+
+#lastTransactionModal {
+        z-index: 10;
+}
+
+#eventPopup {
+        z-index: 15;
 }
 
 .modal-card {
@@ -689,20 +698,27 @@ main {
         animation: pulse 1.8s infinite;
 }
 
-.rfid-step p,
-.rfid-step strong {
-        display: block;
-        text-align: center;
-}
-
-.rfid-step p {
-        color: var(--muted);
-}
-
 .error-text {
         min-height: 18px;
         color: var(--coral);
         font-size: 12px;
+}
+
+.transaction-decoration {
+        height: 232px;
+        background: repeating-linear-gradient(180deg,
+                        #ffffff3d 0px,
+                        #ffffff3d 10px,
+                        #0000ff3d 10px,
+                        #0000ff3d 20px,
+                        #ffffff3d 20px,
+                        #ffffff3d 30px,
+                        #ff00003d 30px,
+                        #ff00003d 40px);
+        background-size: 100% 80%;
+        background-repeat: repeat-y;
+        padding: 0px 15px 0px;
+        border: 1px solid var(--line);
 }
 
 #transactionHistoryText,
@@ -710,35 +726,31 @@ main {
         width: 100%;
         min-height: 230px;
         max-height: 50vh;
+        margin: 0;
         resize: none;
         padding: 14px 16px;
-        border: 1px solid var(--line);
+        border: none;
         background: #fff;
         color: var(--ink);
         font: 12px 'DM Mono', monospace;
-        line-height: 1.6;
+        line-height: 1.8;
         overflow: auto;
+        text-transform: uppercase;
+}
+
+.transaction-menu-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+}
+
+.transaction-menu-actions button {
+        width: 100%;
+        justify-self: stretch;
 }
 
 .transaction-card {
         width: min(100%, 560px);
-}
-
-.toast {
-        position: fixed;
-        right: 24px;
-        bottom: 24px;
-        z-index: 7;
-        max-width: 340px;
-        padding: 15px 18px;
-        color: #fff;
-        background: var(--ink);
-        box-shadow: var(--shadow);
-        font-size: 13px;
-}
-
-.toast.error {
-        background: var(--coral);
 }
 
 .event-popup {
@@ -756,9 +768,9 @@ main {
 }
 
 .event-popup p {
-        margin: 0 0 12px;
-        color: var(--coral);
-        font: 500 13px 'DM Mono', monospace;
+        margin: 0 0 25px;
+        color: var(--ink);
+        font: 700 50px 'DM Mono', monospace;
         letter-spacing: .12em;
         text-transform: uppercase;
 }
@@ -798,9 +810,13 @@ main {
         box-shadow: 0 10px 24px rgba(24, 33, 38, .12);
 }
 
+.dice-box.gold {
+        border: 3px solid var(--gold);
+}
+
 .dice-pending,
 .dice-result {
-        font: 500 16px 'DM Mono', monospace;
+        font: 500 22px 'DM Mono', monospace;
         letter-spacing: .06em;
         color: var(--ink);
 }
@@ -813,7 +829,7 @@ main {
         margin-bottom: 12px;
 }
 
-.crash-card > p:not(.eyebrow) {
+.crash-card>p:not(.eyebrow) {
         color: var(--muted);
         line-height: 1.6;
 }
@@ -837,10 +853,23 @@ main {
         border-top: 5px solid var(--sky);
 }
 
-.status-card.success { border-top-color: var(--mint); }
-.status-card.error { border-top-color: var(--coral); }
-.status-card h2 { margin-bottom: 12px; }
-.status-card > p:not(.eyebrow) { color: var(--muted); line-height: 1.55; }
+.status-card.success {
+        border-top-color: var(--mint);
+}
+
+.status-card.error {
+        border-top-color: var(--coral);
+}
+
+.status-card h2 {
+        margin-bottom: 12px;
+}
+
+.status-card>p:not(.eyebrow) {
+        color: var(--muted);
+        line-height: 1.55;
+}
+
 .status-mark {
         display: grid;
         place-items: center;
@@ -853,9 +882,19 @@ main {
         font-size: 28px;
         font-weight: 800;
 }
-.status-card.success .status-mark { background: var(--mint); }
-.status-card.error .status-mark { background: var(--coral); }
-.status-card .primary-button { min-width: 100px; margin-top: 14px; }
+
+.status-card.success .status-mark {
+        background: var(--mint);
+}
+
+.status-card.error .status-mark {
+        background: var(--coral);
+}
+
+.status-card .primary-button {
+        min-width: 100px;
+        margin-top: 14px;
+}
 
 .shutdown-overlay {
         position: fixed;
@@ -899,6 +938,18 @@ main {
         }
 }
 
+@keyframes modal-in {
+        from {
+                opacity: 0;
+                transform: scale(.96);
+        }
+
+        to {
+                opacity: 1;
+                transform: scale(1);
+        }
+}
+
 @keyframes pulse {
         50% {
                 box-shadow: 0 0 0 12px rgba(232, 121, 98, .08);
@@ -906,8 +957,15 @@ main {
 }
 
 @keyframes event-in {
-        from { opacity: 0; transform: scale(.96); }
-        to { opacity: 1; transform: scale(1); }
+        from {
+                opacity: 0;
+                transform: scale(.96);
+        }
+
+        to {
+                opacity: 1;
+                transform: scale(1);
+        }
 }
 
 @media (max-width:900px) {
@@ -940,7 +998,7 @@ main {
         }
 
         .lobby-intro {
-                padding: 48px 0 30px;
+                padding: 48px 0 25px;
         }
 
         .lobby-players,
