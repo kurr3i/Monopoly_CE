@@ -1,6 +1,7 @@
 bin/
 obj/
 build_validation/
+Registros/
 .vs/
 .vscode/
 *.user

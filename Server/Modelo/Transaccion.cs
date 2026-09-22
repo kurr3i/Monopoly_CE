@@ -24,7 +24,7 @@ namespace Proyecto_MonopoTEC.Server.Modelo
     public class Transaccion
     {
         public int ID { get; private set; }
-        public DateTime FechaHora { get; private set; }
+        public DateTime FechaHora { get; set; }
         public int NumeroTurno { get; private set; }
         public TipoTransaccion Tipo { get; private set; }
         public Jugador JugadorOrigen { get; private set; }
@@ -52,6 +52,25 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             this.JugadorDestino = jugadorDestino;
             this.Monto = monto;
             this.Descripcion = descripcion;
+        }
+
+
+        /// <summary>
+        /// Convierte la transacción a un objeto JSON.
+        /// </summary>
+        public object ConvertirTexto()
+        {
+            return new
+            {
+                id = ID,
+                fechaHora = FechaHora,
+                numeroTurno = NumeroTurno,
+                tipo = Tipo.ToString(),
+                jugadorOrigen = JugadorOrigen?.Nombre ?? "Banco",
+                jugadorDestino = JugadorDestino?.Nombre ?? "Banco",
+                monto = Monto,
+                descripcion = Descripcion
+            };
         }
     }
 

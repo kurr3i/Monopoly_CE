@@ -7,8 +7,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
 	/// </summary>
 	public class NodeCasilla
 	{
-		public Casilla Data { get; set; }
-		public NodeCasilla Next { get; set; }
-		public NodeCasilla Previous { get; set; }
+		public Casilla? Data { get; set; }
+		public NodeCasilla? Next { get; set; }
+		public NodeCasilla? Previous { get; set; }
 	}
 }

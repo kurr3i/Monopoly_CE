@@ -23,6 +23,12 @@
 - GND -> GND (RFID RC522)
 - GND -> GND (Buzzer)
 
+# Arduino Físico
+
+## Requisitos
+
+- Librería MFRC522
+- LiquidCrystal_I2C
 
 # Arduino Virtual
 
@@ -36,4 +42,5 @@
 change CNCA0 PortName=COM10
 change CNCB0 PortName=COM11
 5. El programa requiere de Python 3.14.x+ y Tkinter.
+5.1. Comando: py -m pip install pyserial
 6. Finalmente para activarlo, se debe cambiar la configuración en la clase Config.cs > ArduinoVirtual a true

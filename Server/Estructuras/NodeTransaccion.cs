@@ -8,8 +8,8 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
 	/// </summary>
 	public class NodeTransaccion
 	{
-		public Transaccion Data { get; set; }
-		public NodeTransaccion Next { get; set; }
-		public NodeTransaccion Previous { get; set; }
+		public Transaccion? Data { get; set; }
+		public NodeTransaccion? Next { get; set; }
+		public NodeTransaccion? Previous { get; set; }
 	}
 }

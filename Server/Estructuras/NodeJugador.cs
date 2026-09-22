@@ -7,9 +7,9 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
 	/// </summary>
 	public class NodeJugador
 	{
-		public Jugador Data { get; set; }
-		public NodeJugador Next { get; set; }
-		public NodeJugador Previous { get; set; }
+		public Jugador? Data { get; set; }
+		public NodeJugador? Next { get; set; }
+		public NodeJugador? Previous { get; set; }
 	}
 
 }

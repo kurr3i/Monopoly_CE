@@ -1,4 +1,5 @@
-﻿using Proyecto_MonopoTEC.Client.Red;
+﻿using System.Diagnostics;
+using Proyecto_MonopoTEC.Client.Red;
 using Proyecto_MonopoTEC.Compartido;
 
 namespace Proyecto_MonopoTEC.Client
@@ -8,8 +9,8 @@ namespace Proyecto_MonopoTEC.Client
 		static async Task Main(string[] args)
 		{
 			// Iniciar el cliente
-			Cliente cliente = new Cliente(Config.ServerPort, Config.ClientPort);
-			
+			Cliente cliente = new Cliente(Config.ServerPort, Config.ClientPort, Config.ServerIp);
+
 			// Abrir la comunicación
 			_ = Task.Run(() => cliente.IniciarServer());
 			await cliente.IniciarCliente();
