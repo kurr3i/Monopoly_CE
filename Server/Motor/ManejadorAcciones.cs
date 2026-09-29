@@ -626,8 +626,7 @@ namespace Proyecto_MonopoTEC.Server.Motor
             }
 
                 nodoActual = nodoActual.Next;
-            }
-
+   
             Console.WriteLine("[ManejadorAcciones] Esperando selección de propiedad.");
 
             _server.EnviarMensaje(Protocolo.VentaPropiedad, new

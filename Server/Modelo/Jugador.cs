@@ -139,5 +139,25 @@ namespace Proyecto_MonopoTEC.Server.Modelo
                 TurnosPerdidos--;
             }
         }
+
+        /// <summary>
+        /// Calcula el patrimonio del jugador: saldo + valor de compra de sus propiedades.
+        /// </summary>
+        public int CalcularPatrimonio()
+        {
+            int total = Saldo;
+            NodeCasilla? nodo = PropiedadesAdquiridas.Head;
+
+            while (nodo != null)
+            {
+                if (nodo.Data is Propiedad propiedad)
+                {
+                    total += propiedad.PrecioCompra;
+                }
+                nodo = nodo.Next;
+            }
+
+            return total;
+        }
     }
 }
