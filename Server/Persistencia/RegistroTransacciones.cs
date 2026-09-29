@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Proyecto_MonopoTEC.Server.Modelo;
+using Proyecto_MonopoTEC.Server.Estructuras;
 
 namespace Proyecto_MonopoTEC.Server.Persistencia
 {
@@ -88,7 +89,7 @@ namespace Proyecto_MonopoTEC.Server.Persistencia
 
             // Divide el contenido en bloques
             string[] bloques = contenido.Split(new[] { "\r\n\r\n", "\n\n", "\r\r" }, StringSplitOptions.RemoveEmptyEntries);
-            List<Transaccion> transacciones = new List<Transaccion>();
+            ListaTransacciones transacciones = new ListaTransacciones();
 
             // Recorre los bloques (transacciones)
             foreach (string bloque in bloques)

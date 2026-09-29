@@ -33,6 +33,10 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             {
                 return AccionCasilla.PermitirComprar; // La propiedad no tiene propietario, se puede comprar.
             }
+            else if (Propietario.Activo == false)
+            {
+                return AccionCasilla.SinAccion; // El propietario perdió.
+            }
             else
             {
                 return AccionCasilla.CobrarAlquiler; // La propiedad tiene un propietario diferente al jugador, se debe pagar alquiler.

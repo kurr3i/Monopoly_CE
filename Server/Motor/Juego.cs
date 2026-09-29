@@ -610,14 +610,17 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else
                 {
-                    Console.WriteLine("Se eliminó al jugador" + jugadorActual!.Nombre);
+                    Console.WriteLine("Se eliminó al jugador " + jugadorActual!.Nombre);
+
+                    jugadorActual.Eliminar();
 
                     _server.EnviarMensaje(Protocolo.JugadorEliminado, new
                     {
                         jugadorId = jugadorActual.ID,
-                        mensaje = "Se eliminó al jugador" + jugadorActual.Nombre
+                        mensaje = "Se eliminó al jugador " + jugadorActual.Nombre
                     }
                     );
+
 
                     ColaTurnos.Dequeue();
                 }

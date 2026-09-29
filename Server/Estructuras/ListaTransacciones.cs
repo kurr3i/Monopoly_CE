@@ -189,5 +189,23 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                 } while (nodeActual != null);
             }
         }
+
+        /// <summary>
+        /// Copia las transacciones de la lista a un arreglo, en orden cronológico.
+        /// </summary>
+        public Transaccion[] ToArray()
+        {
+            Transaccion[] resultado = new Transaccion[Size];
+            NodeTransaccion? nodo = Head;
+            int posicion = 0;
+
+            while (nodo != null)
+            {
+                resultado[posicion++] = nodo.Data!;
+                nodo = nodo.Next;
+            }
+
+            return resultado;
+        }   
     }
 }

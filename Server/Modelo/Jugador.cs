@@ -84,6 +84,14 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         }
 
         /// <summary>
+        /// Marca al jugador como eliminado de la partida.
+        /// </summary>
+        public void Eliminar()
+        {
+            Activo = false;
+        }
+
+        /// <summary>
         /// Cambia el estado para que el jugador esté en carcel y cambia los turnos en carcel a 3.
         /// </summary>
         public void EntrarCarcel()
