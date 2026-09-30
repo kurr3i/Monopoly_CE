@@ -486,13 +486,21 @@ namespace Proyecto_MonopoTEC.Server.Motor
             int resultadoDado1 = dado!.Lanzar();
             int resultadoDado2 = dado!.Lanzar();
 
-            Thread.Sleep(1200);
+            // DEBUG TEMPORAL PARA SALTAR ESPERA
+            if (!Config.Skip)
+            {
+                Thread.Sleep(700);
+            }
 
             Console.WriteLine("El jugador " + jugadorActual!.Nombre + " ha lanzado el dado y obtuvo: " + resultadoDado1 + " y " + resultadoDado2);
 
             _server.EnviarMensaje(Protocolo.DadosLanzados, new { jugadorId = jugadorActual.ID, dado1 = resultadoDado1, dado2 = resultadoDado2, resultado = resultadoDado1 + resultadoDado2 });
 
-            Thread.Sleep(1200);
+            // DEBUG TEMPORAL PARA SALTAR ESPERA
+            if (!Config.Skip)
+            {
+                Thread.Sleep(1000);
+            }
 
             bool pasoPorSalida;
             Casilla casillaJugadorActual = _tableroJuego.AvanzarJugador(jugadorActual, resultadoDado1 + resultadoDado2, out pasoPorSalida);
@@ -568,7 +576,100 @@ namespace Proyecto_MonopoTEC.Server.Motor
             }
         }
 
+        /// <summary>
+        /// Devuelve al jugador activo (aún en la cola) con mayor patrimonio.
+        /// En empate gana el que esté primero en la cola.
+        /// </summary>
+        private Jugador ObtenerGanadorPorPatrimonio()
+        {
+            NodeJugador nodo = ColaTurnos!.Head!;
+            Jugador ganador = nodo.Data!;
 
+            for (int indice = 0; indice < ColaTurnos.Size; indice++)
+            {
+                if (nodo.Data!.CalcularPatrimonio() > ganador.CalcularPatrimonio())
+                {
+                    ganador = nodo.Data;
+                }
+                nodo = nodo.Next!;
+            }
+
+            return ganador;
+        }
+
+        /// <summary>
+        /// Arma el ranking final: activos primero, y dentro de cada grupo por patrimonio descendente.
+        /// </summary>
+        private object[] ArmarRanking()
+        {
+            // La partida solo inicia con los 4 jugadores registrados
+            Jugador[] todos = { jugador1!, jugador2!, jugador3!, jugador4! };
+
+            // Ordenamiento burbuja
+            for (int pasada = 0; pasada < todos.Length - 1; pasada++)
+            {
+                // En cada pasada queda un jugador más fijo al final, por eso se revisa uno menos
+                for (int posicion = 0; posicion < todos.Length - 1 - pasada; posicion++)
+                {
+                    Jugador actual = todos[posicion];
+                    Jugador siguiente = todos[posicion + 1];
+
+                    if (DebeIrDespues(actual, siguiente))
+                    {
+                        // Intercambio de posiciones
+                        todos[posicion] = siguiente;
+                        todos[posicion + 1] = actual;
+                    }
+                }
+            }
+
+            object[] ranking = new object[todos.Length];
+            for (int posicion = 0; posicion < todos.Length; posicion++)
+            {
+                Jugador jugador = todos[posicion];
+
+                ranking[posicion] = new
+                {
+                    jugador = jugador.Nombre,
+                    saldo = jugador.Saldo,
+                    patrimonio = jugador.CalcularPatrimonio(),
+                    activo = jugador.Activo
+                };
+            }
+
+            return ranking;
+        }
+
+        /// <summary>
+        /// Indica si el jugador 'a' debe ubicarse después de 'b' en el ranking.
+        /// </summary>
+        private bool DebeIrDespues(Jugador a, Jugador b)
+        {
+            if (a.Activo != b.Activo)
+                return !a.Activo;
+
+            return a.CalcularPatrimonio() < b.CalcularPatrimonio();
+        }
+
+        /// <summary>
+        /// Envía los mensajes de fin de partida.
+        /// </summary>
+        private void FinalizarPartida(Jugador ganador, string motivo)
+        {
+            _server.EnviarMensaje(Protocolo.Ganador, new
+            {
+                jugadorId = ganador.ID,
+                ganador = ganador.Nombre
+            });
+
+            _server.EnviarMensaje(Protocolo.TerminarJuego, new
+            {
+                ganadorId = ganador.ID,
+                ganador = ganador.Nombre,
+                motivo,
+                jugadores = ArmarRanking()
+            });
+        }
 
         /// <summary>
         /// Inicia la partida.
@@ -610,14 +711,17 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 }
                 else
                 {
-                    Console.WriteLine("Se eliminó al jugador" + jugadorActual!.Nombre);
+                    Console.WriteLine("Se eliminó al jugador " + jugadorActual!.Nombre);
+
+                    jugadorActual.Eliminar();
 
                     _server.EnviarMensaje(Protocolo.JugadorEliminado, new
                     {
                         jugadorId = jugadorActual.ID,
-                        mensaje = "Se eliminó al jugador" + jugadorActual.Nombre
+                        mensaje = "Se eliminó al jugador " + jugadorActual.Nombre
                     }
                     );
+
 
                     ColaTurnos.Dequeue();
                 }
@@ -625,46 +729,17 @@ namespace Proyecto_MonopoTEC.Server.Motor
 
                 if (ColaTurnos.Size == 1)
                 {
-                    Console.WriteLine($"Ganó jugador {ColaTurnos.Peek().Nombre}");
-
-                    _server.EnviarMensaje(Protocolo.Ganador, new { jugadorId = ColaTurnos.Peek().ID });
-
-                    _server.EnviarMensaje(Protocolo.TerminarJuego, new
-                    {
-                        ganadorId = ColaTurnos.Peek().ID,
-                        jugadores = new[] { jugador1, jugador2, jugador3, jugador4 }
-                            .Where(jugador => jugador != null)
-                            .OrderByDescending(jugador => jugador!.Saldo)
-                            .Select(jugador => new { jugador = jugador!.Nombre, saldo = jugador.Saldo })
-                    }
-                    );
+                    Jugador ganador = ColaTurnos.Peek();
+                    Console.WriteLine($"Ganó jugador {ganador.Nombre}");
+                    FinalizarPartida(ganador, "ultimo_jugador");
 
                     break;
                 }
-                else if (Turno == 1000)
+                else if (Turno == 100)
                 {
-                    Console.WriteLine("Se ha alcanzado el turno 1000.");
-
-                    var jugadoresActivos = new[] { jugador1, jugador2, jugador3, jugador4 }
-                        .Where(jugador => jugador != null)
-                        .OrderByDescending(jugador => jugador!.Saldo)
-                        .ToArray();
-
-                    var ganadorFinal = jugadoresActivos.FirstOrDefault();
-
-                    _server.EnviarMensaje(Protocolo.TerminarJuego, new
-                    {
-                        ganadorId = ganadorFinal?.ID ?? -1,
-                        ganador = ganadorFinal?.Nombre ?? "Nadie",
-                        jugadores = jugadoresActivos
-                            .Select(jugador => new { jugador = jugador!.Nombre, saldo = jugador.Saldo })
-                    });
-
-                    if (ganadorFinal != null)
-                    {
-                        _server.EnviarMensaje(Protocolo.Ganador, new { jugadorId = ganadorFinal.ID, ganador = ganadorFinal.Nombre });
-                    }
-
+                    Jugador ganador = ObtenerGanadorPorPatrimonio();
+                    Console.WriteLine($"Se alcanzó el límite de {1000} turnos. Ganó {ganador.Nombre} por patrimonio.");
+                    FinalizarPartida(ganador, "limite_turnos");
                     break;
                 }
 

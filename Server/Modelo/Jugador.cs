@@ -84,6 +84,14 @@ namespace Proyecto_MonopoTEC.Server.Modelo
         }
 
         /// <summary>
+        /// Marca al jugador como eliminado de la partida.
+        /// </summary>
+        public void Eliminar()
+        {
+            Activo = false;
+        }
+
+        /// <summary>
         /// Cambia el estado para que el jugador esté en carcel y cambia los turnos en carcel a 3.
         /// </summary>
         public void EntrarCarcel()
@@ -130,6 +138,26 @@ namespace Proyecto_MonopoTEC.Server.Modelo
             {
                 TurnosPerdidos--;
             }
+        }
+
+        /// <summary>
+        /// Calcula el patrimonio del jugador: saldo + valor de compra de sus propiedades.
+        /// </summary>
+        public int CalcularPatrimonio()
+        {
+            int total = Saldo;
+            NodeCasilla? nodo = PropiedadesAdquiridas.Head;
+
+            while (nodo != null)
+            {
+                if (nodo.Data is Propiedad propiedad)
+                {
+                    total += propiedad.PrecioCompra;
+                }
+                nodo = nodo.Next;
+            }
+
+            return total;
         }
     }
 }

@@ -1124,7 +1124,12 @@ function mostrarResultados(content) {
 
         $("#winnerMessage").textContent = "La partida terminó. Estas son las posiciones.";
 
-        $("#resultsList").innerHTML = (content.jugadores || []).map((player, index) => `<div class="result-row"><span class="rank">0${index + 1}</span><strong>${escapeHtml(player.jugador)}</strong><span>${player.saldo} CRC</span></div>`).join("");
+        const jugadores = [...(content.jugadores || [])].sort((a, b) => {
+                if (a.activo !== b.activo) return a.activo ? -1 : 1;
+                return (b.patrimonio ?? b.saldo ?? 0) - (a.patrimonio ?? a.saldo ?? 0);
+        });
+
+        $("#resultsList").innerHTML = jugadores.map((player, index) => `<div class="result-row"><span class="rank">0${index + 1}</span><strong>${escapeHtml(player.jugador)}</strong><span>Patrimonio: ${player.patrimonio ?? player.saldo ?? 0} CRC · Saldo: ${player.saldo ?? 0} CRC</span></div>`).join("");
 }
 
 // Función para cerrar el juego

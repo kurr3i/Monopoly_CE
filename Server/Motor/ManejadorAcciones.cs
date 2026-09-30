@@ -215,10 +215,11 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 case AccionCasilla.DarCarta:
                     CartaEvento cartaSacada = _barajaCartas.Peek();
 
+                    _barajaCartas.Advance(); // La carta vuelve al final 
 
                     bool sigueEnJuego = EjecutarAccionCarta(cartaSacada, jugadorActual, numeroTurno);
 
-                    _barajaCartas.Advance(); // La carta vuelve al final 
+                    
 
                     return sigueEnJuego;
 
@@ -607,31 +608,32 @@ namespace Proyecto_MonopoTEC.Server.Motor
                 return;
             }
 
-            List<object> propiedadesDisponibles = new List<object>();
+            object[] propiedadesDisponibles = new object[jugadorVenta.PropiedadesAdquiridas.Size];
+            int indice = 0;
             NodeCasilla? nodoActual = jugadorVenta.PropiedadesAdquiridas.Head;
 
             while (nodoActual != null)
             {
                 if (nodoActual.Data is Propiedad propiedad)
                 {
-                    propiedadesDisponibles.Add(new
+                    propiedadesDisponibles[indice++] = new
                     {
                         id = propiedad.ID,
                         nombre = propiedad.Nombre,
                         precio = propiedad.PrecioCompra
-                    });
+                    };
                 }
 
                 nodoActual = nodoActual.Next;
             }
-
+   
             Console.WriteLine("[ManejadorAcciones] Esperando selección de propiedad.");
 
             _server.EnviarMensaje(Protocolo.VentaPropiedad, new
             {
                 jugadorId = jugadorVenta.ID,
                 propiedades = propiedadesDisponibles,
-                cantidad = propiedadesDisponibles.Count
+                cantidad = propiedadesDisponibles.Length
             });
 
             Propiedad casillaVenta = ValidarPropiedadVenta(jugadorVenta, _esperarAccion(jugadorVenta, "venta"));

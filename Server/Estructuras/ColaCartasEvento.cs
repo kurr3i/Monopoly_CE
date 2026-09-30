@@ -168,7 +168,7 @@ namespace Proyecto_MonopoTEC.Server.Estructuras
                 "opción para avanzar es desviarse y dar un " +
                 "tremendo rodeo por la catarata de La Paz y Vara Blanca," +
                 " perdiendo muchísimo tiempo en las curvas. " +
-                "Retrocede 3 casillas."
+                "Retrocede 4 casillas."
                 );
             Enqueue(zurqui);
 

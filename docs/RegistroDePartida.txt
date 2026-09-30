@@ -1,0 +1,584 @@
+--- Registro de Partida Iniciado: 9/21/2026 7:58:50 PM ---
+
+2026-09-21 20:00:40
+Timestamp=2026-09-21 20:00:40
+ID=1
+NumeroTurno=0
+Tipo=GananciaEvento
+JugadorOrigen=Banco
+JugadorDestino=Jugador1
+Monto=250
+Descripcion=El banco le paga a Jugador1 por un evento un monto de 250 colones.
+
+
+2026-09-21 20:03:55
+Timestamp=2026-09-21 20:03:55
+ID=2
+NumeroTurno=2
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador3
+JugadorDestino=Banco
+Monto=250
+Descripcion=El jugador Jugador3 compra al banco la propiedad Guácimo por un monto de 250 colones.
+
+
+2026-09-21 20:04:20
+Timestamp=2026-09-21 20:04:20
+ID=3
+NumeroTurno=5
+Tipo=PerdidaEvento
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=400
+Descripcion=El jugador Jugador2 le paga al banco por un evento un monto de 400 colones.
+
+
+2026-09-21 20:04:38
+Timestamp=2026-09-21 20:04:38
+ID=4
+NumeroTurno=7
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador4
+JugadorDestino=Banco
+Monto=750
+Descripcion=El jugador Jugador4 compra al banco la propiedad Turrialba por un monto de 750 colones.
+
+
+2026-09-21 20:04:59
+Timestamp=2026-09-21 20:04:59
+ID=5
+NumeroTurno=11
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:05:03
+Timestamp=2026-09-21 20:05:03
+ID=6
+NumeroTurno=11
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador4
+JugadorDestino=Banco
+Monto=300
+Descripcion=El jugador Jugador4 compra al banco la propiedad San Carlos por un monto de 300 colones.
+
+
+2026-09-21 20:05:13
+Timestamp=2026-09-21 20:05:13
+ID=7
+NumeroTurno=13
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:05:17
+Timestamp=2026-09-21 20:05:17
+ID=8
+NumeroTurno=13
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=200
+Descripcion=El jugador Jugador2 compra al banco la propiedad Pococí por un monto de 200 colones.
+
+
+2026-09-21 20:05:40
+Timestamp=2026-09-21 20:05:40
+ID=9
+NumeroTurno=17
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=600
+Descripcion=El jugador Jugador2 compra al banco la propiedad Liberia por un monto de 600 colones.
+
+
+2026-09-21 20:06:04
+Timestamp=2026-09-21 20:06:04
+ID=10
+NumeroTurno=20
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador2
+Monto=300
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador2 un monto de 300 colones.
+
+
+2026-09-21 20:07:02
+Timestamp=2026-09-21 20:07:02
+ID=11
+NumeroTurno=23
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:07:19
+Timestamp=2026-09-21 20:07:19
+ID=12
+NumeroTurno=24
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador1
+Monto=450
+Descripcion=El banco le paga a Jugador1 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:07:29
+Timestamp=2026-09-21 20:07:29
+ID=13
+NumeroTurno=25
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:07:33
+Timestamp=2026-09-21 20:07:33
+ID=14
+NumeroTurno=25
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=550
+Descripcion=El jugador Jugador2 compra al banco la propiedad Golfito por un monto de 550 colones.
+
+
+2026-09-21 20:07:44
+Timestamp=2026-09-21 20:07:44
+ID=15
+NumeroTurno=28
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador1
+JugadorDestino=Banco
+Monto=400
+Descripcion=El jugador Jugador1 compra al banco la propiedad Heredia por un monto de 400 colones.
+
+
+2026-09-21 20:08:01
+Timestamp=2026-09-21 20:08:01
+ID=16
+NumeroTurno=32
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador2
+Monto=300
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador2 un monto de 300 colones.
+
+
+2026-09-21 20:08:08
+Timestamp=2026-09-21 20:08:08
+ID=17
+NumeroTurno=33
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:08:17
+Timestamp=2026-09-21 20:08:17
+ID=18
+NumeroTurno=34
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador3
+JugadorDestino=Banco
+Monto=650
+Descripcion=El jugador Jugador3 compra al banco la propiedad Nicoya por un monto de 650 colones.
+
+
+2026-09-21 20:08:25
+Timestamp=2026-09-21 20:08:25
+ID=19
+NumeroTurno=35
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador4
+JugadorDestino=Banco
+Monto=700
+Descripcion=El jugador Jugador4 compra al banco la propiedad Cartago por un monto de 700 colones.
+
+
+2026-09-21 20:08:34
+Timestamp=2026-09-21 20:08:34
+ID=20
+NumeroTurno=36
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador4
+Monto=375
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador4 un monto de 375 colones.
+
+
+2026-09-21 20:09:08
+Timestamp=2026-09-21 20:09:08
+ID=21
+NumeroTurno=41
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:09:16
+Timestamp=2026-09-21 20:09:16
+ID=22
+NumeroTurno=42
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador3
+Monto=450
+Descripcion=El banco le paga a Jugador3 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:09:19
+Timestamp=2026-09-21 20:09:19
+ID=23
+NumeroTurno=42
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador3
+JugadorDestino=Banco
+Monto=350
+Descripcion=El jugador Jugador3 compra al banco la propiedad Zarcero por un monto de 350 colones.
+
+
+2026-09-21 20:09:24
+Timestamp=2026-09-21 20:09:24
+ID=24
+NumeroTurno=43
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:09:26
+Timestamp=2026-09-21 20:09:26
+ID=25
+NumeroTurno=43
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador1
+Monto=200
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador1 un monto de 200 colones.
+
+
+2026-09-21 20:09:31
+Timestamp=2026-09-21 20:09:31
+ID=26
+NumeroTurno=44
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador1
+Monto=450
+Descripcion=El banco le paga a Jugador1 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:09:33
+Timestamp=2026-09-21 20:09:33
+ID=27
+NumeroTurno=44
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador2
+Monto=275
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador2 un monto de 275 colones.
+
+
+2026-09-21 20:09:40
+Timestamp=2026-09-21 20:09:40
+ID=28
+NumeroTurno=45
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=800
+Descripcion=El jugador Jugador2 compra al banco la propiedad Desamparados por un monto de 800 colones.
+
+
+2026-09-21 20:10:12
+Timestamp=2026-09-21 20:10:12
+ID=29
+NumeroTurno=49
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:10:17
+Timestamp=2026-09-21 20:10:17
+ID=30
+NumeroTurno=49
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador2
+JugadorDestino=Jugador3
+Monto=175
+Descripcion=El jugador Jugador2 le paga de alquiler a Jugador3 un monto de 175 colones.
+
+
+2026-09-21 20:10:27
+Timestamp=2026-09-21 20:10:27
+ID=31
+NumeroTurno=50
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador2
+Monto=400
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador2 un monto de 400 colones.
+
+
+2026-09-21 20:10:34
+Timestamp=2026-09-21 20:10:34
+ID=32
+NumeroTurno=51
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador1
+Monto=450
+Descripcion=El banco le paga a Jugador1 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:10:38
+Timestamp=2026-09-21 20:10:38
+ID=33
+NumeroTurno=51
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador3
+Monto=125
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador3 un monto de 125 colones.
+
+
+2026-09-21 20:10:43
+Timestamp=2026-09-21 20:10:43
+ID=34
+NumeroTurno=52
+Tipo=GananciaEvento
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=250
+Descripcion=El banco le paga a Jugador2 por un evento un monto de 250 colones.
+
+
+2026-09-21 20:10:51
+Timestamp=2026-09-21 20:10:51
+ID=35
+NumeroTurno=53
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:11:09
+Timestamp=2026-09-21 20:11:09
+ID=36
+NumeroTurno=53
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador2
+Monto=100
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador2 un monto de 100 colones.
+
+
+2026-09-21 20:11:16
+Timestamp=2026-09-21 20:11:16
+ID=37
+NumeroTurno=54
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador1
+JugadorDestino=Banco
+Monto=500
+Descripcion=El jugador Jugador1 compra al banco la propiedad Quepos por un monto de 500 colones.
+
+
+2026-09-21 20:12:05
+Timestamp=2026-09-21 20:12:05
+ID=38
+NumeroTurno=62
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:12:07
+Timestamp=2026-09-21 20:12:07
+ID=39
+NumeroTurno=62
+Tipo=PerdidaEvento
+JugadorOrigen=Jugador4
+JugadorDestino=Banco
+Monto=400
+Descripcion=El jugador Jugador4 le paga al banco por un evento un monto de 400 colones.
+
+
+2026-09-21 20:12:57
+Timestamp=2026-09-21 20:12:57
+ID=40
+NumeroTurno=65
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador2
+Monto=400
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador2 un monto de 400 colones.
+
+
+2026-09-21 20:13:14
+Timestamp=2026-09-21 20:13:14
+ID=41
+NumeroTurno=68
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:13:16
+Timestamp=2026-09-21 20:13:16
+ID=42
+NumeroTurno=68
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador3
+Monto=125
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador3 un monto de 125 colones.
+
+
+2026-09-21 20:13:31
+Timestamp=2026-09-21 20:13:31
+ID=43
+NumeroTurno=70
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=900
+Descripcion=El jugador Jugador2 compra al banco la propiedad Chepe por un monto de 900 colones.
+
+
+2026-09-21 20:13:37
+Timestamp=2026-09-21 20:13:37
+ID=44
+NumeroTurno=71
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador2
+Monto=300
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador2 un monto de 300 colones.
+
+
+2026-09-21 20:13:44
+Timestamp=2026-09-21 20:13:44
+ID=45
+NumeroTurno=73
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:13:46
+Timestamp=2026-09-21 20:13:46
+ID=46
+NumeroTurno=73
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador2
+JugadorDestino=Jugador3
+Monto=125
+Descripcion=El jugador Jugador2 le paga de alquiler a Jugador3 un monto de 125 colones.
+
+
+2026-09-21 20:14:03
+Timestamp=2026-09-21 20:14:03
+ID=47
+NumeroTurno=77
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador4
+Monto=450
+Descripcion=El banco le paga a Jugador4 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:14:06
+Timestamp=2026-09-21 20:14:06
+ID=48
+NumeroTurno=77
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador3
+Monto=175
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador3 un monto de 175 colones.
+
+
+2026-09-21 20:14:23
+Timestamp=2026-09-21 20:14:23
+ID=49
+NumeroTurno=80
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador4
+JugadorDestino=Jugador2
+Monto=300
+Descripcion=El jugador Jugador4 le paga de alquiler a Jugador2 un monto de 300 colones.
+
+
+2026-09-21 20:14:35
+Timestamp=2026-09-21 20:14:35
+ID=50
+NumeroTurno=81
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador1
+JugadorDestino=Jugador2
+Monto=300
+Descripcion=El jugador Jugador1 le paga de alquiler a Jugador2 un monto de 300 colones.
+
+
+2026-09-21 20:14:41
+Timestamp=2026-09-21 20:14:41
+ID=51
+NumeroTurno=82
+Tipo=CompraPropiedad
+JugadorOrigen=Jugador2
+JugadorDestino=Banco
+Monto=950
+Descripcion=El jugador Jugador2 compra al banco la propiedad Escazú por un monto de 950 colones.
+
+
+2026-09-21 20:15:02
+Timestamp=2026-09-21 20:15:02
+ID=52
+NumeroTurno=85
+Tipo=PremioPorInicio
+JugadorOrigen=Banco
+JugadorDestino=Jugador2
+Monto=450
+Descripcion=El banco le paga a Jugador2 por pasar por el inicio un monto de 450 colones.
+
+
+2026-09-21 20:15:07
+Timestamp=2026-09-21 20:15:07
+ID=53
+NumeroTurno=85
+Tipo=PagoAlquiler
+JugadorOrigen=Jugador2
+JugadorDestino=Jugador1
+Monto=200
+Descripcion=El jugador Jugador2 le paga de alquiler a Jugador1 un monto de 200 colones.
+
