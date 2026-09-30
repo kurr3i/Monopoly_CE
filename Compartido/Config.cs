@@ -8,7 +8,7 @@ namespace Proyecto_MonopoTEC.Compartido
                 /// <summary>
                 /// Simular el Arduino Sí/No
                 /// </summary>
-                public const bool ArduinoVirtual = true;
+                public const bool ArduinoVirtual = false;
 
                 /// <summary>
                 /// Puerto del Arduino fisico

@@ -623,9 +623,9 @@ namespace Proyecto_MonopoTEC.Server.Motor
                         precio = propiedad.PrecioCompra
                     };
                 }
-            }
 
                 nodoActual = nodoActual.Next;
+            }
    
             Console.WriteLine("[ManejadorAcciones] Esperando selección de propiedad.");
 
