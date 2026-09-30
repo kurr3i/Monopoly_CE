@@ -1,0 +1,299 @@
+classDiagram
+direction TB
+
+
+
+%% ===================== SERVER: MOTOR =====================
+namespace Server_Motor {
+    class Juego {
+        -Tablero _tableroJuego
+        -ManejadorAcciones _manejadorAcciones
+        -Servidor _server
+        -RFIDDriver _driver
+        -RegistroTransacciones _registro
+        -Jugador jugador1
+        -Jugador jugador2
+        -Jugador jugador3
+        -Jugador jugador4
+        -Jugador jugadorActual
+        -ColaCircular ColaTurnos
+        -Dado dado
+        -int Turno
+        -ManualResetEventSlim _accionEvent
+        -string _accionEsperada
+        -int _jugadorDesbloqueadoId
+        +Juego(Servidor server, RFIDDriver driver, RegistroTransacciones registro)
+        +RecibirAccion(int jugadorId, string accion, string valor)
+        -EsperarAccion(Jugador jugador, string tipo) string
+        +AutenticarJugador(int id, string nombre) bool
+        +VerificarJugador(int id) bool
+        +IniciarJuego()
+        +IniciarPartida()
+        -InicializarJugador(int id, string UID, string nombre, Casilla posicion) Jugador
+        -InicializarTurnos(Jugador j1, Jugador j2, Jugador j3, Jugador j4) ColaCircular
+        -PrepararTurno() AccionCasilla
+        +EnviarHistorialTransacciones()
+        +EnviarUltimaTransaccion()
+        +EnviarPrimeraTransaccion()
+        +EnviarTransaccionesPorJugador(string nombreJugador)
+        +EnviarTransaccionesPorTipo(string tipo)
+    }
+    class ManejadorAcciones {
+        -RegistroTransacciones _registro
+        -Servidor _server
+        -Banco _bancoJuego
+        -Tablero _tableroJuego
+        -ColaCartasEvento _barajaCartas
+        -Func _esperarAccion
+        +ManejadorAcciones(RegistroTransacciones registro, RFIDDriver driver, Servidor server, Tablero tablero, Func esperarAccion)
+        +EjecutarAccion(AccionCasilla accion, Jugador jugadorActual, int numeroTurno) bool
+        +EjecutarAccionCarta(CartaEvento carta, Jugador jugadorActual, int numeroTurno) bool
+        +AccionVenderPropiedad(Jugador jugadorVenta, int numeroTurno)
+        +DarPremio(Jugador jugador, int numeroTurno)
+        -ValidarDecisionCompra(Jugador jugador, string opcion) string
+        -ValidarPropiedadVenta(Jugador jugador, string indice) Propiedad
+    }
+    class AccionCasilla {
+        <<enumeration>>
+        SinAccion
+        PermitirComprar
+        CobrarAlquiler
+        DarCarta
+        MandarCarcel
+    }
+}
+
+%% ===================== SERVER: MODELO =====================
+namespace Server_Modelo {
+    class Casilla {
+        +int ID
+        +string Nombre
+        +Casilla(int id, string nombre)
+        +DevolverAccion(Jugador jugador) AccionCasilla
+    }
+    class Propiedad {
+        +int PrecioCompra
+        +int Alquiler
+        +Jugador Propietario
+        +Propiedad(int id, string nombre, int precioCompra, int alquiler)
+        +DevolverAccion(Jugador jugador) AccionCasilla
+    }
+    class CasillaEvento {
+        +CasillaEvento(int id, string nombre)
+        +DevolverAccion(Jugador jugador) AccionCasilla
+    }
+    class CasillaEspecial {
+        +SubtipoCasillaEspecial Subtipo
+        +CasillaEspecial(int id, string nombre, SubtipoCasillaEspecial subtipo)
+        +DevolverAccion(Jugador jugador) AccionCasilla
+    }
+    class SubtipoCasillaEspecial {
+        <<enumeration>>
+        Salida
+        Carcel
+        ParqueDiversiones
+        VayaCarcel
+    }
+    class Tablero {
+        +NodeCasilla Head
+        +NodeCasilla Tail
+        +int Size
+        -Add(Casilla casilla)
+        +Inicializar()
+        +ObtenerAccion(Casilla casilla, Jugador jugador) AccionCasilla
+        +AvanzarJugador(Jugador jugador, int movimiento, bool pasoPorSalida) Casilla
+        +RetrocederJugador(Jugador jugador, int movimiento) Casilla
+        +MoverJugadorACarcel(Jugador jugador)
+        +MoverJugadorAParque(Jugador jugador, bool pasoPorSalida)
+        +MoverJugadorASalida(Jugador jugador)
+    }
+    class Jugador {
+        +int ID
+        +string UID
+        +string Nombre
+        +int Saldo
+        +bool Activo
+        +bool EnCarcel
+        +int TurnosCarcel
+        +int TurnosPerdidos
+        +Casilla Posicion
+        +ListaDobleEnlazada PropiedadesAdquiridas
+        +Jugador(int id, string UID, string nombre, Casilla posicion)
+        +CambiarPosicion(Casilla posicion)
+        +AumentarSaldo(int monto)
+        +DisminuirSaldo(int monto)
+        +InicializarUID(string uid)
+        +EntrarCarcel()
+        +ReducirCondena()
+        +SalirCarcel()
+        +PerderTurno(int turnosPerdidos)
+        +ReducirTurnoPerdido()
+    }
+    class CartaEvento {
+        +TipoCartaEvento Tipo
+        +string Descripcion
+        +int Valor
+        +CartaEvento(int valor, TipoCartaEvento tipo, string descripcion)
+    }
+    class TipoCartaEvento {
+        <<enumeration>>
+        GanoColones
+        PerdioColones
+        Avanzar
+        Retroceder
+        PerderTurno
+        AvanzarSalida
+        AvanzarParque
+        VayaCarcel
+    }
+    class Dado {
+        -Random dado
+        +Lanzar() int
+    }
+    class Banco {
+        -RFIDDriver _rfidDriver
+        -RegistroTransacciones _registro
+        -ListaTransacciones _listaTransaccionesPartida
+        -int siguienteIdTransaccion
+        +Banco(RFIDDriver driver, RegistroTransacciones registro)
+        +PuedePagar(Jugador jugador, int monto) bool
+        +PagarAlBanco(Jugador origen, int monto, int turno) Transaccion
+        +PagarAlquiler(Jugador origen, Jugador destino, int monto, int turno) Transaccion
+        +PagarAlJugador(Jugador origen, Jugador destino, int monto, int turno) Transaccion
+        +ComprarPropiedad(Jugador jugador, Propiedad propiedad, int turno) Transaccion
+        +VenderPropiedad(Jugador jugador, Propiedad propiedad, int turno) Transaccion
+        +GananciaPorEvento(Jugador jugador, int ganancia, int turno) Transaccion
+        +PerdidaPorEvento(Jugador jugador, int perdida, int turno) Transaccion
+        +PremioPorInicio(Jugador jugador, int turno) Transaccion
+    }
+    class Transaccion {
+        +int ID
+        +DateTime FechaHora
+        +int NumeroTurno
+        +TipoTransaccion Tipo
+        +Jugador JugadorOrigen
+        +Jugador JugadorDestino
+        +int Monto
+        +string Descripcion
+        +Transaccion(int id, int numeroTurno, TipoTransaccion tipo, Jugador origen, Jugador destino, int monto, string descripcion)
+        +ConvertirTexto() object
+    }
+    class TipoTransaccion {
+        <<enumeration>>
+        CompraPropiedad
+        VentaPropiedad
+        PagoAlquiler
+        PagoBanco
+        PagoEntreJugadores
+        GananciaEvento
+        PerdidaEvento
+        PremioPorInicio
+    }
+}
+
+%% ===================== SERVER: ESTRUCTURAS =====================
+namespace Server_Estructuras {
+    class NodeJugador {
+        +Jugador Data
+        +NodeJugador Next
+        +NodeJugador Previous
+    }
+    class NodeCasilla {
+        +Casilla Data
+        +NodeCasilla Next
+        +NodeCasilla Previous
+    }
+    class NodeCartaEvento {
+        +CartaEvento Data
+        +NodeCartaEvento Next
+        +NodeCartaEvento Previous
+    }
+    class NodeTransaccion {
+        +Transaccion Data
+        +NodeTransaccion Next
+        +NodeTransaccion Previous
+    }
+    class ColaCircular {
+        +NodeJugador Head
+        +NodeJugador Tail
+        +int Size
+        +Enqueue(Jugador jugador)
+        +Dequeue() Jugador
+        +Advance()
+        +Peek() Jugador
+    }
+    class ColaCartasEvento {
+        +NodeCartaEvento Head
+        +NodeCartaEvento Tail
+        +int Size
+        +Enqueue(CartaEvento carta)
+        +Dequeue() CartaEvento
+        +Advance()
+        +Peek() CartaEvento
+        +Inicializar()
+    }
+    class ListaDobleEnlazada {
+        +NodeCasilla Head
+        +NodeCasilla Tail
+        +int Size
+        +Add(Casilla data)
+        +Remove(Casilla data)
+        +GetAt(int indicePropiedad) Casilla
+        +GetById(int id) Casilla
+    }
+    class ListaTransacciones {
+        +NodeTransaccion Head
+        +NodeTransaccion Tail
+        +int Size
+        +Add(Transaccion data)
+        +RecorrerDesdeInicio()
+        +RecorrerDesdeFinal()
+        +BuscarPorJugador(Jugador jugador) Transaccion
+        +BuscarPorTipo(TipoTransaccion tipo) Transaccion
+        +Display()
+    }
+}
+
+%% ===================== HERENCIA / REALIZACION =====================
+Casilla <|-- Propiedad
+Casilla <|-- CasillaEvento
+Casilla <|-- CasillaEspecial
+
+%% ===================== ENUMERACIONES =====================
+CasillaEspecial --> SubtipoCasillaEspecial : Subtipo
+CartaEvento --> TipoCartaEvento : Tipo
+Transaccion --> TipoTransaccion : Tipo
+Casilla ..> AccionCasilla : devuelve
+Tablero ..> AccionCasilla : devuelve
+
+%% ===================== ESTRUCTURAS DE DATOS =====================
+ColaCircular *-- NodeJugador
+NodeJugador --> Jugador : Data
+ColaCartasEvento *-- NodeCartaEvento
+NodeCartaEvento --> CartaEvento : Data
+Tablero *-- NodeCasilla : lista circular
+ListaDobleEnlazada *-- NodeCasilla
+NodeCasilla --> Casilla : Data
+ListaTransacciones *-- NodeTransaccion
+NodeTransaccion --> Transaccion : Data
+
+%% ===================== MODELO =====================
+Jugador *-- ListaDobleEnlazada : PropiedadesAdquiridas
+Jugador --> Casilla : Posicion
+Propiedad --> Jugador : Propietario
+Transaccion --> Jugador : Origen y Destino
+Banco *-- ListaTransacciones
+Banco ..> Transaccion : crea
+Banco ..> Propiedad : compra / vende
+
+%% ===================== MOTOR =====================
+Juego *-- Tablero
+Juego *-- ManejadorAcciones
+Juego *-- ColaCircular : turnos
+Juego *-- Dado
+Juego "1" o-- "4" Jugador
+ManejadorAcciones *-- Banco
+ManejadorAcciones *-- ColaCartasEvento
+ManejadorAcciones --> Tablero
+ManejadorAcciones ..> AccionCasilla
+ManejadorAcciones ..> CartaEvento
